@@ -33,26 +33,44 @@ def recent(url):
                  
                 item = xbmcgui.ListItem(title, iconImage="icon.png", thumbnailImage="icon.png")
                 item.setInfo( type='video', infoLabels={'title': 'test', 'plot': 'Description'})
-                item.setProperty('IsPlayable', 'true')
-                xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
-
-    xbmcplugin.endOfDirectory(pluginhandle, True, True, False)     
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+    
+    xbmcplugin.endOfDirectory(pluginhandle, True)     
      
      
 def show(url):
-    print "*** SHOW " + url
     result = common.fetchPage({"link": url})
+    flashvars = common.parseDOM(result["content"], "embed", ret="flashvars")
+    swf = common.parseDOM(result["content"], "embed", ret="src")
     
-    print result
-    uri = sys.argv[0] + '?mode=PLAY&url=%s'%href
-    item = xbmcgui.ListItem("test", iconImage="icon.png", thumbnailImage="icon.png")
-    item.setInfo( type='video', infoLabels={'title': 'test', 'plot': 'Description'})
-    item.setProperty('IsPlayable', 'true')
-    xbmcplugin.addDirectoryItem(pluginhandle, uri, item)    
+    # TODO: improve url search
+    url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+.xml', flashvars[0])[0]
+        
     
-    xbmcplugin.endOfDirectory(pluginhandle, True)  
+    xml = common.fetchPage({"link": url})
+    print xml
     
-
+    locations = common.parseDOM(xml["content"], "location")
+    titles = common.parseDOM(xml["content"], "title")
+    
+    
+    for j in range(0, len(locations)):
+        print str(titles[j]).decode('utf-8')
+        print '&#x44F'.encode('UTF-8')
+        print '&#x44F'.decode('UTF-8')
+        
+        uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[j]
+        item = xbmcgui.ListItem(titles[j].decode('utf-8'), iconImage="icon.png", thumbnailImage="icon.png")
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
+        item.setProperty('IsPlayable', 'true')
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+    
+def play(url):
+    item = xbmcgui.ListItem(path = url)
+    #flvURL = getFLVLoc(clipID)
+    xbmc.Player().play(url)
+    #xbmcplugin.setResolvedUrl(pluginhandle, True, item)
+    
 def get_params():
     param=[]
     paramstring=sys.argv[2]
@@ -78,16 +96,19 @@ mode=None
 channel=None
 
 try:
-    mode=params['mode']
+    mode=params['mode'].upper()
 except: pass
 
 try:
     url=urllib.unquote_plus(params['url'])
 except: pass
 
-if mode == None:
-    print "**** DEFAULT MODE"
-    recent(URL)
-elif mode == 'SHOW': 
-    print "**** MODE " + mode
+print "+++++++++++++++++ MODE ++++++++++++++++++++++"
+print params
+
+if mode == 'SHOW':
     show(url)
+elif mode == 'PLAY':
+    play(url)
+elif mode == None:
+    recent(URL)
