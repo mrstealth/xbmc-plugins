@@ -1,11 +1,16 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
 # Rev. 1.0.0
+# -*- coding: utf-8 -*-
 
-import re
-import urllib,urllib2,re,sys,os,time
+import urllib
+#import urllib2, sys, os, time
+import urllib, re
 import xbmcplugin,xbmcgui,xbmcaddon
+
+import HTMLParser
+h = HTMLParser.HTMLParser()
+
 import CommonFunctions
 
 common = CommonFunctions
@@ -14,63 +19,62 @@ common.dbg = False # Default (True)
 common.dbglevel = 3 # Default
 
 pluginhandle = int(sys.argv[1])
-__addon__    = xbmcaddon.Addon(id='plugin.video.filin.tv') 
+__addon__    = xbmcaddon.Addon(id='plugin.video.filin.tv')
 
 URL         = 'http://www.filin.tv'
-    
+
+def unescape(entity, encoding):
+  if encoding == 'utf-8':
+    return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
+  elif encoding == 'cp1251':
+    return HTMLParser.HTMLParser().unescape(entity).decode(encoding).encode('utf-8')
+
+def get_url(string):
+  return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+.xml', string)[0]
+
 def recent(url):
     result = common.fetchPage({"link": url})
 
+    print result["content"]
+    print result["header"]
+
     if result["status"] == 200:
-        content = common.parseDOM(result["content"], "div", attrs = { "id":"dle-content" })  
+        content = common.parseDOM(result["content"], "div", attrs = { "id":"dle-content" })
         mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
 
         if len(mainf):
             for i, div in enumerate(mainf):
                 href = common.parseDOM(div, "a", ret="href")[0]
-                title = common.parseDOM(div, "a")[0]
+                # TODO: parse encoding from html meta tag
+                title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
                 uri = sys.argv[0] + '?mode=SHOW&url=%s'%href
-                 
+
                 item = xbmcgui.ListItem(title, iconImage="icon.png", thumbnailImage="icon.png")
                 item.setInfo( type='video', infoLabels={'title': 'test', 'plot': 'Description'})
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-    
-    xbmcplugin.endOfDirectory(pluginhandle, True)     
-     
-     
+
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+
 def show(url):
     result = common.fetchPage({"link": url})
-    flashvars = common.parseDOM(result["content"], "embed", ret="flashvars")
-    swf = common.parseDOM(result["content"], "embed", ret="src")
-    
-    # TODO: improve url search
-    url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+.xml', flashvars[0])[0]
-        
-    
+    flashvars = common.parseDOM(result["content"], "embed", ret="flashvars")[0]
+    url = get_url(flashvars)
+
     xml = common.fetchPage({"link": url})
-    print xml
-    
     locations = common.parseDOM(xml["content"], "location")
     titles = common.parseDOM(xml["content"], "title")
-    
-    
-    for j in range(0, len(locations)):
-        print str(titles[j]).decode('utf-8')
-        print '&#x44F'.encode('UTF-8')
-        print '&#x44F'.decode('UTF-8')
-        
-        uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[j]
-        item = xbmcgui.ListItem(titles[j].decode('utf-8'), iconImage="icon.png", thumbnailImage="icon.png")
+
+    for i in range(0, len(locations)):
+        uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
+        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage="icon.png", thumbnailImage="icon.png")
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
         item.setProperty('IsPlayable', 'true')
     xbmcplugin.endOfDirectory(pluginhandle, True)
-    
+
 def play(url):
     item = xbmcgui.ListItem(path = url)
-    #flvURL = getFLVLoc(clipID)
     xbmc.Player().play(url)
-    #xbmcplugin.setResolvedUrl(pluginhandle, True, item)
-    
+
 def get_params():
     param=[]
     paramstring=sys.argv[2]
