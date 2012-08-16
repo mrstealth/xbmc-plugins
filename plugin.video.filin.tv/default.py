@@ -4,9 +4,8 @@
 # -*- coding: utf-8 -*-
 
 #import urllib2, sys, os, time
-import urllib
 import urllib, re
-import xbmcplugin,xbmcgui,xbmcaddon
+import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import HTMLParser
 import CommonFunctions
 
@@ -35,6 +34,9 @@ def next(url):
   else:
     return URL+'/page/' + str(int(url[-1])+1)
 
+
+# (xbmc.getSkinDir() == "skin.quartz")    
+
 def recent(url):
     page = ''
     result = common.fetchPage({"link": url})
@@ -43,24 +45,31 @@ def recent(url):
         content = common.parseDOM(result["content"], "div", attrs = { "id":"dle-content" })
         mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
         block = common.parseDOM(content, "div", attrs = { "class":"block_text" })
-
+        
+        info = common.parseDOM(result["content"], "div", attrs = { "style":"display:inline;" })
+ 
+    
+        
+                        
         if len(mainf):
             for i, div in enumerate(mainf):
                 href = common.parseDOM(div, "a", ret="href")[0]
                 thumbnail = common.parseDOM(block[i], "img", ret = "src")[0]
                 if thumbnail[0] == '/': thumbnail = URL+thumbnail
-
+                 
                 # TODO: parse encoding from html meta tag
                 title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
                 uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
 
                 item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
-                item.setInfo( type='video', infoLabels={'title': 'test', 'plot': 'Description'})
+                item.setProperty( "Fanart_Image", thumbnail )
+                
+                item.setInfo( type='Video', infoLabels={'title': title, 'plot': info[i].decode('cp1251').encode('utf-8')})
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     uri = sys.argv[0] + '?mode=NEXT&url=' + next(url)
     xbmcplugin.addDirectoryItem(pluginhandle, uri, xbmcgui.ListItem(">>"), True)
-
+    xbmc.executebuiltin('Container.SetViewMode(52)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 def show(url,thumbnail):
@@ -122,9 +131,6 @@ except: pass
 try:
     thumbnail=urllib.unquote_plus(params['thumbnail'])
 except: pass
-
-print "+++++++++++++++++ MODE ++++++++++++++++++++++"
-print params
 
 if mode == 'NEXT':
     recent(url)
