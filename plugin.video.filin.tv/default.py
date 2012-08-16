@@ -3,14 +3,11 @@
 # Rev. 1.0.0
 # -*- coding: utf-8 -*-
 
-import urllib
 #import urllib2, sys, os, time
+import urllib
 import urllib, re
 import xbmcplugin,xbmcgui,xbmcaddon
-
 import HTMLParser
-h = HTMLParser.HTMLParser()
-
 import CommonFunctions
 
 common = CommonFunctions
@@ -32,33 +29,47 @@ def unescape(entity, encoding):
 def get_url(string):
   return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+.xml', string)[0]
 
-def recent(url):
-    result = common.fetchPage({"link": url})
+def next(url):
+  if url[-1] == 'v':
+    return URL+'/page/2'
+  else:
+    return URL+'/page/' + str(int(url[-1])+1)
 
-    print result["content"]
-    print result["header"]
+def recent(url):
+    page = ''
+    result = common.fetchPage({"link": url})
 
     if result["status"] == 200:
         content = common.parseDOM(result["content"], "div", attrs = { "id":"dle-content" })
         mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
+        block = common.parseDOM(content, "div", attrs = { "class":"block_text" })
 
         if len(mainf):
             for i, div in enumerate(mainf):
                 href = common.parseDOM(div, "a", ret="href")[0]
+                thumbnail = common.parseDOM(block[i], "img", ret = "src")[0]
+                if thumbnail[0] == '/': thumbnail = URL+thumbnail
+
                 # TODO: parse encoding from html meta tag
                 title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
-                uri = sys.argv[0] + '?mode=SHOW&url=%s'%href
+                uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
 
-                item = xbmcgui.ListItem(title, iconImage="icon.png", thumbnailImage="icon.png")
+                item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
                 item.setInfo( type='video', infoLabels={'title': 'test', 'plot': 'Description'})
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
+    uri = sys.argv[0] + '?mode=NEXT&url=' + next(url)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, xbmcgui.ListItem(">>"), True)
+
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
-def show(url):
+def show(url,thumbnail):
     result = common.fetchPage({"link": url})
     flashvars = common.parseDOM(result["content"], "embed", ret="flashvars")[0]
     url = get_url(flashvars)
+
+    #TODO: parse <creator> tag and create groups
+    #http://filin.tv/208950482a70e02fad0e82e9a7db82c2/play/srochnoeuvedomlenie.xml
 
     xml = common.fetchPage({"link": url})
     locations = common.parseDOM(xml["content"], "location")
@@ -66,7 +77,7 @@ def show(url):
 
     for i in range(0, len(locations)):
         uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
-        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage="icon.png", thumbnailImage="icon.png")
+        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), thumbnailImage=thumbnail)
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
         item.setProperty('IsPlayable', 'true')
     xbmcplugin.endOfDirectory(pluginhandle, True)
@@ -98,6 +109,7 @@ params = get_params()
 url=None
 mode=None
 channel=None
+thumbnail=None
 
 try:
     mode=params['mode'].upper()
@@ -107,11 +119,17 @@ try:
     url=urllib.unquote_plus(params['url'])
 except: pass
 
+try:
+    thumbnail=urllib.unquote_plus(params['thumbnail'])
+except: pass
+
 print "+++++++++++++++++ MODE ++++++++++++++++++++++"
 print params
 
-if mode == 'SHOW':
-    show(url)
+if mode == 'NEXT':
+    recent(url)
+elif mode == 'SHOW':
+    show(url,thumbnail)
 elif mode == 'PLAY':
     play(url)
 elif mode == None:
