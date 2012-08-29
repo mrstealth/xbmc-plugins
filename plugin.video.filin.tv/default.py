@@ -41,36 +41,36 @@ def next(url):
 
 # (xbmc.getSkinDir() == "skin.quartz")
 
-def menu():
-    name="Categories"
-    item = xbmcgui.ListItem(name)
-    uri = sys.argv[0] + '?mode=GENRES'
-    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+#def menu():
+#    name="Categories"
+#    item = xbmcgui.ListItem(name)
+#    uri = sys.argv[0] + '?mode=CATEGORIES'
+#    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-    name='Latest income'
-    item = xbmcgui.ListItem(name)
-    uri = sys.argv[0] + '?mode=RECENT'
-    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+#    name='Latest income'
+#    item = xbmcgui.ListItem(name)
+#    uri = sys.argv[0] + '?mode=RECENT'
+#    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-    xbmcplugin.endOfDirectory(pluginhandle)
+#    xbmcplugin.endOfDirectory(pluginhandle)
 
-def categories(url):
-    page = ''
-    result = common.fetchPage({"link": url})
+#def categories(url):
+#    page = ''
+#    result = common.fetchPage({"link": url})
 
-    if result["status"] == 200:
-        content = common.parseDOM(result["content"], "div", attrs = { "class":"mcont" })
-        categories = common.parseDOM(content, "option", ret="value")
-        descriptions = common.parseDOM(content, "option")
+#    if result["status"] == 200:
+#        content = common.parseDOM(result["content"], "div", attrs = { "class":"mcont" })
+#        categories = common.parseDOM(content, "option", ret="value")
+#        descriptions = common.parseDOM(content, "option")
 
-        if len(categories):
-            for i, categorie in enumerate(categories):
-                uri = sys.argv[0] + '?mode=RECENT&url=' + URL + '/x.php?onlyjanr=' + categorie
-                title = unescape(descriptions[i], 'cp1251')
-                print uri
+#        if len(categories):
+#            for i, categorie in enumerate(categories):
+#                uri = sys.argv[0] + '?mode=RECENT&url=' + URL + '/x.php?onlyjanr=' + categorie
+#                title = unescape(descriptions[i], 'cp1251')
+#                print uri
 
-                item = xbmcgui.ListItem(title)
-                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+#                item = xbmcgui.ListItem(title)
+#                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
@@ -142,6 +142,120 @@ def play(url):
     item = xbmcgui.ListItem(path = url)
     xbmc.Player().play(url)
 
+
+
+#########################################################################
+
+# INDEX or categories section
+# return array of item urls
+# def getList(url)
+
+def menu():
+    name="Categories"
+    item = xbmcgui.ListItem(name)
+    uri = sys.argv[0] + '?mode=CATEGORIES'
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    name='Latest income'
+    item = xbmcgui.ListItem(name)
+    uri = sys.argv[0] + '?mode=RECENT'
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    xbmcplugin.endOfDirectory(pluginhandle)
+
+# url = ROOT URL
+def getCategories(url):
+    page = ''
+    result = common.fetchPage({"link": url})
+
+    if result["status"] == 200:
+        content = common.parseDOM(result["content"], "div", attrs = { "class":"mcont" })
+        categories = common.parseDOM(content, "option", ret="value")
+        descriptions = common.parseDOM(content, "option")
+
+        if len(categories):
+            for i, categorie in enumerate(categories):
+                uri = sys.argv[0] + '?mode=GET&url=' + URL + '/x.php?onlyjanr=' + categorie
+                title = unescape(descriptions[i], 'cp1251')
+                print uri
+
+                item = xbmcgui.ListItem(title)
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+def getCategoryItems(url):
+    result = common.fetchPage({"link": url})
+
+    if result["status"] == 200:
+        links = common.parseDOM(content, "a", ret="href")
+        titles = common.parseDOM(content, "a") # should be unescape
+
+
+
+# Item with multiple subitems
+# return array of subitem urls
+def getItems(url) # == recent()
+    page = ''
+    result = common.fetchPage({"link": url})
+
+    if result["status"] == 200:
+        content = common.parseDOM(result["content"], "div", attrs = { "id":"dle-content" })
+        mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
+        block = common.parseDOM(content, "div", attrs = { "class":"block_text" })
+
+        descriptions = common.parseDOM(result["content"], "div", attrs = { "style":"display:inline;" })
+
+        if len(mainf):
+            for i, div in enumerate(mainf):
+                href = common.parseDOM(div, "a", ret="href")[0]
+                thumbnail = common.parseDOM(block[i], "img", ret = "src")[0]
+                if thumbnail[0] == '/': thumbnail = URL+thumbnail
+
+                # TODO: parse encoding from html meta tag
+                title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
+                uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
+
+                item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
+                item.setProperty( "Fanart_Image", thumbnail )
+
+                item.setInfo( type='Video', infoLabels={'title': title, 'plot': unescape(descriptions[i], 'cp1251')})
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    uri = sys.argv[0] + '?mode=NEXT&url=' + next(url)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, xbmcgui.ListItem(">>"), True)
+    xbmc.executebuiltin('Container.SetViewMode(52)')
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+
+
+# Show item description with thumbnail
+# return playable subitem url
+def showItem(url, thumbnail)
+
+    result = common.fetchPage({"link": url})
+    flashvars = common.parseDOM(result["content"], "embed", ret="flashvars")[0]
+    url = get_url(flashvars)
+
+    xml = common.fetchPage({"link": url})["content"]
+    locations = common.parseDOM(xml, "location")
+    titles = common.parseDOM(xml, "title")
+
+    t = common.parseDOM(xml, "title")
+    creators = common.parseDOM(xml, "creator")
+
+    for i in range(0, len(locations)):
+        uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
+        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), thumbnailImage=thumbnail)
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
+        item.setProperty('IsPlayable', 'true')
+
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+
+# Play subitem url
+def playItem(url)
+    item = xbmcgui.ListItem(path = url)
+    xbmc.Player().play(url)
+
+#########################################################################
+
 def get_params():
     param=[]
     paramstring=sys.argv[2]
@@ -184,9 +298,9 @@ if mode == 'NEXT':
 elif mode == 'SHOW':
     show(url,thumbnail)
 elif mode == 'PLAY':
-    play(url)
-elif mode == 'GENRES':
-    categories(URL)
+    playItem(url) # play(url)
+elif mode == 'CATEGORIES':
+    getCategories(URL)
 elif mode == 'RECENT':
     recent(URL)
 elif mode == None:
