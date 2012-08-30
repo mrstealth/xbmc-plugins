@@ -60,25 +60,46 @@ def getCategories(url):
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
-def getCategoryItems(url,categorie):
-    url = url + "?onlyjanr=" + categorie
-    response = common.fetchPage({"link": url})
+def getCategoryItems(url, categorie, page):
+  
+    path = url + "?onlyjanr=" + categorie
+    page = int(page)
+        
+    response = common.fetchPage({"link": path})
     content = response['content']
 
     if response["status"] == 200:
         links = common.parseDOM(content, "a", ret="href")
         titles = common.parseDOM(content, "a")
-
-        for i in range(0, len(links)):
-          uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail=#"
-
-          if titles[i] == '':
-            titles[i] = "[Empty]" #TODO: investigate title issue
+              
+        if page == 1:
+            min=0
+            max = {True: page*10, False: len(links)}[len(links) > (page*10)]
+        else:
+            min=(page-1)*10
+            max= {True: page*10, False: len(links)}[len(links) > (page*10)]
+        
+        for i in range(min, max):
+          # html parsing is to slow, find a better way for getting posters
+          #content = common.fetchPage({"link": links[i]})["content"]
+          #ssc = common.parseDOM(content, "div", attrs = { "class":"ssc" })
+          #thumbnail = common.parseDOM(ssc, "img", ret = "src")[0]
+          #if thumbnail[0] == '/': thumbnail = URL+thumbnail                   
+          #uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail=" + thumbnail
+          
+          uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail="
+          
+          if titles[i] == '': titles[i] = "[Empty]" #TODO: investigate title issue
 
           item = xbmcgui.ListItem(titles[i])
           xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-    xbmcplugin.endOfDirectory(pluginhandle, True)
+        if max >= 10 and max < len(links):
+            uri = sys.argv[0] + '?mode=CNEXT&url=' + url + '&page=' + str(page+1) + '&categorie=' + categorie
+            item = xbmcgui.ListItem('>>')
+            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)  
+     
+        xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
 
@@ -111,7 +132,7 @@ def getRecentItems(url):
 
     next = URL+'/page/2' if url[-1] == 'v' else URL+'/page/' + str(int(url[-1])+1)
 
-    xbmcItem(next, ">>", 'NEXT')
+    xbmcItem(next, ">>", 'RNEXT')
     xbmc.executebuiltin('Container.SetViewMode(52)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
@@ -144,7 +165,7 @@ def playItem(url):
 
 
 
-def xbmcItem(url, title, mode):
+def xbmcItem(url, title, mode, *args):
     item = xbmcgui.ListItem(title)
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
@@ -178,6 +199,7 @@ url=None
 mode=None
 categorie=None
 thumbnail=None
+page=None
 
 try:
     mode=params['mode'].upper()
@@ -194,9 +216,14 @@ except: pass
 try:
     thumbnail=urllib.unquote_plus(params['thumbnail'])
 except: pass
+try:
+    page=params['page']
+except: pass
 
-if mode == 'NEXT':
+if mode == 'RNEXT':
     getRecentItems(url)
+elif mode == 'CNEXT':
+    getCategoryItems(url, categorie, page)
 elif mode == 'SHOW':
     showItem(url,thumbnail)
 elif mode == 'PLAY':
@@ -204,6 +231,6 @@ elif mode == 'PLAY':
 elif mode == 'CATEGORIES':
     getCategories(URL)
 elif mode == 'CATEGORIE':
-    getCategoryItems(url, categorie)
+    getCategoryItems(url, categorie, '1')
 elif mode == None:
     getRecentItems(URL)
