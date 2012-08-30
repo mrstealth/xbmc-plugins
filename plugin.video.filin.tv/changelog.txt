@@ -1,2 +1,5 @@
+[B]Version 1.0.1[/B]
+- Add category listing
+
 [B]Version 1.0.0[/B]
 - Initial version
