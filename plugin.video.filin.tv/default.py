@@ -130,11 +130,49 @@ def getCategoryItems(url, categorie, page):
         xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
+def listGenres():
+    genres = [
+                 'http://www.filin.tv/otechestvennue/',
+                 'http://www.filin.tv/detectiv/',
+                 'http://www.filin.tv/romance/',
+                 'http://www.filin.tv/action/',
+                 'http://www.filin.tv/fantastika/',
+                 'http://www.filin.tv/kriminal/',
+                 'http://www.filin.tv/comedi/',
+                 'http://www.filin.tv/teleshou/',
+                 'http://www.filin.tv/multfilms/',
+                 'http://www.filin.tv/adventure/',
+                 'http://www.filin.tv/fantasy/',
+                 'http://www.filin.tv/horror/',
+                 'http://www.filin.tv/drama/',
+                 'http://www.filin.tv/history/',
+                 'http://www.filin.tv/triller/',
+                 'http://www.filin.tv/mystery/',
+                 'http://www.filin.tv/sport/',
+                 'http://www.filin.tv/musical/',
+                 'http://www.filin.tv/dokumentalnii/'
+    ]
+    
+    
+    for i in range(0, len(genres)):
+        uri = sys.argv[0] + '?&url=' + genres[i]
+        item = xbmcgui.ListItem(genres[i])
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)  
+
+    
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+     
+    
 
 # Get latest income from index page
 def getRecentItems(url):
-    text = "[COLOR FF00FF00][&#1050;&#1072;&#1090;&#1077;&#1075;&#1086;&#1088;&#1080;&#1080;][/COLOR]"
-    if url==URL: xbmcItem('', unescape(text, "utf-8"), 'CATEGORIES')
+    categories = "[COLOR FF00FF00][&#1050;&#1072;&#1090;&#1077;&#1075;&#1086;&#1088;&#1080;&#1080;][/COLOR]"
+    genres = "[COLOR FF00FF00]&#1046;&#1072;&#1085;&#1088;&#1099; (&#1085;&#1086;&#1074;&#1099;&#1077; &#1087;&#1086;&#1089;&#1090;&#1091;&#1087;&#1083;&#1077;&#1085;&#1080;&#1103;)[/COLOR]"
+    
+    if url==URL: 
+        xbmcItem('', unescape(categories, "utf-8"), 'CATEGORIES')
+        xbmcItem('', unescape(genres, "utf-8"), 'GENRES')
+    
 
     response = common.fetchPage({"link": url})
 
@@ -266,12 +304,17 @@ elif mode == 'SHOW':
     showItem(url,thumbnail)
 elif mode == 'PLAY':
     playItem(url)
+
+elif mode == 'GENRES':
+    listGenres();
 elif mode == 'CATEGORIES':
     getCategories(URL)
 elif mode == 'CATEGORIE':
     getCategoryItems(url, categorie, '1')
 elif mode == None:
-    getRecentItems(URL)
+    url = {True: url, False: URL}[url == None]
+    
+    getRecentItems(url)
     
 # Add alternative view mode for genres 
 # example pagination: http://www.filin.tv/dokumentalnii/page/2/
@@ -294,3 +337,20 @@ elif mode == None:
 # http://www.filin.tv/sport/
 # http://www.filin.tv/musical/
 # http://www.filin.tv/dokumentalnii/
+
+
+# EXAMPLES
+# >>> foo = [
+# ...            'some string',
+# ...         'another string',
+# ...           'short string'
+# ... ]
+# >>> print foo
+# ['some string', 'another string', 'short string']
+# 
+# >>> bar = 'this is ' \
+# ...       'one long string ' \
+# ...           'that is split ' \
+# ...     'across multiple lines'
+# >>> print bar
+# this is one long string that is split across multiple lines
