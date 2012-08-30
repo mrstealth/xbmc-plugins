@@ -18,6 +18,20 @@ __addon__    = xbmcaddon.Addon(id='plugin.video.filin.tv')
 
 URL         = 'http://www.filin.tv'
 
+
+#Strip HTML tags
+def remove_html_tags(data):
+    p = re.compile(r'<.*?>')
+    return p.sub('', data)
+
+
+#Remove more than one consecutive white spaces:
+
+def remove_extra_spaces(data):
+    p = re.compile(r'\s+')
+    return p.sub(' ', data)
+
+
 # TODO: find a better way of html decoding
 #def format(text):
 #    return re.sub(r'^(&.*;)$', '', text)
@@ -43,6 +57,20 @@ def get_url(string):
 #    getRecentItems(URL)
 #    xbmcplugin.endOfDirectory(pluginhandle, True)
 
+
+def getDescription(block):
+    html = block[block.find('</h2>'):len(block)]
+    return unescape(remove_extra_spaces(remove_html_tags(html)), 'cp1251')
+
+def getThumbnail(block):
+    thumbnail = common.parseDOM(block, "img", ret = "src")[0]
+    if thumbnail[0] == '/': thumbnail = URL+thumbnail
+    return thumbnail
+    
+def getTitle(block):
+    title = common.parseDOM(block, "a")
+    return unescape(title[len(title)-1], 'cp1251')
+    
 def getCategories(url):
     result = common.fetchPage({"link": url})
 
@@ -125,7 +153,6 @@ def getRecentItems(url):
             uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
 
             item = xbmcgui.ListItem(title)
-            item.setProperty( "Fanart_Image", thumbnail )
             item.setInfo( type='Video', infoLabels={'title': title, 'plot': unescape(descs[i], 'cp1251')})
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
@@ -136,25 +163,36 @@ def getRecentItems(url):
     xbmc.executebuiltin('Container.SetViewMode(52)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
+#import string 
 
-def showItem(url, thumbnail, *description):
-    result = common.fetchPage({"link": url})
-    flashvars = common.parseDOM(result["content"], "embed", ret="flashvars")[0]
+def showItem(url, thumbnail):
+    content = common.fetchPage({"link": url})["content"]
+    block = common.parseDOM(content, "div", attrs = { "class":"ssc" })[0]
+        
+    if len(thumbnail) == 0: thumbnail = getThumbnail(block)
+    desc = getDescription(block) 
+          
+    flashvars = common.parseDOM(content, "embed", ret="flashvars")[0]
     url = get_url(flashvars)
 
     xml = common.fetchPage({"link": url})["content"]
     locations = common.parseDOM(xml, "location")
     titles = common.parseDOM(xml, "title")
+    
+    print url
 
 #    t = common.parseDOM(xml, "title")
 #    creators = common.parseDOM(xml, "creator")
 
+    title = getTitle(block)
+
     for i in range(0, len(locations)):
         uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
         item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), thumbnailImage=thumbnail)
+        item.setInfo( type='Video', infoLabels={'title': title, 'plot': desc})
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
-        item.setProperty('IsPlayable', 'true')
-
+        
+    xbmc.executebuiltin('Container.SetViewMode(52)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
@@ -234,3 +272,25 @@ elif mode == 'CATEGORIE':
     getCategoryItems(url, categorie, '1')
 elif mode == None:
     getRecentItems(URL)
+    
+# Add alternative view mode for genres 
+# example pagination: http://www.filin.tv/dokumentalnii/page/2/
+# http://www.filin.tv/otechestvennue/
+# http://www.filin.tv/detectiv/
+# http://www.filin.tv/romance/
+# http://www.filin.tv/action/
+# http://www.filin.tv/fantastika/
+# http://www.filin.tv/kriminal/
+# http://www.filin.tv/comedi/
+# http://www.filin.tv/teleshou/
+# http://www.filin.tv/multfilms/
+# http://www.filin.tv/adventure/
+# http://www.filin.tv/fantasy/
+# http://www.filin.tv/horror/
+# http://www.filin.tv/drama/
+# http://www.filin.tv/history/
+# http://www.filin.tv/triller/
+# http://www.filin.tv/mystery/
+# http://www.filin.tv/sport/
+# http://www.filin.tv/musical/
+# http://www.filin.tv/dokumentalnii/
