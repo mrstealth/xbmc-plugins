@@ -217,7 +217,6 @@ def showItem(url, thumbnail):
     locations = common.parseDOM(xml, "location")
     titles = common.parseDOM(xml, "title")
     
-    print url
 
 #    t = common.parseDOM(xml, "title")
 #    creators = common.parseDOM(xml, "creator")
@@ -312,8 +311,7 @@ elif mode == 'CATEGORIES':
 elif mode == 'CATEGORIE':
     getCategoryItems(url, categorie, '1')
 elif mode == None:
-    url = {True: url, False: URL}[url == None]
-    
+    url = URL if url == None else url
     getRecentItems(url)
     
 # Add alternative view mode for genres 
