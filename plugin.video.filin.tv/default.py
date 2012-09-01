@@ -155,7 +155,7 @@ def listGenres():
     
     
     for i in range(0, len(genres)):
-        uri = sys.argv[0] + '?&url=' + genres[i]
+        uri = sys.argv[0] + '?&url=' + genres[i] + '/'
         item = xbmcgui.ListItem(genres[i])
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)  
 
@@ -173,7 +173,6 @@ def getRecentItems(url):
         xbmcItem('', unescape(categories, "utf-8"), 'CATEGORIES')
         xbmcItem('', unescape(genres, "utf-8"), 'GENRES')
     
-
     response = common.fetchPage({"link": url})
 
     if response["status"] == 200:
@@ -187,16 +186,17 @@ def getRecentItems(url):
             thumbnail = common.parseDOM(block[i], "img", ret = "src")[0]
             if thumbnail[0] == '/': thumbnail = URL+thumbnail
 
+            print thumbnail
+            
             title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
             uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
 
-            item = xbmcgui.ListItem(title)
+            item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
             item.setInfo( type='Video', infoLabels={'title': title, 'plot': unescape(descs[i], 'cp1251')})
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-
-    next = URL+'/page/2' if url[-1] == 'v' else URL+'/page/' + str(int(url[-1])+1)
-
+    next = url + '/page/2' if url.find("page") == -1 else url[:-1] + str(int(url[-1])+1)
+ 
     xbmcItem(next, ">>", 'RNEXT')
     xbmc.executebuiltin('Container.SetViewMode(52)')
     xbmcplugin.endOfDirectory(pluginhandle, True)

@@ -1,3 +1,6 @@
+[B]Version 1.0.2[/B]
+- Improve category listing
+
 [B]Version 1.0.1[/B]
 - Add category listing
 
