@@ -1,12 +1,14 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.1
+# Rev. 1.0.3
 # -*- coding: utf-8 -*-
 
 import urllib, re
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import HTMLParser
 import CommonFunctions
+
+from urllib2 import Request, urlopen, URLError, HTTPError
 
 common = CommonFunctions
 common.plugin = "Filin.net"
@@ -15,22 +17,22 @@ common.dbglevel = 3 # Default
 
 pluginhandle = int(sys.argv[1])
 __addon__    = xbmcaddon.Addon(id='plugin.video.filin.tv')
+_addon_icon    =__addon__.getAddonInfo('icon')
+_resdir = "special://home/addons/" + str(__addon__)+ "/resources" #resources directory
+language = __addon__.getLocalizedString
 
 URL         = 'http://www.filin.tv'
 
 
-#Strip HTML tags
+# Strip HTML tags
 def remove_html_tags(data):
     p = re.compile(r'<.*?>')
     return p.sub('', data)
 
-
-#Remove more than one consecutive white spaces:
-
+# Remove more than one consecutive white space
 def remove_extra_spaces(data):
     p = re.compile(r'\s+')
     return p.sub(' ', data)
-
 
 # TODO: find a better way of html decoding
 #def format(text):
@@ -42,21 +44,15 @@ def unescape(entity, encoding):
   elif encoding == 'cp1251':
     return entity.decode(encoding).encode('utf-8')
 
+def localize(string):
+    return unescape(string, 'utf-8')
+    
+def colorize(string, color):
+    text = "[COLOR " + color + "]" + string + "[/COLOR]"
+    return text
+    
 def get_url(string):
   return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+.xml', string)[0]
-
-#def menu():
-#    name="[Categories]"
-#    text = "[COLOR FF00FF00][&#1050;&#1072;&#1090;&#1077;&#1075;&#1086;&#1088;&#1080;&#1080;][/COLOR]"
-#    name= unescape(text, "utf-8")
-#    print name
-#    item = xbmcgui.ListItem(name)
-#    uri = sys.argv[0] + '?mode=CATEGORIES'
-#    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
-#    getRecentItems(URL)
-#    xbmcplugin.endOfDirectory(pluginhandle, True)
-
 
 def getDescription(block):
     html = block[block.find('</h2>'):len(block)]
@@ -71,6 +67,77 @@ def getTitle(block):
     title = common.parseDOM(block, "a")
     return unescape(title[len(title)-1], 'cp1251')
     
+    
+def search():
+    kbd = xbmc.Keyboard()
+    kbd.setDefault('')
+    kbd.setHeading(language(2002))
+    kbd.doModal()
+    keyword=''
+    
+    if kbd.isConfirmed():
+        try:
+            keyword = trans.detranslify(kbd.getText())
+            keyword=keyword.encode("utf-8")
+        except:
+            keyword = kbd.getText()
+
+    path = "/do=search"
+    values = {'do' : 'search', 
+              'subaction' : 'search',
+              'story' : keyword, 
+              'x' : '0',
+              'y' : '0'}
+              
+    data = urllib.urlencode(values)        
+    req = Request(URL+path, data)
+
+    try:
+        response = urlopen(req)
+    except URLError, e:
+        if hasattr(e, 'reason'):
+            print 'We failed to reach a server.'
+            print 'Reason: ', e.reason
+        elif hasattr(e, 'code'):
+            print 'The server couldn\'t fulfill the request.'
+            print 'Error code: ', e.code
+    else:
+        response = response.read()
+        # everything is fine
+        print "**** everything is fine"
+        
+        info = common.parseDOM(response, "div", attrs = { "id":"dle-info" })[0]
+        content = common.parseDOM(response, "div", attrs = { "id":"dle-content" })
+        
+        print content
+        
+        if len(info) > 1:
+            result = common.parseDOM(info, "div", attrs = { "class":"ssc2r" })[0]
+            item = xbmcgui.ListItem(colorize('[' + unescape(result, 'cp1251') + ']', 'FFFF4000'))
+            xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
+
+            # XBMC Notification or item with message????
+            #message = colorize('[' + unescape(result, 'cp1251') + ']', 'FFFF4000')
+            #xbmc.executebuiltin('XBMC.Notification("%s", "%s", %s, "%s")' % (localize(language(2002)), message, 5000, _addon_icon))
+        else:
+            result = common.parseDOM(content, "span", attrs = { "class":"sresult" })[0]
+            item = xbmcgui.ListItem(colorize('[' + unescape(result, 'cp1251') + ']', 'FF00FFF0'))
+            xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
+        
+            mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
+            titles = common.parseDOM(mainf, "a")
+            links = common.parseDOM(mainf, "a", ret = "href")
+            
+            for i in range(0, len(links)):    
+                title = unescape(titles[i], 'cp1251')
+                uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail="
+            
+                item = xbmcgui.ListItem(title)
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+     
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+    
+
 def getCategories(url):
     result = common.fetchPage({"link": url})
 
@@ -88,8 +155,8 @@ def getCategories(url):
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
-def getCategoryItems(url, categorie, page):
-  
+
+def getCategoryItems(url, categorie, page):  
     path = url + "?onlyjanr=" + categorie
     page = int(page)
         
@@ -102,12 +169,13 @@ def getCategoryItems(url, categorie, page):
               
         if page == 1:
             min=0
-            max = {True: page*10, False: len(links)}[len(links) > (page*10)]
+            max = {True: page*20, False: len(links)}[len(links) > (page*20)]
         else:
-            min=(page-1)*10
-            max= {True: page*10, False: len(links)}[len(links) > (page*10)]
+            min=(page-1)*20
+            max= {True: page*20, False: len(links)}[len(links) > (page*20)]
         
         for i in range(min, max):
+        #for i in range(min, max):
           # html parsing is to slow, find a better way for getting posters
           #content = common.fetchPage({"link": links[i]})["content"]
           #ssc = common.parseDOM(content, "div", attrs = { "class":"ssc" })
@@ -122,9 +190,9 @@ def getCategoryItems(url, categorie, page):
           item = xbmcgui.ListItem(titles[i])
           xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-        if max >= 10 and max < len(links):
+        if max >= 20 and max < len(links):
             uri = sys.argv[0] + '?mode=CNEXT&url=' + url + '&page=' + str(page+1) + '&categorie=' + categorie
-            item = xbmcgui.ListItem('>>')
+            item = xbmcgui.ListItem(localize(language(3000)))
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)  
      
         xbmcplugin.endOfDirectory(pluginhandle, True)
@@ -150,31 +218,32 @@ def listGenres():
                  'http://www.filin.tv/mystery/',
                  'http://www.filin.tv/sport/',
                  'http://www.filin.tv/musical/',
-                 'http://www.filin.tv/dokumentalnii/'
+                 'http://www.filin.tv/dokumentalnii/',
+                 'http://www.filin.tv/war/'
     ]
     
     
     for i in range(0, len(genres)):
         uri = sys.argv[0] + '?&url=' + genres[i] + '/'
-        item = xbmcgui.ListItem(genres[i])
+        item = xbmcgui.ListItem(localize(language(1000+i)))
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)  
 
     
+    #xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
     xbmcplugin.endOfDirectory(pluginhandle, True)
      
     
 
 # Get latest income from index page
-def getRecentItems(url):
-    categories = "[COLOR FF00FF00][&#1050;&#1072;&#1090;&#1077;&#1075;&#1086;&#1088;&#1080;&#1080;][/COLOR]"
-    genres = "[COLOR FF00FF00]&#1046;&#1072;&#1085;&#1088;&#1099; (&#1085;&#1086;&#1074;&#1099;&#1077; &#1087;&#1086;&#1089;&#1090;&#1091;&#1087;&#1083;&#1077;&#1085;&#1080;&#1103;)[/COLOR]"
-    
+def getRecentItems(url):    
+    print "*** URL " + url
     if url==URL: 
-        xbmcItem('', unescape(categories, "utf-8"), 'CATEGORIES')
-        xbmcItem('', unescape(genres, "utf-8"), 'GENRES')
+        xbmcItem('', colorize(localize('['+language(2002)+']'), "FF00FF00"), 'SEARCH')
+        xbmcItem('', colorize(localize(language(2000)), "FF00FFF0"), 'CATEGORIES')
+        xbmcItem('', colorize(localize(language(2001)), "FF00FFF0"), 'GENRES')
     
     response = common.fetchPage({"link": url})
-
+    
     if response["status"] == 200:
         content = common.parseDOM(response["content"], "div", attrs = { "id":"dle-content" })
         mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
@@ -185,8 +254,6 @@ def getRecentItems(url):
             href = common.parseDOM(div, "a", ret="href")[0]
             thumbnail = common.parseDOM(block[i], "img", ret = "src")[0]
             if thumbnail[0] == '/': thumbnail = URL+thumbnail
-
-            print thumbnail
             
             title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
             uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
@@ -197,11 +264,9 @@ def getRecentItems(url):
 
     next = url + '/page/2' if url.find("page") == -1 else url[:-1] + str(int(url[-1])+1)
  
-    xbmcItem(next, ">>", 'RNEXT')
+    xbmcItem(next, localize(language(3000)), 'RNEXT')
     xbmc.executebuiltin('Container.SetViewMode(52)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
-
-#import string 
 
 def showItem(url, thumbnail):
     content = common.fetchPage({"link": url})["content"]
@@ -297,45 +362,23 @@ except: pass
 
 if mode == 'RNEXT':
     getRecentItems(url)
+elif mode == 'CATEGORIES':
+    getCategories(URL)
+elif mode == 'CATEGORIE':
+    getCategoryItems(url, categorie, '1')
 elif mode == 'CNEXT':
     getCategoryItems(url, categorie, page)
 elif mode == 'SHOW':
     showItem(url,thumbnail)
 elif mode == 'PLAY':
     playItem(url)
-
 elif mode == 'GENRES':
     listGenres();
-elif mode == 'CATEGORIES':
-    getCategories(URL)
-elif mode == 'CATEGORIE':
-    getCategoryItems(url, categorie, '1')
+elif mode == 'SEARCH':
+    search();
 elif mode == None:
     url = URL if url == None else url
     getRecentItems(url)
-    
-# Add alternative view mode for genres 
-# example pagination: http://www.filin.tv/dokumentalnii/page/2/
-# http://www.filin.tv/otechestvennue/
-# http://www.filin.tv/detectiv/
-# http://www.filin.tv/romance/
-# http://www.filin.tv/action/
-# http://www.filin.tv/fantastika/
-# http://www.filin.tv/kriminal/
-# http://www.filin.tv/comedi/
-# http://www.filin.tv/teleshou/
-# http://www.filin.tv/multfilms/
-# http://www.filin.tv/adventure/
-# http://www.filin.tv/fantasy/
-# http://www.filin.tv/horror/
-# http://www.filin.tv/drama/
-# http://www.filin.tv/history/
-# http://www.filin.tv/triller/
-# http://www.filin.tv/mystery/
-# http://www.filin.tv/sport/
-# http://www.filin.tv/musical/
-# http://www.filin.tv/dokumentalnii/
-
 
 # EXAMPLES
 # >>> foo = [
