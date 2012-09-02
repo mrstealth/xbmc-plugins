@@ -1,0 +1,45 @@
+﻿#EXTM3U
+#EXTINF:0,Первый канал Европа
+rtsp://95.67.65.135:1935/rtplive/pervyi_evropa_m.stream
+#EXTINF:0,Первый Канал
+rtsp://213.186.127.42:1935/live/_definst_/first.stream
+#EXTINF:0,Россия 1
+rtsp://213.186.127.42:1935/live/_definst_/rus1.stream
+#EXTINF:0,НТВ
+rtsp://213.186.127.42:1935/live/_definst_/ntv.stream
+#EXTINF:0,Россия 2
+rtsp://213.186.127.42:1935/live/_definst_/rus2.stream
+#EXTINF:0,Перец
+rtsp://213.186.127.42:1935/live/_definst_/dtv.stream
+#EXTINF:0,Россия к
+rtsp://213.186.127.42:1935/live/_definst_/kultura.stream
+#EXTINF:0,РЕН
+rtsp://213.186.127.42:1935/live/_definst_/ren.stream
+#EXTINF:0,ТНТ
+rtsp://213.186.127.42:1935/live/_definst_/tnt.stream
+#EXTINF:0,Россия 24
+rtsp://213.186.127.42:1935/live/_definst_/rus24.stream
+#EXTINF:0,Карусель
+rtsp://213.186.127.42:1935/live/_definst_/karusel.stream
+#EXTINF:0,5 Канал
+rtsp://213.186.127.42:1935/live/_definst_/5kanal.stream
+#EXTINF:0,7 тв
+rtsp://213.186.127.42:1935/live/_definst_/7tv.stream
+#EXTINF:0,СТС
+rtsp://213.186.127.42:1935/live/_definst_/sts.stream
+#EXTINF:0,Домашний
+rtsp://213.186.127.42:1935/live/_definst_/dom.stream
+#EXTINF:0,Центр
+rtsp://213.186.127.42:1935/live/_definst_/tvc.stream
+#EXTINF:0,Звезда
+rtsp://213.186.127.42:1935/live/_definst_/zvezda.stream
+#EXTINF:0,Муз ТВ
+rtsp://213.186.127.42:1935/live/_definst_/muztv.stream
+#EXTINF:0,Бридж ТВ
+rtsp://213.186.127.42:1935/live/_definst_/bridgetv.stream
+#EXTINF:0,ТВ3
+rtsp://213.186.127.42:1935/live/_definst_/tv3.stream
+#EXTINF:0,MTV
+rtsp://213.186.127.42:1935/live/_definst_/mtv.stream
+#EXTINF:0,RUTV
+rtsp://213.186.127.42:1935/live/_definst_/rutv.stream

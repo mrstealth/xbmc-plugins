@@ -1,0 +1,261 @@
+#EXTM3U
+#EXTINF:0, Первый
+rtsp://iptv.karelia.ru/ort.sdp
+#EXTINF:0, НТВ
+http://iptvcast2.itl.ua:4531
+#EXTINF:0, Перец
+http://iptvcast2.itl.ua:4532
+#EXTINF:0, СТС
+http://iptvcast2.itl.ua:4534
+#EXTINF:0, MTV Россия
+http://iptvcast2.itl.ua:4535
+#EXTINF:0, РЕН ТВ
+http://iptvcast2.itl.ua:4536
+#EXTINF:0, Россия 24
+http://iptvcast2.itl.ua:4537
+#EXTINF:0, Спорт 2
+http://iptvcast2.itl.ua:4538
+#EXTINF:0, ТНТ
+http://iptvcast2.itl.ua:4540
+#EXTINF:0, ТНТ
+http://iptvcast2.itl.ua:4541
+#EXTINF:0, НТВ
+http://iptvcast2.itl.ua:4543
+#EXTINF:0, НТВ
+http://iptvcast2.itl.ua:4544
+#EXTINF:0, РТР Планета
+http://iptvcast2.itl.ua:4551
+#EXTINF:0, Шансон ТВ
+http://iptvcast2.itl.ua:4553
+#EXTINF:0, Сарафан-ТВ
+http://iptvcast2.itl.ua:4554
+#EXTINF:0, 2x2
+http://iptvcast2.itl.ua:4563
+#EXTINF:0, НТВ
+http://iptvcast2.itl.ua:4531
+#EXTINF:0, ДТВ
+http://iptvcast2.itl.ua:4532
+#EXTINF:0, СТС
+http://iptvcast2.itl.ua:4534
+#EXTINF:0, MTV
+http://iptvcast2.itl.ua:4535
+#EXTINF:0, РЕН ТВ
+http://iptvcast2.itl.ua:4536
+#EXTINF:0, Россия 24
+http://iptvcast2.itl.ua:4537
+#EXTINF:0, Спорт 2
+http://iptvcast2.itl.ua:4538
+#EXTINF:0, РЕН ТВ
+http://iptvcast2.itl.ua:4539
+#EXTINF:0, ТНТ
+http://iptvcast2.itl.ua:4540
+#EXTINF:0, НТВ
+http://iptvcast2.itl.ua:4543
+#EXTINF:0, РТР Планета
+http://iptvcast2.itl.ua:4551
+#EXTINF:0, STV 1
+http://88.212.35.222:2001
+#EXTINF:0,Disney Channel
+http://88.212.35.222:2002
+#EXTINF:0,STV 2 SLK
+http://88.212.35.223:2001
+#EXTINF:0,TV Markiza
+http://88.212.35.223:2002
+#EXTINF:0,STV 3 SLK
+http://88.212.35.224:2001
+#EXTINF:0,TA 3 SLK
+http://88.212.35.224:2002
+#EXTINF:0,Musiq 1 TV
+http://88.212.35.225:2001
+#EXTINF:0,Sport 1 SLK
+http://88.212.35.225:2002
+#EXTINF:0,CT2
+http://88.212.35.226:2001
+#EXTINF:0,TV Joj
+http://88.212.35.226:2002
+#EXTINF:0,TVOR
+http://88.212.35.227:2001
+#EXTINF:0,Doma TV
+http://88.212.35.227:2002
+#EXTINF:0, Ocko TV
+http://88.212.35.228:2001
+#EXTINF:0, TV Joj Plus
+http://88.212.35.228:2002
+#EXTINF:0, Інтер+
+http://tv.x-lan.net.ua:8015/inter-plus
+#EXTINF:0, Перший Національний
+http://tv.x-lan.net.ua:8015/1nacionalniy
+#EXTINF:0, ТЕТ
+http://tv.x-lan.net.ua:8015/tet
+#EXTINF:0, ТРК Україна
+http://tv.x-lan.net.ua:8015/trk-ukraina
+#EXTINF:0, 5 Канал
+http://tv.x-lan.net.ua:8015/5channel
+#EXTINF:0, Новый Канал
+http://tv.x-lan.net.ua:8015/novy
+#EXTINF:0, СТБ
+http://tv.x-lan.net.ua:8015/kiev-stb
+#EXTINF:0, НТН
+http://tv.x-lan.net.ua:8015/ntn
+#EXTINF:0, Ентер-фільм
+http://tv.x-lan.net.ua:8015/enterfilm
+#EXTINF:0, 2+2
+http://tv.x-lan.net.ua:8015/2plus2
+#EXTINF:0, TV1000 Action
+http://tv.x-lan.net.ua:8015/tv1000-action
+#EXTINF:0, TV XXI
+http://tv.x-lan.net.ua:8015/tvxxi
+#EXTINF:0, Наше Кино
+http://tv.x-lan.net.ua:8015/nashe-kino
+#EXTINF:0, ТВі
+http://tv.x-lan.net.ua:8015/tvi
+#EXTINF:0, Тонис
+http://tv.x-lan.net.ua:8015/tonis
+#EXTINF:0, Сити
+http://tv.x-lan.net.ua:8015/citi
+#EXTINF:0, Гамма
+http://tv.x-lan.net.ua:8015/gamma
+#EXTINF:0, К1
+http://tv.x-lan.net.ua:8015/k1
+#EXTINF:0, К2
+http://tv.x-lan.net.ua:8015/k2
+#EXTINF:0, РТР Планета
+http://tv.x-lan.net.ua:8015/rtr-planeta
+#EXTINF:0, Euronews
+http://tv.x-lan.net.ua:8015/euronews
+#EXTINF:0, ТРК Футбол
+http://tv.x-lan.net.ua:8015/football
+#EXTINF:0, Спорт 1
+http://tv.x-lan.net.ua:8015/sport1
+#EXTINF:0, Перший автомобільний
+http://tv.x-lan.net.ua:8015/1auto
+#EXTINF:0, Мега
+http://tv.x-lan.net.ua:8015/mega
+#EXTINF:0, Юмор ТВ
+http://tv.x-lan.net.ua:8015/gumor-tv
+#EXTINF:0, Меню ТВ
+http://tv.x-lan.net.ua:8015/menu-tv
+#EXTINF:0, ТДК
+http://tv.x-lan.net.ua:8015/tdk
+#EXTINF:0, НТА
+http://tv.x-lan.net.ua:8015/nta
+#EXTINF:0, English Club TV
+http://tv.x-lan.net.ua:8015/english-club
+#EXTINF:0, MTV Україна
+http://tv.x-lan.net.ua:8015/mtvu
+#EXTINF:0, M1
+http://tv.x-lan.net.ua:8015/m1
+#EXTINF:0, M2
+http://tv.x-lan.net.ua:8015/m2
+#EXTINF:0, OTV-Music
+http://tv.x-lan.net.ua:8015/otv
+#EXTINF:0, Enter Music
+http://tv.x-lan.net.ua:8015/entermusic
+#EXTINF:0, A-ONE
+http://tv.x-lan.net.ua:8015/a-one
+#EXTINF:0, MUSIC BOX
+http://tv.x-lan.net.ua:8015/musicbox
+#EXTINF:0, Юниан
+http://tv.x-lan.net.ua:8015/unian
+#EXTINF:0, Канал 24
+http://tv.x-lan.net.ua:8015/news24
+#EXTINF:0, Первый деловой
+http://tv.x-lan.net.ua:8015/pervy-delovoy
+#EXTINF:0, Культура
+http://tv.x-lan.net.ua:8015/kultura
+#EXTINF:0, КДТРК
+http://tv.x-lan.net.ua:8015/kdrtrk
+#EXTINF:0, Рада
+http://tv.x-lan.net.ua:8015/rada
+#EXTINF:0, ТРК Киев
+http://tv.x-lan.net.ua:8015/trk-kyiv
+#EXTINF:0, ЧП.INFO
+http://tv.x-lan.net.ua:8015/chp-info
+#EXTINF:0, SOLEIL TV
+http://www.impek.com/go/soleiltv/wm
+#EXTINF:0, MUSIC BOX
+mms://81.89.49.210/musicbox?MSWMExt=.asf
+#EXTINF:0, Movie Channel
+mms://94.137.189.197/Ayety Pal 
+#EXTINF:0, Fire Music
+http://netcom.lg.ua:1000/  
+#EXTINF:0, Brodilo TV
+http://brodilo.tv:8100  
+#EXTINF:3, ClapTV Live
+mms://rr93.diffusepro.com/rr93
+#EXTINF:0,*ТНТ
+http://tvtvtv.ru/asx.php?ch=4182
+#EXTINF:0, РЕН ТВ
+http://tv.trkterra.ru:1234/
+#EXTINF:0, Unian
+http://91.210.156.50:1231
+#EXTINF:0, ОТВ
+http://91.210.156.50:1232
+#EXTINF:0, 1+1
+http://91.210.156.50:1233
+#EXTINF:0, Сити
+http://91.210.156.50:1234
+#EXTINF:0, TVI
+http://91.210.156.50:1235
+#EXTINF:0, UBR
+http://91.210.156.50:1236
+#EXTINF:0, Menu TV
+http://91.210.156.50:1237
+#EXTINF:0, СТБ
+http://91.210.156.50:1238
+#EXTINF:0, M-1
+http://91.210.156.50:1239
+#EXTINF:0, Toніс
+http://91.210.156.50:1240
+#EXTINF:0, Новий Канал
+http://91.210.156.50:1241
+#EXTINF:0, ICTV
+http://91.210.156.50:1242
+#EXTINF:0, M-2
+http://91.210.156.50:1243
+#EXTINF:0, 1 Діловий
+http://91.210.156.50:1245
+#EXTINF:0, QTV
+http://91.210.156.50:1246
+#EXTINF:0, Интер
+http://91.210.156.50:1247
+#EXTINF:0, НТН
+http://91.210.156.50:1248
+#EXTINF:0, K-1
+http://91.210.156.50:1249
+#EXTINF:0, Мега
+http://91.210.156.50:1250
+#EXTINF:0, MTV
+http://91.210.156.50:1251
+#EXTINF:0, Enter Film
+http://91.210.156.50:1252
+#EXTINF:0, Enter Music
+http://91.210.156.50:1254
+#EXTINF:0, Інтер +
+http://91.210.156.50:1255
+#EXTINF:0, Gamma
+http://91.210.156.50:1256
+#EXTINF:0, Music Box
+http://91.210.156.50:1258
+#EXTINF:0, Real Estate TV
+http://91.210.156.50:1259
+#EXTINF:0, Gumor TV / Babay TV
+http://91.210.156.50:1260
+#EXTINF:0, Київ
+http://91.210.156.50:1261
+#EXTINF:0, Music Box
+mms://81.89.49.210/musicbox?MSWMExt=.asf
+#EXTINF:0, Enter Music
+http://91.210.156.50:1254
+#EXTINF:0, Fire Music Tv
+http://netcom.lg.ua:1000/  
+#EXTINF:0, Mizik Tropical
+mms://live240.impek.com/mizik?MSWMExt=.asf
+#EXTINF:0, Dance
+http://62.75.191.45:8050/
+#EXTINF:0, Японский
+http://87.118.94.218:8000/;stream.nsv
+#EXTINF:0, Hit Music
+http://87.117.193.13:8190/;stream.nsv
+#EXTINF:0, Slam Tv
+rtsp://stream04.qt.slamtv.true.nl/slamtv.sdp
