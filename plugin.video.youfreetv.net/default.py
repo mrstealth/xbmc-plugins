@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.0
+# Rev. 1.0.1
 
 import re
 import urllib,urllib2,re,sys,os,time
@@ -69,6 +69,7 @@ def get_channels(url):
     xbmcplugin.endOfDirectory(pluginhandle, True, True, True)     
      
 def play_url(url,channel):
+    channel = channel if url.find("hd=true") == -1 else channel+'hd'
     furl  = 'rtmp://50.7.168.98:1935/live/%s'%(channel + '.stream')
     furl += ' swfUrl=http://www.youfreetv.net/medien/player.php?file=swf swfvfy=true '
     furl += ' pageUrl=http://www.youfreetv.net/index.php?section=channel&amp;value=' + channel + '&amp;hd=false'
@@ -78,8 +79,22 @@ def play_url(url,channel):
     item = xbmcgui.ListItem(channel, iconImage="icon.png", thumbnailImage="icon.png", path=furl)
     item = xbmcgui.ListItem(path = furl)
     xbmcplugin.setResolvedUrl(pluginhandle, True, item)
-             
-# TODO: code refactoring
+    
+    
+# TODO: parse flashvars and get channel dynamically
+# <param name="flashvars" 
+# value="netstreambasepath=http%3A%2F%2Fwww.youfreetv.net%2Findex.php%3Fsection%3Dchannel%26value%3Dzdf%26hd%3Dtrue&amp;
+# id=mediaplayer&amp;
+# autostart=true&amp;
+# allowfullscreen=true&amp;
+# allowscriptaccess=always&amp;
+# provider=rtmp&amp;
+# shownavigation=false&amp;
+# streamer=rtmp%3A%2F%2Fmegaserver.youfreetv.net%2Flive&amp;
+# skin=..%2Fmedien%2Fskins%2Fmodieus.xml&amp;
+# file=zdfhd.stream&amp;
+# controlbar.position=over">
+            
 def get_params():
     param=[]
     paramstring=sys.argv[2]
