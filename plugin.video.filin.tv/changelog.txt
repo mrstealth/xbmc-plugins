@@ -1,3 +1,6 @@
+[B]Version 1.0.4[/B]
+- Add my favorite section
+
 [B]Version 1.0.3[/B]
 - Add search function
 - Localize UI

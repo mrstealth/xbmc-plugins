@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.3
+# Rev. 1.0.4
 # -*- coding: utf-8 -*-
 
 import urllib, re
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import HTMLParser
 import CommonFunctions
+import simplejson as json
 
 from urllib2 import Request, urlopen, URLError, HTTPError
 
@@ -24,13 +25,12 @@ language = __addon__.getLocalizedString
 URL         = 'http://www.filin.tv'
 
 
-# Strip HTML tags
-def remove_html_tags(data):
+# *** Python helpers ***
+def remove_html_tags(data):     # Strip HTML tags
     p = re.compile(r'<.*?>')
     return p.sub('', data)
 
-# Remove more than one consecutive white space
-def remove_extra_spaces(data):
+def remove_extra_spaces(data):  # Remove more than one consecutive white space
     p = re.compile(r'\s+')
     return p.sub(' ', data)
 
@@ -54,6 +54,15 @@ def colorize(string, color):
 def get_url(string):
   return re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+.xml', string)[0]
 
+# *** XBMC helpers ***
+def AddContextItem(name,script,arg):
+    commands = []
+    runner = "XBMC.RunScript(" + str(script)+ ", " + str(arg) + ")"
+    commands.append(( str(name), runner, ))
+    listitem = xbmcgui.ListItem()
+    listitem.addContextMenuItems( commands )
+
+# *** Addon helpers ***   
 def getDescription(block):
     html = block[block.find('</h2>'):len(block)]
     return unescape(remove_extra_spaces(remove_html_tags(html)), 'cp1251')
@@ -67,7 +76,7 @@ def getTitle(block):
     title = common.parseDOM(block, "a")
     return unescape(title[len(title)-1], 'cp1251')
     
-    
+# *** UI functions ***    
 def search():
     kbd = xbmc.Keyboard()
     kbd.setDefault('')
@@ -108,12 +117,11 @@ def search():
         
         info = common.parseDOM(response, "div", attrs = { "id":"dle-info" })[0]
         content = common.parseDOM(response, "div", attrs = { "id":"dle-content" })
-        
-        print content
-        
+               
         if len(info) > 1:
             result = common.parseDOM(info, "div", attrs = { "class":"ssc2r" })[0]
             item = xbmcgui.ListItem(colorize('[' + unescape(result, 'cp1251') + ']', 'FFFF4000'))
+            item.setProperty('IsPlayable', 'false')
             xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
 
             # XBMC Notification or item with message????
@@ -122,6 +130,7 @@ def search():
         else:
             result = common.parseDOM(content, "span", attrs = { "class":"sresult" })[0]
             item = xbmcgui.ListItem(colorize('[' + unescape(result, 'cp1251') + ']', 'FF00FFF0'))
+            item.setProperty('IsPlayable', 'false')
             xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
         
             mainf = common.parseDOM(content, "div", attrs = { "class":"mainf" })
@@ -175,19 +184,18 @@ def getCategoryItems(url, categorie, page):
             max= {True: page*20, False: len(links)}[len(links) > (page*20)]
         
         for i in range(min, max):
-        #for i in range(min, max):
-          # html parsing is to slow, find a better way for getting posters
-          #content = common.fetchPage({"link": links[i]})["content"]
-          #ssc = common.parseDOM(content, "div", attrs = { "class":"ssc" })
-          #thumbnail = common.parseDOM(ssc, "img", ret = "src")[0]
-          #if thumbnail[0] == '/': thumbnail = URL+thumbnail                   
-          #uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail=" + thumbnail
-          
           uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail="
           
           if titles[i] == '': titles[i] = "[Empty]" #TODO: investigate title issue
 
           item = xbmcgui.ListItem(titles[i])
+          
+          # TODO: move to "addFavorite" function
+          script = "special://home/addons/plugin.video.filin.tv/contextmenuactions.py"
+          params = "add|%s"%href + "|%s"%title
+          runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
+                     
+          item.addContextMenuItems([(localize(language(3001)), runner)])
           xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
         if max >= 20 and max < len(links):
@@ -228,17 +236,42 @@ def listGenres():
         item = xbmcgui.ListItem(localize(language(1000+i)))
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)  
 
-    
-    #xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
     xbmcplugin.endOfDirectory(pluginhandle, True)
      
+def listFavorites():
+    string = __addon__.getSetting('favorites')
     
+    if len(string) == 0:
+        item = xbmcgui.ListItem()
+        item.setProperty('IsPlayable', 'false')
+        xbmcplugin.addDirectoryItem(pluginhandle, '', item, True)
+    else:
+        favorites = json.loads(string)
+        for key in favorites:
+    	   item = xbmcgui.ListItem(favorites[key])
+
+    	   #item = xbmcgui.ListItem(key, thumbnailImage=thumbnail)
+    	   # TODO: show thumbnail
+    	   uri = sys.argv[0] + '?mode=SHOW&url=' + key + '&thumbnail='
+    	   item.setInfo( type='Video', infoLabels={'title': favorites[key]})
+    	   
+    	   # TODO: move to "addFavorite" function 
+    	   script = "special://home/addons/plugin.video.filin.tv/contextmenuactions.py"
+    	   params = "remove|%s"%key + "|%s"%favorites[key]
+    	   runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
+    	   item.addContextMenuItems([(localize(language(3004)), runner)])
+    	   xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+       
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+
 
 # Get latest income from index page
-def getRecentItems(url):    
-    print "*** URL " + url
+def getRecentItems(url):
+    
     if url==URL: 
         xbmcItem('', colorize(localize('['+language(2002)+']'), "FF00FF00"), 'SEARCH')
+
+        xbmcItem('', colorize(localize(language(2003)), "FF00FFF0"), 'FAVORITES')
         xbmcItem('', colorize(localize(language(2000)), "FF00FFF0"), 'CATEGORIES')
         xbmcItem('', colorize(localize(language(2001)), "FF00FFF0"), 'GENRES')
     
@@ -260,6 +293,13 @@ def getRecentItems(url):
 
             item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
             item.setInfo( type='Video', infoLabels={'title': title, 'plot': unescape(descs[i], 'cp1251')})
+
+            # TODO: move to "addFavorite" function
+            script = "special://home/addons/plugin.video.filin.tv/contextmenuactions.py"
+            params = "add|%s"%href + "|%s"%title
+            runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
+                         
+            item.addContextMenuItems([(localize(language(3001)), runner)])
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     next = url + '/page/2' if url.find("page") == -1 else url[:-1] + str(int(url[-1])+1)
@@ -376,6 +416,8 @@ elif mode == 'GENRES':
     listGenres();
 elif mode == 'SEARCH':
     search();
+elif mode == 'FAVORITES':
+    listFavorites();
 elif mode == None:
     url = URL if url == None else url
     getRecentItems(url)
