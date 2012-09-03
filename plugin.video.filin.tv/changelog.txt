@@ -1,4 +1,4 @@
-[B]Version 1.0.4[/B]
+[B]Version 1.0.5[/B]
 - fix script error in categories listing
 - allow to add item to "my favorites" from search results
 
