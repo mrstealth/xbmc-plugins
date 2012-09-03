@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.5
 # -*- coding: utf-8 -*-
 
 import urllib, re
@@ -142,6 +142,11 @@ def search():
                 uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + "&thumbnail="
             
                 item = xbmcgui.ListItem(title)
+                # TODO: move to "addFavorite" function
+                script = "special://home/addons/plugin.video.filin.tv/contextmenuactions.py"
+                params = "add|%s"%links[i] + "|%s"%title
+                runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
+                item.addContextMenuItems([(localize(language(3001)), runner)])
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
      
     xbmcplugin.endOfDirectory(pluginhandle, True)
@@ -192,7 +197,7 @@ def getCategoryItems(url, categorie, page):
           
           # TODO: move to "addFavorite" function
           script = "special://home/addons/plugin.video.filin.tv/contextmenuactions.py"
-          params = "add|%s"%href + "|%s"%title
+          params = "add|%s"%links[i] + "|%s"%titles[i]
           runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
                      
           item.addContextMenuItems([(localize(language(3001)), runner)])

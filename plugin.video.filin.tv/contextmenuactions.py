@@ -33,7 +33,7 @@ if(args[0] == "add"):
     message = "[COLOR FF00FF00]" + language(3003).encode('utf-8') + "[/COLOR]"  
       
     xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ _addon_icon +")")
-    xbmc.executebuiltin("Container.Refresh")
+    #xbmc.executebuiltin("Container.Refresh")
 
 elif(args[0] == "remove"):
     removeFavorite(args[1], args[2])
