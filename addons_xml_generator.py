@@ -1,4 +1,3 @@
-""" downloaded from http://xbmc-addons.googlecode.com/svn/addons/ """
 """ addons.xml generator """
 
 import os
@@ -22,12 +21,12 @@ class Generator:
         # addon list
         addons = os.listdir( "." )
         # final addons text
-        addons_xml = u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<addons>\n"
+        addons_xml = u"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<addons>\n"
         # loop thru and add each addons addon.xml file
         for addon in addons:
             try:
-                # skip any file or .git folder
-                if ( not os.path.isdir( addon ) or addon == ".git" ): continue
+                # skip any file or .svn folder
+                if ( not os.path.isdir( addon ) or addon == ".svn" ): continue
                 # create path
                 _path = os.path.join( addon, "addon.xml" )
                 # split lines for stripping
@@ -39,7 +38,7 @@ class Generator:
                     # skip encoding format line
                     if ( line.find( "<?xml" ) >= 0 ): continue
                     # add line
-                    addon_xml += unicode( line.rstrip() + "\n", "utf-8" )
+                    addon_xml += unicode( line.rstrip() + "\n", "UTF-8" )
                 # we succeeded so add to our final addons.xml text
                 addons_xml += addon_xml.rstrip() + "\n\n"
             except Exception, e:
@@ -48,7 +47,7 @@ class Generator:
         # clean and add closing tag
         addons_xml = addons_xml.strip() + u"\n</addons>\n"
         # save file
-        self._save_file( addons_xml.encode( "utf-8" ), file="addons.xml" )
+        self._save_file( addons_xml.encode( "UTF-8" ), file="addons.xml" )
 
     def _generate_md5_file( self ):
         try:

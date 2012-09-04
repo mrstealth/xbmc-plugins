@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="repository.mrstealth" name="Mrstealth's XBMC add-ons" version="1.0.0" provider-name="MrStealth">
-	<extension point="xbmc.addon.repository" name="MrStealth's XBMC add-on Repository">
+<addon id="repository.mrstealth" name="Mrstealth's XBMC Addons" version="1.0.1" provider-name="MrStealth">
+	<extension point="xbmc.addon.repository" name="MrStealth's XBMC Addon Repository">
 		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
 		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/downloads/</datadir>
+		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Install Add-ons from MrStealth's add-on repository</summary>
@@ -12,3 +12,4 @@
 		<platform>all</platform>
 	</extension>
 </addon>
+
