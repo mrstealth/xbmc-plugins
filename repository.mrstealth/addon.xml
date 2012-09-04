@@ -3,7 +3,7 @@
 	<extension point="xbmc.addon.repository" name="MrStealth's XBMC add-on Repository">
 		<info compressed="false">https://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
 		<checksum>https://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
-		<datadir zip="false">https://github.com/mrstealth/xbmc-plugins/</datadir>
+		<datadir zip="false">http://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Install Add-ons from MrStealth's add-on repository</summary>
