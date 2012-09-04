@@ -1,2 +1,0 @@
-[B]Version 0.1.19[/B]
-- Disable google analytics
