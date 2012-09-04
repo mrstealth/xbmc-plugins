@@ -17,24 +17,6 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.IPTV"
-       name="IPTV"
-       version="0.1.0"
-       provider-name="TDW">
-  <requires>
-    <import addon="xbmc.python" version="1.0"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>IPTV</summary>
-    <description>Просмотр Internet TV из плейлиста без проверки на доступность. Плейлисты добавлять в подкаталог Playlists</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.stepashka.com"
        name="stepashka.com"
        version="0.1.19"
@@ -72,29 +54,14 @@
 
 <addon id="repository.mrstealth" name="Mrstealth's XBMC add-ons" version="1.0.0" provider-name="MrStealth">
 	<extension point="xbmc.addon.repository" name="MrStealth's XBMC add-on Repository">
-		<info compressed="false">http://github.com/t0mm0/t0mm0-xbmc-plugins/raw/master/addons.xml</info>
-		<checksum>http://github.com/t0mm0/t0mm0-xbmc-plugins/raw/master/addons.xml.md5</checksum>
-		<datadir zip="true">http://github.com/t0mm0/t0mm0-xbmc-plugins/raw/master/repo/</datadir>
+		<info compressed="false">https://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
+		<checksum>https://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
+		<datadir zip="false">https://github.com/mrstealth/xbmc-plugins/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Install Add-ons from MrStealth's add-on repository</summary>
 		<description>Download and install addons by mrstealth</description>
 		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
-		<platform>all</platform>
-	</extension>
-</addon>
-
-
-<addon id="repository.silhouette" name="Silhouette XBMC Add-ons" version="1.0.0" provider-name="Silhouette">
-	<extension point="xbmc.addon.repository" name="Silhouette XBMC Add-ons">
-		<info compressed="false">http://silhouette-xbmc-repo.googlecode.com/svn/trunk/addons/addons.xml</info>
-		<checksum>http://silhouette-xbmc-repo.googlecode.com/svn/trunk/addons/addons.xml.md5</checksum>
-		<datadir zip="false">http://silhouette-xbmc-repo.googlecode.com/svn/trunk/addons/</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Install Add-ons from Silhouette Add-on Repository</summary>
-		<description>Plug-ins for XBMC</description>
-		<disclaimer>add-ons for home usage in XBMC</disclaimer>
 		<platform>all</platform>
 	</extension>
 </addon>
