@@ -19,25 +19,6 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.stepashka.com"
-       name="stepashka.com"
-       version="0.1.19"
-       provider-name="nuismons">
-    <requires>
-        <import addon="xbmc.python" version="1.0"/>
-        <import addon="script.module.beautifulsoup"/>
-		<import addon="script.module.intkeyboard"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <summary>Видеоархивы stepashka.com</summary>
-        <description>Видеоархивы stepashka.com</description>
-        <platform>all</platform>
-    </extension>
-</addon>
-
 <addon id="plugin.video.youfreetv.net"
        name="Youfreetv.net"
        version="1.0.1"
@@ -57,15 +38,15 @@
     </extension>
 </addon>
 
-<addon id="repository.mrstealth" name="Mrstealth's XBMC Addons" version="1.0.1" provider-name="MrStealth">
-	<extension point="xbmc.addon.repository" name="MrStealth's XBMC Addon Repository">
+<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
+	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
 		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
 		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
 		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary>Install Add-ons from MrStealth's add-on repository</summary>
-		<description>Download and install addons by mrstealth</description>
+		<summary>Install Add-ons from MrStealth add-on repository</summary>
+		<description>Download and install add-ons by mrstealth</description>
 		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
 		<platform>all</platform>
 	</extension>
