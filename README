@@ -1,0 +1,9 @@
+MrStealth's xbmc plugin repository!
+-------------------------------
+
+To install the repository, download from: https://github.com/mrstealth/xbmc-plugins/downloads and use 'Add from zip' in XBMC.
+
+Contents:
+ - filin.tv (Plays flash enabled streams from filin.tv)
+ - youfreetv.net (Plays live stream from http://www.youfreetv.net)
+ - stepashka.com (Plays movies from stepashka.com) disabled google analytics script
