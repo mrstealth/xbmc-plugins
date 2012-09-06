@@ -1,5 +1,8 @@
-import urllib,urllib2,re
-import xbmc,xbmcplugin,xbmcgui,xbmcaddon
+#!/usr/bin/python
+# Writer (c) 2012, MrStealth
+# -*- coding: utf-8 -*-
+
+import xbmc,xbmcaddon
 import simplejson as json
 
 __addon__    = xbmcaddon.Addon(id='plugin.video.filin.tv')
@@ -23,7 +26,6 @@ def removeFavorite(url, name):
         __addon__.setSetting('favorites', json.dumps(favorites))
     
 # ***** MAIN *****
-#Get the passed in argument from the addContextMenuItems() call in default.py
 args = sys.argv[1].split("|")
 
 if(args[0] == "add"):
@@ -33,7 +35,6 @@ if(args[0] == "add"):
     message = "[COLOR FF00FF00]" + language(3003).encode('utf-8') + "[/COLOR]"  
       
     xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ _addon_icon +")")
-    #xbmc.executebuiltin("Container.Refresh")
 
 elif(args[0] == "remove"):
     removeFavorite(args[1], args[2])

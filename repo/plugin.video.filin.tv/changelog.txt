@@ -1,3 +1,6 @@
+[B]Version 1.0.6[/B]
+- on play back end mark items as watched
+
 [B]Version 1.0.5[/B]
 - fix script error in categories listing
 - allow to add item to "my favorites" from search results
