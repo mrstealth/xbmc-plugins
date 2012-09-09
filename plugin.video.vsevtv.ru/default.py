@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.0
+# Rev. 1.0.1
 
 import xbmcplugin,xbmcgui,xbmcaddon
 import urllib, CommonFunctions
@@ -64,9 +64,8 @@ def get_channels(url, title):
     
        
 def play_url(url, title):
-    item = xbmcgui.ListItem(path = url)    
-    player = xbmc.Player(xbmc.PLAYER_CORE_MPLAYER)
-    player.play(url, item)
+    item = xbmcgui.ListItem(path = url) 
+    xbmcplugin.setResolvedUrl(pluginhandle, True, item)
 
 def get_params():
     param=[]
@@ -87,7 +86,6 @@ def get_params():
 
 params = get_params()
 
-# TODO: code refactoring
 url=None
 mode=None
 title=None

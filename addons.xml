@@ -21,7 +21,7 @@
 
 <addon id="plugin.video.vsevtv.ru"
        name="Vsevtv.ru"
-       version="1.0.0"
+       version="1.0.1"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
