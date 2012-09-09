@@ -27,9 +27,56 @@ addon_path    = Addon.getAddonInfo('path')
 addon_cache = xbmc.translatePath( Addon.getAddonInfo( "profile" ) )
 
 # *** Python helpers ***
-def remove_html_tags(data):     # Strip HTML tags
-    p = re.compile(r'<.*?>')
-    return p.sub('', data)
+def strip_html(text):
+	def fixup(m):
+		text = m.group(0)
+		if text[:1] == "<":
+			if text[1:3] == 'br':
+				return '\n'
+			else:
+				return ""
+		if text[:2] == "&#":
+			try:
+				if text[:3] == "&#x":
+					return chr(int(text[3:-1], 16))
+				else:
+					return chr(int(text[2:-1]))
+			except ValueError:
+				pass
+		elif text[:1] == "&":
+			import htmlentitydefs
+			if text[1:-1] == "mdash":
+				entity = " - "
+			elif text[1:-1] == "ndash":
+				entity = "-"
+			elif text[1:-1] == "hellip":
+				entity = "-"
+			else:
+				entity = htmlentitydefs.entitydefs.get(text[1:-1])
+			if entity:
+				if entity[:2] == "&#":
+					try:
+						return chr(int(entity[2:-1]))
+					except ValueError:
+						pass
+				else:
+					return entity
+		return text
+	ret =  re.sub("(?s)<[^>]*>|&#?\w+;", fixup, text)
+	return re.sub("\n+", '\n' , ret)
+	
+#def remove_html_tags(data):     # Strip HTML tags
+#    p = re.compile(r'<.*?>')
+#    return p.sub('', data)
+
+
+
+#     
+# def remove(sub, s):  # replace first sub with empty string
+#     return s.replace(sub, "", 1)
+# 
+# def remove_all(sub, s):  # replace all sub with empty string
+#     return s.replace(sub, "", -1)
 
 def remove_extra_spaces(data):  # Remove more than one consecutive white space
     p = re.compile(r'\s+')
@@ -86,7 +133,9 @@ def get_params():
 # *** Addon helpers ***   
 def getDescription(block):
     html = block[block.find('</h2>'):len(block)]
-    return unescape(remove_extra_spaces(remove_html_tags(html)), 'cp1251')
+    return unescape(strip_html(remove_extra_spaces(html)), 'cp1251')
+
+    #return unescape(remove_extra_spaces(remove_html_tags(html)), 'cp1251')
 
 def getThumbnail(block):
     thumbnail = common.parseDOM(block, "img", ret = "src")[0]
@@ -321,9 +370,10 @@ def getRecentItems(url):
             
             title = unescape(common.parseDOM(div, "a")[0], 'cp1251')
             uri = sys.argv[0] + '?mode=SHOW&url=' + href + '&thumbnail=' + thumbnail
+            description = unescape(strip_html(descs[i]), 'cp1251')
 
             item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
-            item.setInfo( type='Video', infoLabels={'title': title, 'plot': unescape(descs[i], 'cp1251')})
+            item.setInfo( type='Video', infoLabels={'title': title, 'plot': description})
             item.setProperty( "isFolder", 'True')
 
             # TODO: move to "addFavorite" function
@@ -369,7 +419,10 @@ def showItem(url, thumbnail):
         item.setInfo( type='Video', infoLabels=info)
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
         
-    xbmc.executebuiltin('Container.SetViewMode(52)')
+    print xbmc.getInfoLabel('Container.ViewMode')
+
+    # set view mode to List2 (quarz3 skin)    
+    if xbmc.getSkinDir() == "skin.quartz": xbmc.executebuiltin('Container.SetViewMode(51)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
@@ -429,3 +482,17 @@ elif mode == 'FAVORITES':
 elif mode == None:
     url = BASE_URL if url == None else url
     getRecentItems(url)
+    
+# View modes
+# <include>CommonRootView</include> <!-- view id = 50 -->
+# <include>FullWidthList</include> <!-- view id = 51 -->
+# <include>ThumbnailView</include> <!-- view id = 500 -->
+# <include>PosterWrapView</include> <!-- view id = 501 -->
+# <include>PosterWrapView2_Fanart</include> <!-- view id = 508 -->
+# <include>MediaListView3</include> <!-- view id = 503 -->
+# <include>MediaListView2</include> <!-- view id = 504 -->
+# <include>WideIconView</include> <!-- view id = 505 -->
+# <include>MusicVideoInfoListView</include> <!-- view id = 511 -->
+# <include>AddonInfoListView1</include> <!-- view id = 550 -->
+# <include>AddonInfoThumbView1</include> <!-- view id = 551 -->
+# <include>LiveTVView1</include> <!-- view id = 560 -->
