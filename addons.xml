@@ -19,9 +19,29 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.vsevtv.ru"
-       name="Vsevtv.ru"
-       version="1.0.1"
+<addon id="plugin.video.go2load.com"
+       name="[COLOR ff7CCD7C]Go2Load.com[/COLOR]"
+       version="0.0.2"
+       provider-name="Tolin">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="0.9.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Фильмы онлайн в HD/SD</summary>
+    <description>Фильмы онлайн</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.iptv5.ts9.ru"
+       name="Iptv5.ts9.ru"
+       version="1.0.0"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -31,8 +51,8 @@
         <provides>video</provides>
     </extension>
     <extension point= "xbmc.addon.metadata">
-        <summary>Stream live IPTV from vsevtv.ru</summary>
-        <description>Enables watching streams on vsevtv.ru</description>
+        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
+        <description>Enables watching streams oniptv5.ts9.ru</description>
         <disclaimer>This is an unofficial XBMC add-on</disclaimer>
         <platform>all</platform>
     </extension>

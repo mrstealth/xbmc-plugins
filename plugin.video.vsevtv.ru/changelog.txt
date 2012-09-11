@@ -1,4 +1,0 @@
-[B]Version 1.0.1[/B]
-- Fix boring message for unplayable items
-[B]Version 1.0.0[/B]
-- Initial version
