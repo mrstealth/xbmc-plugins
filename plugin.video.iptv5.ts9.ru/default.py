@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.0
+# Rev. 1.0.1
 # -*- coding: utf-8 -*-
 
 import xbmcplugin,xbmcgui,xbmcaddon
@@ -47,14 +47,19 @@ def listFavorites():
         xbmcplugin.addDirectoryItem(pluginhandle, '', item, True)
     else:
         favorites = json.loads(string)
+        
         for key in favorites:
-    	   item = xbmcgui.ListItem(favorites[key])
-    	   uri = sys.argv[0] + '?mode=PLAY&url=' + key + '&thumbnail='
-    	   item.setInfo( type='Video', infoLabels={'title': favorites[key]})
-    	   
-    	   # TODO: move to "addFavorite" function 
-           xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
-    	   xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+            print "Found favorite " + key
+            item = xbmcgui.ListItem(favorites[key])
+            uri = sys.argv[0] + '?mode=PLAY2'
+            uri += '&url=' + urllib.quote_plus(key)
+            uri += '&title=' + favorites[key]
+            
+            item.setInfo( type='Video', infoLabels={'title': favorites[key]})
+            item.setProperty('IsPlayable', 'true')
+
+            xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
+            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
        
     xbmcplugin.endOfDirectory(pluginhandle, True)
     
@@ -83,12 +88,10 @@ def get_groups(url):
                             
             uri = sys.argv[0] + '?mode=SHOW'
             uri += '&url=' + urllib.quote_plus(BASE_URL)
-            uri += '&channels=' + group
+            uri += '&group=' + group
             
             item = xbmcgui.ListItem(optgroups[i], iconImage=addon_icon, thumbnailImage=addon_icon)
-            item.setInfo( type='video', infoLabels={'title': optgroups[i]})
-            item.setProperty('IsPlayable', 'true')
-            
+            item.setInfo( type='video', infoLabels={'title': optgroups[i]})            
             
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
     
@@ -122,8 +125,11 @@ def get_channels(url, group):
     xbmc.executebuiltin('Container.SetSortMethod(9)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
     
-       
-def play_url(url, title):
+
+def play_fav(url):
+    xbmc.Player().play(url)
+         
+def play_url(url):
     item = xbmcgui.ListItem(path = url) 
     xbmcplugin.setResolvedUrl(pluginhandle, True, item)
 
@@ -148,8 +154,7 @@ params = get_params()
 
 url=None
 mode=None
-title=None
-channels=None
+group=None
 
 try:
     mode=params['mode']
@@ -158,16 +163,15 @@ try:
     url=urllib.unquote_plus(params['url'])
 except: pass
 try:
-    title=params['title']
-except: pass
-try:
-    channels=params['channels']
+    group=params['group']
 except: pass
 
 if mode == 'PLAY':
-    play_url(url, title)
+    play_url(url)
+elif mode == 'PLAY2':
+    play_fav(url)
 elif mode == 'SHOW': 
-    get_channels(BASE_URL, channels)
+    get_channels(BASE_URL, group)
 elif mode == 'FAVORITES':
     listFavorites();
 elif mode == None: 

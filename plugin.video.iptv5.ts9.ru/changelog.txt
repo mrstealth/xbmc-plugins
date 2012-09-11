@@ -1,2 +1,4 @@
+[B]Version 1.0.1[/B]
+- Fix unplayable items in my favorites 
 [B]Version 1.0.0[/B]
 - Initial version
