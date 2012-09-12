@@ -14,7 +14,7 @@ BASE_URL = 'http://go2load.com'
 common = CommonFunctions
 pluginhandle = int(sys.argv[1])
 
-Addon = xbmcaddon.Addon(id='plugin.video.filin.tv')
+Addon = xbmcaddon.Addon(id='plugin.video.go2load-reloaded.com')
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
 
