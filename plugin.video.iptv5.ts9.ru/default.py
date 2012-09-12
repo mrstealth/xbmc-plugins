@@ -4,9 +4,11 @@
 # -*- coding: utf-8 -*-
 
 import xbmcplugin,xbmcgui,xbmcaddon
-import os, urllib, CommonFunctions
+import os, urllib, urllib2, CommonFunctions
 import simplejson as json
 import HTMLParser
+import socket, datetime
+
 from traceback import print_exc
 
 common = CommonFunctions
@@ -19,7 +21,38 @@ addon_path    = Addon.getAddonInfo('path')
 
 BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 
-        
+# save last check for each URL
+def check_url(url):
+    today = datetime.date.today()
+#    yesterday = today - datetime.timedelta(days=1)
+    
+    #last_check = Addon.getSetting('last-check')
+    last_check = []
+    if not last_check and last_check != str(today):
+        if not url.find("rtsp") == -1: # skip rtsp check
+            print "*** Skip rtsp check for " + url
+            return True
+        try:
+            response = urllib2.urlopen(url, None, 1)        
+        except urllib2.HTTPError, e:
+            print "***** Oops, HTTPError ", str(e.code)
+            return False
+        except urllib2.URLError, e:
+            print "***** Oops, URLError", str(e.args)
+            return False
+        except socket.timeout, e:
+            print "***** Oops timed out! ", str(e.args)
+            return False
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            return False
+        else:
+            return True
+    else:
+        print "*** Skip check for today, last check " + last_check
+        return True
+
+
 def unescape(entity, encoding):
   if encoding == 'utf-8':
     return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
@@ -111,17 +144,23 @@ def get_channels(url, group):
         
         for url,title in channels.iteritems():
             name = unescape(title, 'utf-8')
+            name = title
             uri = sys.argv[0] + '?mode=PLAY'
             uri += '&url=' + urllib.quote_plus(url)
             uri += '&title=' + name
-            
-            item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
-            item.setInfo( type='video', infoLabels={'title': name})
-            item.setProperty('IsPlayable', 'true')
-            
-            xbmcContextMenuItem(item, 'add', label, url, title)
-            xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
-    
+#             if check_url(url):
+#                 item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
+#             else:
+#                 item = xbmcgui.ListItem(name + '-broken', iconImage=addon_icon, thumbnailImage=addon_icon)
+
+            if check_url(url):
+                item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
+                item.setInfo( type='video', infoLabels={'title': name})
+                item.setProperty('IsPlayable', 'true')
+                        
+                xbmcContextMenuItem(item, 'add', label, url, title)
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
+                    
     xbmc.executebuiltin('Container.SetSortMethod(9)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
     
