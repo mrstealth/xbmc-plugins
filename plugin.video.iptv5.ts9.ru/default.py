@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.1
+# Rev. 1.0.2
 # -*- coding: utf-8 -*-
 
 import xbmcplugin,xbmcgui,xbmcaddon

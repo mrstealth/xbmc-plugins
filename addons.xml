@@ -1,47 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.filin.tv"
-       name="Filin.tv"
-       version="1.0.6"
-       provider-name="mrstealth">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="0.9.1"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
-        <provides>video</provides>
-    </extension>
-    <extension point= "xbmc.addon.metadata">
-        <summary>Browse and stream from filin.tv</summary>
-        <description>Enables watching streams on filin.tv that are flash enabled.</description>
-        <disclaimer>This is an unofficial XBMC addon</disclaimer>
-        <platform>all</platform>
-    </extension>
-</addon>
-
-<addon id="plugin.video.go2load.com"
-       name="[COLOR ff7CCD7C]Go2Load.com[/COLOR]"
-       version="0.0.2"
-       provider-name="Tolin">
-  <requires>
-    <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="0.9.1"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-             provides="video"
-             library="default.py">
-    <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Фильмы онлайн в HD/SD</summary>
-    <description>Фильмы онлайн</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.iptv5.ts9.ru"
        name="Iptv5.ts9.ru"
-       version="1.0.1"
+       version="1.0.2"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -77,6 +38,26 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.go2load-reloaded.com"
+       name="[COLOR ff7CCD7C]Go2Load.com[/COLOR]"
+       version="0.0.2"
+       provider-name="Tolin">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="0.9.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Фильмы онлайн в HD/SD</summary>
+    <description>Фильмы онлайн</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
 	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
 		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
@@ -89,5 +70,24 @@
 		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
 		<platform>all</platform>
 	</extension>
+</addon>
+
+<addon id="plugin.video.filin.tv"
+       name="Filin.tv"
+       version="1.0.6"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="0.9.1"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Browse and stream from filin.tv</summary>
+        <description>Enables watching streams on filin.tv that are flash enabled.</description>
+        <disclaimer>This is an unofficial XBMC addon</disclaimer>
+        <platform>all</platform>
+    </extension>
 </addon>
 </addons>
