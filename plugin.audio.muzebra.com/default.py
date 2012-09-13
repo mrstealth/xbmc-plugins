@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.1
+# Rev. 1.0.2
 # -*- coding: utf-8 -*-
 
 
@@ -53,13 +53,10 @@ def onlineradio(url, category):
     
     xbmcplugin.endOfDirectory(handle, True)
 
-def play(url):
-    try:
-        item = xbmcgui.ListItem(path = url)
-        xbmc.Player().play(url, item)
-    except:
-        print "Unexpected error:", sys.exc_info()[0]
-        return False
+
+def play_url(url):
+    item = xbmcgui.ListItem(path = url)
+    xbmcplugin.setResolvedUrl(handle, True, item)
 
 
 params = get_params()
@@ -88,6 +85,6 @@ except: pass
 if mode == None:
     main()
 elif mode == 'play':
-    play(url)
+    play_url(url)
 elif mode == 'onlineradio':
     onlineradio(url, category)

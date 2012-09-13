@@ -1,3 +1,5 @@
+[B]Version 1.0.2[/B]
+- use xbmcplugin.setResolvedUrl instead of xbmc.player()
 [B]Version 1.0.1[/B]
 - Remove test url
 - Code clean-up
