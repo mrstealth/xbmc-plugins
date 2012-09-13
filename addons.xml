@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.audio.muzebra.com"
        name="Muzebra"
-       version="1.0.0"
+       version="1.0.1"
        provider-name="mrstealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>

@@ -1,23 +1,16 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.0
+# Rev. 1.0.1
 # -*- coding: utf-8 -*-
 
-import socket
-import urllib, re, os, sys
+
+import urllib, os, sys
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import HTMLParser
 import CommonFunctions
-import simplejson as json
+
 from helpers import * 
 
-
-from locale import getdefaultlocale
-from urllib2 import Request, urlopen, URLError, HTTPError
-
 common = CommonFunctions
-socket.setdefaulttimeout(10)
-
 
 BASE_URL = 'http://muzebra.com/'
 handle = int(sys.argv[1])
@@ -61,69 +54,12 @@ def onlineradio(url, category):
     xbmcplugin.endOfDirectory(handle, True)
 
 def play(url):
-    url = "http://stream-high.kmih.org:8000/;stream.nsv"
-    #item = xbmcgui.ListItem(path = url)
-    #xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(url, item)
-
-    #item = xbmcgui.ListItem(path = url)
-    #xbmcplugin.setResolvedUrl(pluginhandle, True, item)
-    
     try:
         item = xbmcgui.ListItem(path = url)
         xbmc.Player().play(url, item)
     except:
         print "Unexpected error:", sys.exc_info()[0]
         return False
-    else:
-        print "OK playing"
-        
-# def get_play(url, name):
-#   xbmc.output('>>> get_play(%s, %s)' % (url, name))
-#   #use_wma = True
-#   #use_mp3 = True
-# 
-#   playList = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
-#   playList.clear()
-# 
-# # if use_wma:
-#   #wma_url = url.replace('port_playmp3','port_playwma')
-#   wma0 = getURL(url)
-#   if wma0 != None:
-#       wma1 = re.compile('<param name="URL" value="(.*?)">').findall(wma0)
-#       if len(wma1) > 0:
-# 
-#           #xbmc.Player().play(wma1[0].replace('&amp;','&'))
-# 
-# 
-#           wma2 = getURL(wma1[0].replace('&amp;','&'))
-#           if wma2 != None:
-#               wma3 = re.compile('<ref href = "(.*?)"/>').findall(wma2)
-#               if len(wma3) > 0:
-#                   x = 1
-#                   stacked_url = ''
-#                   for wma_purl in reversed(wma3):
-#                       item = xbmcgui.ListItem('%s [WMA Server %s])'%(name,x),iconImage=play_thumb,thumbnailImage=play_thumb)
-#                       item.setInfo(type='music',infoLabels={'title':name,'artist': '101.RU'})
-#                       playList.add(wma_purl, item)
-#                   xbmc.Player().play(playList)
-
-
-#   if use_mp3:
-#       mp3_url = url.replace('port_playwma','port_playmp3')
-#       mp0 = getURL(mp3_url)
-#       if mp0 != None:
-#           mp1 = re.compile('"pl":"(.*?)"').findall(mp0)
-#           if len(mp1) > 0:
-#               cur_mpu = mp1[0].replace('|','&')
-#               mp2 = getURL(cur_mpu, 'http://101.ru/101player/uppod7.swf')
-#               mp3 = re.compile('"file":"(.*?)"').findall(mp2)
-#               if len(mp3) > 0:
-#                   x = 1
-#                   for streamer in mp3:
-#                       item = xbmcgui.ListItem('Serv %s. %s (MP3)'%(x,name),iconImage=play_thumb,thumbnailImage=play_thumb)
-#                       item.setInfo(type='music',infoLabels={'title':name,'artist': '101.RU'})
-#                       xbmcplugin.addDirectoryItem(handle, streamer, item)
-#   xbmcplugin.endOfDirectory(handle)
 
 
 params = get_params()
