@@ -18,9 +18,10 @@ addon_path    = Addon.getAddonInfo('path')
 
 BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 
+today = datetime.date.today()
 # save last check for each URL
 def check_url(url):
-    today = datetime.date.today()
+#    today = datetime.date.today()
 #    yesterday = today - datetime.timedelta(days=1)
 
     #last_check = Addon.getSetting('last-check')
@@ -55,7 +56,6 @@ def unescape(entity, encoding):
     return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
   elif encoding == 'cp1251':
     return entity.decode(encoding).encode('utf-8')
-#  return entity.decode(encoding).encode('utf-8')
 
 def xbmcItem(url, title, mode, *args):
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
@@ -71,25 +71,29 @@ def xbmcContextMenuItem(item, action, label, url, title):
 def listFavorites():
     label = unescape("&#1059;&#1076;&#1072;&#1083;&#1080;&#1090;&#1100; &#1080;&#1079; &#1089;&#1087;&#1080;&#1089;&#1082;&#1072; &#1092;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1086;&#1074;", 'utf-8')
 
-    favorites = json.loads(Addon.getSetting('favorites'))
+    string = Addon.getSetting('favorites')
+    if len(string) > 0:
+      favorites = json.loads(string)
 
-    for key in favorites:
-        print "Found favorite " + key
-        uri = sys.argv[0] + '?mode=PLAY2'
-        uri += '&url=' + urllib.quote_plus(key)
+      for key in favorites:
+          print "Found favorite " + key
+          uri = sys.argv[0] + '?mode=PLAY2'
+          uri += '&url=' + urllib.quote_plus(key)
 
-        item = xbmcgui.ListItem(favorites[key], iconImage=addon_icon, thumbnailImage=addon_icon)
-        item.setInfo( type='Video', infoLabels={'title': favorites[key]})
-        item.setProperty('IsPlayable', 'true')
+          item = xbmcgui.ListItem(favorites[key], iconImage=addon_icon, thumbnailImage=addon_icon)
+          item.setInfo( type='Video', infoLabels={'title': favorites[key]})
+          item.setProperty('IsPlayable', 'true')
 
-        xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+          xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
+          xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-    xbmcplugin.endOfDirectory(pluginhandle, True, True)
+    xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
 def get_groups(url):
-    #print "System encoding: " + sys.getdefaultencoding()
+    # TODO: Improv category loading speed, load categories from settings if settings !!!
+    # TODO NEXT: use sqlite.db as a storage instead of settings.xml
+
     page = common.fetchPage({"link": url})
 
     fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
@@ -101,11 +105,12 @@ def get_groups(url):
         options = common.parseDOM(select, "optgroup")
 
         for i in range(len(optgroups)):
+            group = {}
             channels = {}
 
             optgroup = optgroups[i]
             option = options[optgroups.index(optgroup)]
-            group = unescape(optgroup, 'cp1251')
+            groupname = unescape(optgroup, 'cp1251')
 
             titles = common.parseDOM(option, "option")
             links = common.parseDOM(option, "option", ret="value")
@@ -113,39 +118,59 @@ def get_groups(url):
             for x, title in enumerate(titles):
                 channels[links[x]] = unescape(titles[x], 'cp1251')
 
-
-            Addon.setSetting(group, json.dumps(channels))
+            if len(Addon.getSetting(groupname)) == 0 or ("checked_at" in group and group["checked_at"] != str(today)):
+              group["channels"] = channels
+              group["checked_at"] = ""
+              Addon.setSetting(groupname, json.dumps(group))
 
             uri = sys.argv[0] + '?mode=SHOW'
             uri += '&url=' + urllib.quote_plus(BASE_URL)
-            uri += '&group=' + group
+            uri += '&group=' + groupname
 
-            item = xbmcgui.ListItem(group, iconImage=addon_icon, thumbnailImage=addon_icon)
-            item.setInfo( type='video', infoLabels={'title': group})
+            item = xbmcgui.ListItem(groupname, iconImage=addon_icon, thumbnailImage=addon_icon)
+            item.setInfo( type='video', infoLabels={'title': groupname})
 
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
-def get_channels(url, group):
+def get_channels(url, groupname):
     label = unescape("&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100; &#1074; '&#1052;&#1086;&#1080; &#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;'", 'utf-8')
 
-    if url and group:
-        channels = json.loads(Addon.getSetting(group))
+    group = json.loads(Addon.getSetting(groupname))
+    channels = {}
 
-        for url,title in channels.iteritems():
+    if url and group:
+        for url,title in group["channels"].iteritems():
             name = unescape(title, 'utf-8')
 
             uri = sys.argv[0] + '?mode=PLAY'
             uri += '&url=' + urllib.quote_plus(url)
 
-            if check_url(url):
+            if "checked_at" in group and len(group["checked_at"]) !=0 and group["checked_at"] == str(today):
+                print "*** Everything is fine go ahead date of the last check is " + group['checked_at']
+
                 item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
                 item.setInfo( type='video', infoLabels={'title': name})
                 item.setProperty('IsPlayable', 'true')
 
                 xbmcContextMenuItem(item, 'add', label, url, title)
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
+            else:
+                if check_url(url):
+                    channels[url] = name
+                    item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
+                    item.setInfo( type='video', infoLabels={'title': name})
+                    item.setProperty('IsPlayable', 'true')
+
+                    xbmcContextMenuItem(item, 'add', label, url, title)
+                    xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
+
+    # save check results
+    if channels:
+      group["checked_at"] = str(today)
+      group["channels"] = channels
+      Addon.setSetting(groupname, json.dumps(group))
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
