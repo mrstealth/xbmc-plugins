@@ -23,6 +23,14 @@ def get_params():
                 param[splitparams[0]]=splitparams[1]
     return param
     
+def construct_url(mode, url=False, title=False, category=False):
+    uri = sys.argv[0] + '?mode=' + mode
+    if url: uri += '&url=' + urllib.quote_plus(url)
+    if category: uri += '&category=' + category 
+    if title: uri += '&title=' + title
+    return uri
+    
+    
     
 # *** Python helpers ***
 def strip_html(text):

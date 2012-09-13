@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-	<string id="1000">Онлайн радиостанции</string>
+    <string id="1000">Радиостанции</string>
+	<string id="1001">Онлайн радиостанции</string>
+	<string id="1002">Чарты радиостанций (Москва)</string>
+	<string id="1003">Чарты радиостанций Санкт-Петербург)</string>
+	
+    <string id="2000">Русский чарт</string>
+	<string id="2001">Всемирный чарт</string>
+	
+    <string id="3000">Исполнители</string>
+
+    <string id="4000">Алфавит</string>
 </strings>
+    
