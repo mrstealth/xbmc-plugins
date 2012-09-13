@@ -4,13 +4,10 @@
 # -*- coding: utf-8 -*-
 
 import xbmcplugin,xbmcgui,xbmcaddon
-import os, urllib, urllib2, CommonFunctions
-import simplejson as json
-import HTMLParser
+import os, sys, urllib, urllib2
+import HTMLParser, CommonFunctions
 import socket, datetime
-
-from traceback import print_exc
-
+import simplejson as json
 common = CommonFunctions
 
 pluginhandle = int(sys.argv[1])
@@ -25,7 +22,7 @@ BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 def check_url(url):
     today = datetime.date.today()
 #    yesterday = today - datetime.timedelta(days=1)
-    
+
     #last_check = Addon.getSetting('last-check')
     last_check = []
     if not last_check and last_check != str(today):
@@ -33,7 +30,7 @@ def check_url(url):
             print "*** Skip rtsp check for " + url
             return True
         try:
-            response = urllib2.urlopen(url, None, 1)        
+            response = urllib2.urlopen(url, None, 1)
         except urllib2.HTTPError, e:
             print "***** Oops, HTTPError ", str(e.code)
             return False
@@ -58,10 +55,11 @@ def unescape(entity, encoding):
     return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
   elif encoding == 'cp1251':
     return entity.decode(encoding).encode('utf-8')
+#  return entity.decode(encoding).encode('utf-8')
 
 def xbmcItem(url, title, mode, *args):
-    item = xbmcgui.ListItem(title)
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
+    item = xbmcgui.ListItem(title, iconImage=addon_icon, thumbnailImage=addon_icon)
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
 def xbmcContextMenuItem(item, action, label, url, title):
@@ -69,107 +67,95 @@ def xbmcContextMenuItem(item, action, label, url, title):
     params = action + "|%s"%url + "|%s"%title
     runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
     item.addContextMenuItems([(label, runner)])
-       
-def listFavorites():
-    string = Addon.getSetting('favorites')
-    label = unescape("&#1059;&#1076;&#1072;&#1083;&#1080;&#1090;&#1100; &#1080;&#1079; &#1089;&#1087;&#1080;&#1089;&#1082;&#1072; &#1092;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1086;&#1074;", 'utf-8')
-    
-    if len(string) == 0:
-        item = xbmcgui.ListItem()
-        item.setProperty('IsPlayable', 'false')
-        xbmcplugin.addDirectoryItem(pluginhandle, '', item, True)
-    else:
-        favorites = json.loads(string)
-        
-        for key in favorites:
-            print "Found favorite " + key
-            item = xbmcgui.ListItem(favorites[key])
-            uri = sys.argv[0] + '?mode=PLAY2'
-            uri += '&url=' + urllib.quote_plus(key)
-            uri += '&title=' + favorites[key]
-            
-            item.setInfo( type='Video', infoLabels={'title': favorites[key]})
-            item.setProperty('IsPlayable', 'true')
 
-            xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
-            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-       
-    xbmcplugin.endOfDirectory(pluginhandle, True)
-    
+def listFavorites():
+    label = unescape("&#1059;&#1076;&#1072;&#1083;&#1080;&#1090;&#1100; &#1080;&#1079; &#1089;&#1087;&#1080;&#1089;&#1082;&#1072; &#1092;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1086;&#1074;", 'utf-8')
+
+    favorites = json.loads(Addon.getSetting('favorites'))
+
+    for key in favorites:
+        print "Found favorite " + key
+        uri = sys.argv[0] + '?mode=PLAY2'
+        uri += '&url=' + urllib.quote_plus(key)
+
+        item = xbmcgui.ListItem(favorites[key], iconImage=addon_icon, thumbnailImage=addon_icon)
+        item.setInfo( type='Video', infoLabels={'title': favorites[key]})
+        item.setProperty('IsPlayable', 'true')
+
+        xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    xbmcplugin.endOfDirectory(pluginhandle, True, True)
+
+
 def get_groups(url):
+    #print "System encoding: " + sys.getdefaultencoding()
     page = common.fetchPage({"link": url})
-    
+
     fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
     xbmcItem('', "[COLOR FF00FFF0][" + fav + "][/COLOR]", 'FAVORITES')
 
-    if page["status"] == 200:       
-        select = common.parseDOM(page["content"], "select", attrs = { "id":"ch" }) 
+    if page["status"] == 200:
+        select = common.parseDOM(page["content"], "select", attrs = { "id":"ch" })
         optgroups = common.parseDOM(select, "optgroup", ret="label")[0:-1]
         options = common.parseDOM(select, "optgroup")
-        
+
         for i in range(len(optgroups)):
             channels = {}
-            
-            titles = common.parseDOM(options[optgroups.index(optgroups[i])], "option")
-            links = common.parseDOM(options[optgroups.index(optgroups[i])], "option", ret="value")
-            
+
+            optgroup = optgroups[i]
+            option = options[optgroups.index(optgroup)]
+            group = unescape(optgroup, 'cp1251')
+
+            titles = common.parseDOM(option, "option")
+            links = common.parseDOM(option, "option", ret="value")
+
             for x, title in enumerate(titles):
                 channels[links[x]] = unescape(titles[x], 'cp1251')
-            
-            group = unescape(optgroups[i], 'cp1251')
+
+
             Addon.setSetting(group, json.dumps(channels))
-                            
+
             uri = sys.argv[0] + '?mode=SHOW'
             uri += '&url=' + urllib.quote_plus(BASE_URL)
             uri += '&group=' + group
-            
-            item = xbmcgui.ListItem(optgroups[i], iconImage=addon_icon, thumbnailImage=addon_icon)
-            item.setInfo( type='video', infoLabels={'title': optgroups[i]})            
-            
+
+            item = xbmcgui.ListItem(group, iconImage=addon_icon, thumbnailImage=addon_icon)
+            item.setInfo( type='video', infoLabels={'title': group})
+
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-    
-    xbmc.executebuiltin('Container.SetSortMethod(9)')
-    xbmcplugin.endOfDirectory(pluginhandle, True) 
-    
+
+    xbmcplugin.endOfDirectory(pluginhandle, True)
+
 def get_channels(url, group):
     label = unescape("&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100; &#1074; '&#1052;&#1086;&#1080; &#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;'", 'utf-8')
-    page = common.fetchPage({"link": url})
 
-    if page["status"] == 200:       
-        select = common.parseDOM(page["content"], "select", attrs = { "id":"ch" }) 
-        optgroups = common.parseDOM(select, "optgroup", ret="label")
-        options = common.parseDOM(select, "optgroup")
-                    
+    if url and group:
         channels = json.loads(Addon.getSetting(group))
-        
+
         for url,title in channels.iteritems():
             name = unescape(title, 'utf-8')
-            name = title
+
             uri = sys.argv[0] + '?mode=PLAY'
             uri += '&url=' + urllib.quote_plus(url)
-            uri += '&title=' + name
-#             if check_url(url):
-#                 item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
-#             else:
-#                 item = xbmcgui.ListItem(name + '-broken', iconImage=addon_icon, thumbnailImage=addon_icon)
 
             if check_url(url):
                 item = xbmcgui.ListItem(name, iconImage=addon_icon, thumbnailImage=addon_icon)
                 item.setInfo( type='video', infoLabels={'title': name})
                 item.setProperty('IsPlayable', 'true')
-                        
+
                 xbmcContextMenuItem(item, 'add', label, url, title)
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
-                    
-    xbmc.executebuiltin('Container.SetSortMethod(9)')
+
     xbmcplugin.endOfDirectory(pluginhandle, True)
-    
+
 
 def play_fav(url):
-    xbmc.Player().play(url)
-         
+    item = xbmcgui.ListItem(path = url)
+    xbmc.Player().play(url, item)
+
 def play_url(url):
-    item = xbmcgui.ListItem(path = url) 
+    item = xbmcgui.ListItem(path = url)
     xbmcplugin.setResolvedUrl(pluginhandle, True, item)
 
 def get_params():
@@ -205,13 +191,14 @@ try:
     group=params['group']
 except: pass
 
+
 if mode == 'PLAY':
     play_url(url)
 elif mode == 'PLAY2':
     play_fav(url)
-elif mode == 'SHOW': 
+elif mode == 'SHOW':
     get_channels(BASE_URL, group)
 elif mode == 'FAVORITES':
     listFavorites();
-elif mode == None: 
+elif mode == None:
     get_groups(BASE_URL)
