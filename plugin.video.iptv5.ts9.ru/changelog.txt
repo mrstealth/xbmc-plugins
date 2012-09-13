@@ -1,4 +1,7 @@
+[B]Version 1.0.2[/B]
+- Add check for broken streams
+- Fix encoding issue
 [B]Version 1.0.1[/B]
-- Fix unplayable items in my favorites 
+- Fix unplayable items in my favorites
 [B]Version 1.0.0[/B]
 - Initial version
