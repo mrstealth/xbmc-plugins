@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="plugin.audio.muzebra.com"
+       name="Muzebra"
+       version="1.0.0"
+       provider-name="mrstealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="0.9.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
+        <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">Internet radio station muzebra.com</summary>
+    <summary lang="ru">Интернет-радиостанция muzebra.com</summary>
+    <description lang="en">Listen to radio with only the best site muzebra.comu</description>
+    <description lang="ru">Слушайте только лучшие радиоканалы с сайта muzebra.com</description>
+  </extension>
+</addon>
+
 <addon id="plugin.video.filin.tv"
        name="Filin.tv"
        version="1.0.6"
@@ -19,7 +39,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.go2load.com"
+<addon id="plugin.video.go2load-reloaded.com"
        name="[COLOR ff7CCD7C]Go2Load.com[/COLOR]"
        version="0.0.2"
        provider-name="Tolin">

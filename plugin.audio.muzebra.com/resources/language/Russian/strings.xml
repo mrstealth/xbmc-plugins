@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+	<string id="1000">Онлайн радиостанции</string>
+
+    <string id="3000">[следующая страница] >></string>
+    <string id="3001">Добавить в мои фавориты</string>
+    <string id="3002">Список фаворитов пуст</string>
+    <string id="3003">Успешно добавлен в список фаворитов</string>
+    <string id="3004">Удалить из моих фаворитов</string>
+    <string id="3005">Успешно удалён из списка моих фаворитов</string>
+</strings>

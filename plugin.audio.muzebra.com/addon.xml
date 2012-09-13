@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.audio.muzebra.com"
+       name="Muzebra"
+       version="1.0.0"
+       provider-name="mrstealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="0.9.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
+        <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">Internet radio station muzebra.com</summary>
+    <summary lang="ru">Интернет-радиостанция muzebra.com</summary>
+    <description lang="en">Listen to radio with only the best site muzebra.comu</description>
+    <description lang="ru">Слушайте только лучшие радиоканалы с сайта muzebra.com</description>
+  </extension>
+</addon>
