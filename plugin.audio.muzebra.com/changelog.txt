@@ -1,3 +1,5 @@
+[B]Version 1.0.3[/B]
+- add charts(ru, en) with top 100 songs
 [B]Version 1.0.2[/B]
 - use xbmcplugin.setResolvedUrl instead of xbmc.player()
 [B]Version 1.0.1[/B]
