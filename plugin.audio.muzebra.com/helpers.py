@@ -22,16 +22,16 @@ def get_params():
             if (len(splitparams))==2:
                 param[splitparams[0]]=splitparams[1]
     return param
-    
+
 def construct_url(mode, url=False, title=False, category=False):
     uri = sys.argv[0] + '?mode=' + mode
     if url: uri += '&url=' + urllib.quote_plus(url)
-    if category: uri += '&category=' + category 
+    if category: uri += '&category=' + category
     if title: uri += '&title=' + title
     return uri
-    
-    
-    
+
+
+
 # *** Python helpers ***
 def strip_html(text):
 	def fixup(m):
@@ -70,11 +70,11 @@ def strip_html(text):
 		return text
 	ret =  re.sub("(?s)<[^>]*>|&#?\w+;", fixup, text)
 	return re.sub("\n+", '\n' , ret)
-	
-#     
+
+#
 # def remove(sub, s):  # replace first sub with empty string
 #     return s.replace(sub, "", 1)
-# 
+#
 # def remove_all(sub, s):  # replace all sub with empty string
 #     return s.replace(sub, "", -1)
 
@@ -87,11 +87,15 @@ def unescape(entity, encoding):
     return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
   elif encoding == 'cp1251':
     return entity.decode(encoding).encode('utf-8')
-    
+
 def uniq(alist):    # Fastest order preserving
     set = {}
     return [set.setdefault(e,e) for e in alist if e not in set]
-    
+
+def duration_in_sec(duration):
+  time = duration.split(':')
+  return int(time[0]) * 60 + int(time[1])
+
 # def uniq(alist):    # Fastest without order preserving
 #     set = {}
 #     map(set.__setitem__, alist, [])
