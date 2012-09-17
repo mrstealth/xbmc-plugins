@@ -3,7 +3,7 @@
 # Rev. 1.0.0
 # -*- coding: utf-8 -*-
 
-import urllib, urllib2, sys
+import urllib, urllib2, re, sys
 import HTMLParser
 import CommonFunctions
 import simplejson as json
@@ -28,31 +28,31 @@ def get_params():
                 param[splitparams[0]]=splitparams[1]
     return param
 
-def construct_url(mode, url=False, title=False, category=False):
+def construct_url(mode, url=False, title=False, artist=False, category=False):
     uri = sys.argv[0] + '?mode=' + mode
     if url: uri += '&url=' + urllib.quote_plus(url)
+    if artist: uri += '&artist=' + artist
     if category: uri += '&category=' + category
-    if title: uri += '&title=' + title
     return uri
 
 def construct_mp3_url(aid):
     if len(aid) > 0:
         url = "https://api.vk.com/method/audio.getById.json"
         url += "?access_token=cccbeac0c9bf906fc9bf906ff6c991a752cc9bfc9be906709d6d3b8b2d7606d"
-        url += "&audios=" + aid        
+        url += "&audios=" + aid
         return url
     else:
         return ''
 
 def get_mp3_url(aid):
     page = common.fetchPage({"link":  construct_mp3_url(aid)})
-    
+
     if page["status"] == 200:
         song = json.loads(page["content"])["response"][0]
         return song
     else:
         return False
-    
+
 def check_url(url):
     if not url.find("rtsp") == -1: # skip rtsp check
         print "*** Skip rtsp check for " + url
@@ -72,7 +72,7 @@ def check_url(url):
         print "Unexpected error:", sys.exc_info()[0]
         return False
     else:
-        return True   
+        return True
 
 # *** Python helpers ***
 def strip_html(text):
