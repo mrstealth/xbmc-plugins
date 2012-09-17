@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.3
 # -*- coding: utf-8 -*-
 
 import xbmcplugin,xbmcgui,xbmcaddon
@@ -16,7 +16,7 @@ Addon = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
 __settings__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
-logos_path = os.path.join(addon_path, 'resources/logos/')
+#logos_path = os.path.join(addon_path, 'resources/logos/')
 
 BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 
@@ -24,9 +24,7 @@ today = datetime.date.today()
 
 from category import Category
 category_db = Category('category.db')
-#category_db._drop()
 
-#print c.get('Category')
 
 def check_url(url):
 #     if not url.find("rtsp") == -1: # skip rtsp check
@@ -124,6 +122,10 @@ def get_categories_from_url(url):
     return categories
     
 def get_categories_from_db(url):
+
+    fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
+    xbmcItem('FAVORITES', '', "[COLOR FF00FFF0][" + fav + "][/COLOR]")
+
     entries = category_db.all()
     #entries = []
     
@@ -200,19 +202,16 @@ def get_channels_from_url(category):
 def get_channels_from_db(name):
     category = category_db.get(name)
     channels = json.loads(category['channels'])
-    
-    c = get_channels_from_url(name)
-    #print c
-        
+            
     label = unescape("&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100; &#1074; '&#1052;&#1086;&#1080; &#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;'", 'utf-8')
     
     for url in channels:
         title = channels[url].encode('utf-8')
         
         uri = sys.argv[0] + '?mode=PLAY' + '&url=' + urllib.quote_plus(url)
-        logo = os.path.join(logos_path, title + '.png')
+        #logo = os.path.join(logos_path, title + '.png')
 
-        item = xbmcgui.ListItem(title, iconImage=addon_icon, thumbnailImage=logo)
+        item = xbmcgui.ListItem(title, iconImage=addon_icon, thumbnailImage=addon_icon)
         item.setInfo( type='video', infoLabels={'title': title})
         item.setProperty('IsPlayable', 'true')
 
@@ -271,10 +270,8 @@ if mode == 'PLAY':
 elif mode == 'PLAY2':
     play_fav(url)
 elif mode == 'SHOW':
-    #get_channels(BASE_URL, group)
     get_channels_from_db(group)
 elif mode == 'FAVORITES':
     listFavorites();
 elif mode == None:
     get_categories_from_db(BASE_URL)
-    #get_groups(BASE_URL)
