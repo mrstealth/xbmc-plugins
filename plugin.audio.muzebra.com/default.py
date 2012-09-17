@@ -54,7 +54,7 @@ def main():
     uri = construct_url('letters', 'http://muzebra.com/artists/', '', 'en')
 
     item = xbmcgui.ListItem(en_artists, iconImage = addon_icon, thumbnailImage = addon_icon)
-    xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)    
+    xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
     xbmcplugin.endOfDirectory(handle, True)
 
 
@@ -124,21 +124,21 @@ def letters(url, category):
             letters = common.parseDOM(page["content"], "ul", attrs = { "class":"ru" })
         else:
             letters = common.parseDOM(page["content"], "ul", attrs = { "class":"en" })
-        
+
         links = common.parseDOM(letters, "a", attrs = { "class":"hash" }, ret="href")
         titles = common.parseDOM(letters, "a")
 
         if category == 'ru':
             links.insert(1, '/artists/%D0%B0/')
             titles.insert(1, '\xd0\xb0')
-        
+
         for i, link in enumerate(links):
             # TODO: REFACTORING
             uri = sys.argv[0] + '?mode=artists'
             uri += '&url='  + BASE_URL
             uri += '&letter=' + links[i]
             title = titles[i].decode('utf-8').upper()
-            
+
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
             item.setInfo(type='music', infoLabels = {'title': title})
             item.setProperty('IsPlayable', 'false')
@@ -151,34 +151,60 @@ def artists(url, artist):
     page = common.fetchPage({"link": url})
     #print page
 #     print url
-# 
+#
     if page["status"] == 200:
         artists = common.parseDOM(page["content"], "ul", attrs = { "class":"artists span6" })
         links = common.parseDOM(artists, "a", attrs = { "class":"hash" }, ret="href")
         titles = common.parseDOM(artists, "a")
 
-        print artists
         for i, link in enumerate(links):
             # TODO: REFACTORING
-            uri = sys.argv[0] + '?mode=get_artist'
+            uri = sys.argv[0] + '?mode=getartist'
             uri += '&url='  + BASE_URL
-            #uri += '&query=' + json.dumps(links[i])
-            uri += '&artist=' + titles[i]
+            uri += '&query=' + links[i].split('=')[-1]
+
             title = titles[i].decode('utf-8').upper()
-            
-            print links[i]
 
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
             item.setInfo(type='music', infoLabels = {'title': title})
             item.setProperty('IsPlayable', 'false')
+            xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
+
+    xbmcplugin.endOfDirectory(handle, True)
+
+def getArtist(url, artist):
+    url = url + '/search/?q=' + artist
+    page = common.fetchPage({"link": url})
+
+
+    if page["status"] == 200:
+        playlist = common.parseDOM(page["content"], "ul", attrs = { "class":"white playlist" })
+        song_ids = common.parseDOM(playlist, "a", attrs = { "class":"info" }, ret="data-aid")
+
+        durations = common.parseDOM(playlist, "div", attrs = { "class":"time" })
+        songs = common.parseDOM(playlist, "a", attrs = { "class":"info" })
+
+        title_div = common.parseDOM(playlist, "div", attrs = { "class":"title" })
+        songs = common.parseDOM(title_div, "span", attrs = { "class":"name" })
+        artists = common.parseDOM(title_div, "a")
+
+        for i, identifier in enumerate(song_ids):
+            # TODO: replace by construect_url
+            uri = sys.argv[0] + '?mode=play_mp3'
+            uri += '&aid='  + identifier
+            uri += '&category=' + artists[i].decode('utf-8')
+
+            song = songs[i].decode('utf-8')
+            artist = artists[i].decode('utf-8')
+            title = artist + "-" + song
+
+            item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
+            item.setInfo(type='music', infoLabels = {'title': title, 'album' : 'Unknown', 'genre': 'category', 'artist': artist, 'duration': duration_in_sec(durations[i])})
+            item.setProperty('IsPlayable', 'true')
             xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
 
     xbmcplugin.endOfDirectory(handle, True)
-   
-def getArtist(url, query):
-    print url
-    xbmcplugin.endOfDirectory(handle, True)
-     
+
 def play_stream(url, title, category):
     item = xbmcgui.ListItem(path = url)
     item.setInfo('music', {'Title': title, 'Genre': category})
@@ -193,7 +219,7 @@ def play_mp3(aid, category):
     item = xbmcgui.ListItem(path = url)
     item.setInfo('music', {'Title': title, 'artist' : artist, 'Genre': category})
     xbmcplugin.setResolvedUrl(handle, True, item)
-    
+
 # xbmc.Player() loads faster the next item but can not play next song directly?
 def play(url, title, category):
     song = get_mp3_url(aid)
@@ -246,7 +272,7 @@ try:
 except: pass
 
 
-    
+
 if mode != None: print "*** MODE " + mode
 if mode == None:
     main()
@@ -265,7 +291,5 @@ elif mode == 'letters':
     letters(url, category)
 elif mode == 'artists':
     artists(url, artist)
-elif mode == 'get_artist':
-    print artist
-    getArtist(url, artist)    
-    
+elif mode == 'getartist':
+    getArtist(url, query)
