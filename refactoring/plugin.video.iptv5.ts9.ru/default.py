@@ -2,7 +2,6 @@
 # Writer (c) 2012, MrStealth
 # Rev. 1.0.4
 # -*- coding: utf-8 -*-
-# -*- encoding: utf-8 -*-
 
 
 import xbmcplugin,xbmcgui,xbmcaddon

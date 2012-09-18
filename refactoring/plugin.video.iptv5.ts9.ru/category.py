@@ -2,8 +2,6 @@
 # Writer (c) 2012, MrStealth
 # Rev. 1.0.2
 # -*- coding: utf-8 -*-
-# -*- encoding: utf-8 -*-
-
 
 import os, time, xbmcaddon
 import sqlite3 as sqlite
