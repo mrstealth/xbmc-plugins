@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.5
 # -*- coding: utf-8 -*-
 # -*- encoding: utf-8 -*-
 
@@ -105,10 +105,9 @@ def get_categories_from_db(url):
     fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
     xbmcItem('FAVORITES', '', "[COLOR FF00FFF0][" + fav + "][/COLOR]")
 
+    # Hotfix
     entries = category_db.all()
-
-    #print entries
-    entries = []
+    #entries = []
 
     # update categories once a day
     if len(entries) > 0:
