@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="1000">[Фавориты]</string>
+    <string id="1001">Добавить в [фавориты]</string>
+    <string id="1002">Список фаворитов пуст</string>
+    <string id="1003">Успешно добавлен в список фаворитов</string>
+    <string id="1004">Удалить из [фавориты]</string>
+    <string id="1005">Успешно удалён из списка фаворитов</string>
+</strings>

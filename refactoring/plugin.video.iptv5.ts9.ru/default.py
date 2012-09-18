@@ -17,9 +17,11 @@ common.plugin = "plugin.video.iptv5.ts9.ru"
 handle = int(sys.argv[1])
 
 Addon = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
+__settings__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
+__language__ = Addon.getLocalizedString
+
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
-__settings__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
 
 BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 
@@ -27,8 +29,8 @@ from helpers import *
 from category import Category
 from channel import Channel
 
-category_db = Category('category.db')
-channel_db = Channel('channel.db')
+category_db = Category()
+channel_db = Channel()
 
 def getCategories(url):
     print "*** get category from URL"
@@ -80,13 +82,35 @@ def categories(url):
     getCategories(url)
 
 
+
+def listFavorites():
+    label = __language__(1004)
+
+    channels = channel_db.favorites()
+    print "channels in fav"
+    print channels
+
+    for channel in channels:
+      for title,url in channel.items():
+        item = xbmcPlayableItem('PLAY', title, url)
+
+    xbmcplugin.endOfDirectory(handle, True)
+
+
 def listCategories(url):
-    #xbmcItem('CHANNELS', url, title, icon=False):
+
+    fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
+    xbmcItem('FAVORITES', '', "[COLOR FF00FFF0][" + fav + "][/COLOR]")
+
     categories = category_db.find_all()
 
+    if not categories:
+      getCategories(url)
+      categories = category_db.find_all()
+
     for category in categories:
-      for name,category in category.items():
-        xbmcItem('CHANNELS', '', name, False, category)
+        for name,category in category.items():
+          xbmcItem('CHANNELS', '', name, False, category)
 
     xbmcplugin.endOfDirectory(handle, True)
 
@@ -138,4 +162,4 @@ elif mode == 'CHANNELS':
 elif mode == 'FAVORITES':
     listFavorites();
 elif mode == None:
-    categories(BASE_URL)
+    listCategories(BASE_URL)

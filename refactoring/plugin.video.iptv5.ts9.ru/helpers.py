@@ -36,6 +36,8 @@ def xbmcItem(mode, url, title, icon=False, category=False):
     item.setProperty('IsPlayable', 'false')
     xbmcplugin.addDirectoryItem(handle, uri, item, True)
 
+favorites_tag = unescape('&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100; &#1074; "&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;"', 'utf-8')
+
 def xbmcPlayableItem(mode, title, url):
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
 
@@ -43,7 +45,9 @@ def xbmcPlayableItem(mode, title, url):
     item.setInfo(type='Video', infoLabels = {'title': title})
     item.setProperty('IsPlayable', 'true')
 
-    xbmcplugin.addDirectoryItem(handle, uri, item, False)
+    xbmcContextMenuItem(item, 'add', favorites_tag, url, title)
+    xbmcplugin.addDirectoryItem(handle, uri, item)
+
 
 def xbmcContextMenuItem(item, action, label, url, title):
     script = "special://home/addons/plugin.video.iptv5.ts9.ru/contextmenu.py"

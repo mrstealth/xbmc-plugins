@@ -12,19 +12,19 @@ __addon__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
 addon_path = __addon__.getAddonInfo('path')
 
 class Channel:
-    def __init__(self, filename):
+    def __init__(self):
         self.filename = os.path.join(addon_path, 'resources', 'channel.sqlite')
 
         self._connect()
         self.cur.execute('pragma auto_vacuum=1')
-        self.cur.execute("CREATE TABLE IF NOT EXISTS channels (name TEXT, url TEXT, category_id INTEGER)")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS channels (name TEXT, url TEXT, category_id INTEGER, is_fav BOOLEAN DEFAULT '0' NOT NULL )")
         self.db.commit()
         self._close()
 
     def find(self, url):
         self._connect()
-        self.cur.execute("SELECT name, url, category_id FROM channels WHERE url=?", (url, ))
-        result = [{'name': x[0], 'url': x[1], 'category_id' : x[2]} for x in self.cur.fetchall()]
+        self.cur.execute("SELECT name, url, category_id, is_fav FROM channels WHERE url=?", (url, ))
+        result = [{'name': x[0], 'url': x[1], 'category_id' : x[2], 'is_fav' : x[3]} for x in self.cur.fetchall()][0]
         self._close()
 
         return result
@@ -38,7 +38,7 @@ class Channel:
 
     def find_by_category_id(self, category_id):
         self._connect()
-        self.cur.execute("SELECT name, url FROM channels WHERE category_id=?", (category_id, ))
+        self.cur.execute("SELECT name, url FROM channels WHERE category_id=? ORDER BY name ASC", (category_id, ))
         result = [{x[0] : x[1]} for x in self.cur.fetchall()]
         self._close()
         return result
@@ -53,6 +53,25 @@ class Channel:
     def destroy(self, url):
         self._connect()
         self.cur.execute('DELETE FROM channels WHERE url=?', (url, ))
+        self.db.commit()
+        self._close()
+
+    def favorites(self):
+        self._connect()
+        self.cur.execute("SELECT name, url FROM channels WHERE is_fav=1 ORDER BY name ASC")
+        result = [{x[0] : x[1]} for x in self.cur.fetchall()]
+        self._close()
+        return result
+
+    def addToFav(self, url):
+        self._connect()
+        self.cur.execute('UPDATE channels SET is_fav=1 WHERE url=?', (url, ))
+        self.db.commit()
+        self._close()
+
+    def removeFromFav(self, url):
+        self._connect()
+        self.cur.execute('UPDATE channels SET is_fav=0 WHERE url=?', (url, ))
         self.db.commit()
         self._close()
 

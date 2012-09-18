@@ -12,7 +12,7 @@ __addon__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
 addon_path = __addon__.getAddonInfo('path')
 
 class Category:
-    def __init__(self, filename):
+    def __init__(self):
         self.filename = os.path.join(addon_path, 'resources', 'category.sqlite')
 
         self._connect()
