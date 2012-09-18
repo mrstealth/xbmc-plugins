@@ -38,7 +38,7 @@ class Category:
     def find_all(self):
         self._connect()
         self.cur.execute("SELECT name,optgroupid FROM categories ORDER BY name ASC")
-        result = [ { x[0]: x[1] } for x in self.cur.fetchall()]
+        result = [{ x[0]: x[1] } for x in self.cur.fetchall()]
         self._close()
         return result
 
@@ -55,6 +55,23 @@ class Category:
         self.db.commit()
         self._close()
 
+    def checkNeeded(self, optgroupid):
+        self._connect()
+        self.cur.execute("SELECT created_at FROM categories WHERE optgroupid=?", (optgroupid, ))
+        created_at = int(self.cur.fetchall()[0][0])
+        self._close()
+        
+        interval = int(__addon__.getSetting('interval'))*60*60
+        now = int(time.time())
+        created_at = created_at - interval
+ 
+        if created_at+interval - now > 0:
+            print "*** Skip stream availability check"
+            return False
+        else:
+            print "*** Check stream availability"
+            return True
+            
     def _connect(self):
         self.db = sqlite.connect(self.filename)
         self.db.text_factory = str

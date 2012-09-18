@@ -83,10 +83,8 @@ def listFavorites():
 def listCategories(url):    
     xbmcItem('FAVORITES', '', "[COLOR FF00FFF0]" + __language__(1000) + "[/COLOR]")
 
-    interval = int(__addon__.getSetting('interval'))*60*60
-    
     categories = category_db.find_all()
-
+    print category_db.checkNeeded(0)
     if not categories:
       getCategories(url)
       categories = category_db.find_all()
