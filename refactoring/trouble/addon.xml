@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.iptv5.ts9.ru"
+       name="Iptv5.ts9.ru"
+       version="1.0.5"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="0.9.1"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
+        <description>Enables watching streams oniptv5.ts9.ru</description>
+        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <platform>all</platform>
+    </extension>
+</addon>
