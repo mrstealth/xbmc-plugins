@@ -5,7 +5,7 @@
 # -*- encoding: utf-8 -*-
 
 import os, sys
-import xbmcaddon, xbmcplugin
+import xbmcgui, xbmcaddon, xbmcplugin
 
 import HTMLParser
 import  CommonFunctions
@@ -27,12 +27,23 @@ def unescape(entity, encoding):
     elif encoding == 'cp1251':
         return HTMLParser.HTMLParser().unescape(entity).decode(encoding).encode('utf-8')
 
-def xbmcItem(mode, url, title, icon=False):
+def xbmcItem(mode, url, title, icon=False, category=False):
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
     if not icon: icon = addon_icon
+    if category: uri += '&category=' + category
+
     item = xbmcgui.ListItem(title, iconImage=icon, thumbnailImage=icon)
+    item.setProperty('IsPlayable', 'false')
     xbmcplugin.addDirectoryItem(handle, uri, item, True)
 
+def xbmcPlayableItem(mode, title, url):
+    uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
+
+    item = xbmcgui.ListItem(title, iconImage=addon_icon, thumbnailImage=addon_icon)
+    item.setInfo(type='Video', infoLabels = {'title': title})
+    item.setProperty('IsPlayable', 'true')
+
+    xbmcplugin.addDirectoryItem(handle, uri, item, False)
 
 def xbmcContextMenuItem(item, action, label, url, title):
     script = "special://home/addons/plugin.video.iptv5.ts9.ru/contextmenu.py"

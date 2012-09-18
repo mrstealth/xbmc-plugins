@@ -38,8 +38,8 @@ class Channel:
 
     def find_by_category_id(self, category_id):
         self._connect()
-        self.cur.execute("SELECT name, url, category_id FROM channels WHERE category_id=?", (category_id, ))
-        result = [{'name': x[0], 'url': x[1], 'category_id' : x[2]} for x in self.cur.fetchall()]
+        self.cur.execute("SELECT name, url FROM channels WHERE category_id=?", (category_id, ))
+        result = [{x[0] : x[1]} for x in self.cur.fetchall()]
         self._close()
         return result
 

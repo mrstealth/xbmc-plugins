@@ -27,9 +27,6 @@ from helpers import *
 from category import Category
 from channel import Channel
 
-print os.path.join(addon_path, 'resources', 'category.db')
-print os.path.join(addon_path, 'resources', 'channel.db')
-print "******************+"
 category_db = Category('category.db')
 channel_db = Channel('channel.db')
 
@@ -77,35 +74,37 @@ def categories(url):
 
   if categories:
     print "FOUND ENTRIES IN DB"
+    listCategories(url)
   else:
     print "EMPTY"
     getCategories(url)
 
 
 def listCategories(url):
-  print "*** list categories"
+    #xbmcItem('CHANNELS', url, title, icon=False):
+    categories = category_db.find_all()
 
+    for category in categories:
+      for name,category in category.items():
+        xbmcItem('CHANNELS', '', name, False, category)
 
+    xbmcplugin.endOfDirectory(handle, True)
 
-  categories = category_db.find_all()
+def listChannels(category):
+    print "*** list channels " + category
 
-  if categories:
-    print "FOUND ENTRIES IN DB"
-  else:
-    print "EMPTY"
-    getCategories(url)
+    channels = channel_db.find_by_category_id(category)
+    print channels
 
-  #if getCategories(url):
-  #  print "SUCCESS"
-  #else:
-  #  print "ERROR"
+    for channel in channels:
+      for title,url in channel.items():
+        xbmcPlayableItem('PLAY', title, url)
 
-def listChannels():
-  print "*** list channels"
+    xbmcplugin.endOfDirectory(handle, True)
 
 def play_fav(url):
     item = xbmcgui.ListItem(path = url)
-    xbmc.Player().play(url, item)
+    xbmc.Player().play(url)
 
 
 def play_url(url):
@@ -117,7 +116,7 @@ params = common.getParameters(sys.argv[2])
 
 url=None
 mode=None
-group=None
+category=None
 
 try:
     mode=params['mode']
@@ -126,7 +125,7 @@ try:
     url=urllib.unquote_plus(params['url'])
 except: pass
 try:
-    group=params['group']
+    category=params['category']
 except: pass
 
 
@@ -134,8 +133,8 @@ if mode == 'PLAY':
     play_url(url)
 elif mode == 'PLAY2':
     play_fav(url)
-elif mode == 'SHOW':
-    get_channels_from_db(group)
+elif mode == 'CHANNELS':
+    listChannels(category)
 elif mode == 'FAVORITES':
     listFavorites();
 elif mode == None:

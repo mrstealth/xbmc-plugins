@@ -40,7 +40,7 @@ class Category:
     def find_all(self):
         self._connect()
         self.cur.execute("SELECT name,optgroupid FROM categories ORDER BY name ASC")
-        result = [ {'name':x[0], 'index' : x[1]} for x in self.cur.fetchall()]
+        result = [ { x[0]: x[1] } for x in self.cur.fetchall()]
         self._close()
         return result
 
