@@ -1,4 +1,4 @@
 <settings>
     <setting id="parent_control" type="bool" label="Parent control" default="False" />
-    <setting id="check_interval" type="number" label="Check stream availability (hours)" default="24" />
+    <setting id="interval" type="number" label="Check stream availability (hours)" default="24" />
 </settings>

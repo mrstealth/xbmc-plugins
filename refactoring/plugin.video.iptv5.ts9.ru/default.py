@@ -15,12 +15,10 @@ common.plugin = "plugin.video.iptv5.ts9.ru"
 
 handle = int(sys.argv[1])
 
-Addon = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
-__settings__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
-__language__ = Addon.getLocalizedString
-
-addon_icon    = Addon.getAddonInfo('icon')
-addon_path    = Addon.getAddonInfo('path')
+__addon__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
+__language__ = __addon__.getLocalizedString
+addon_icon    = __addon__.getAddonInfo('icon')
+addon_path    = __addon__.getAddonInfo('path')
 
 BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 
@@ -45,7 +43,6 @@ def getCategories(url):
             option = options[optgroups.index(optgroup)]
             name = unescape(optgroup, 'cp1251')
 
-            #try:
             if category_db.exists(name) == 1:
                 print "### CATEGORY already in DB, skip save"
             else:
@@ -68,19 +65,6 @@ def getCategories(url):
         print page["status"]
         return False
 
-def categories(url):
-  print "*** list categories"
-
-  categories = category_db.find_all()
-
-  if categories:
-    print "FOUND ENTRIES IN DB"
-    listCategories(url)
-  else:
-    print "EMPTY"
-    getCategories(url)
-
-
 
 def listFavorites():
     label = __language__(1004)
@@ -91,16 +75,16 @@ def listFavorites():
 
     for channel in channels:
       for title,url in channel.items():
-        item = xbmcPlayableItem('PLAY', title, url)
+        item = xbmcPlayableItem('PLAY', title, url, 'remove')
 
     xbmcplugin.endOfDirectory(handle, True)
 
 
-def listCategories(url):
+def listCategories(url):    
+    xbmcItem('FAVORITES', '', "[COLOR FF00FFF0]" + __language__(1000) + "[/COLOR]")
 
-    fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
-    xbmcItem('FAVORITES', '', "[COLOR FF00FFF0][" + fav + "][/COLOR]")
-
+    interval = int(__addon__.getSetting('interval'))*60*60
+    
     categories = category_db.find_all()
 
     if not categories:
@@ -109,7 +93,11 @@ def listCategories(url):
 
     for category in categories:
         for name,category in category.items():
-          xbmcItem('CHANNELS', '', name, False, category)
+            if int(category) != 8:
+                xbmcItem('CHANNELS', '', name, False, category)
+            else:
+                if __addon__.getSetting('parent_control') == 'false':
+                    xbmcItem('CHANNELS', '', name, False, category)
 
     xbmcplugin.endOfDirectory(handle, True)
 
@@ -121,7 +109,7 @@ def listChannels(category):
 
     for channel in channels:
       for title,url in channel.items():
-        xbmcPlayableItem('PLAY', title, url)
+        xbmcPlayableItem('PLAY', title, url, 'add')
 
     xbmcplugin.endOfDirectory(handle, True)
 

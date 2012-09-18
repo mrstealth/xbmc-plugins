@@ -1,40 +1,41 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
 # -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 
 import xbmc,xbmcaddon
-import simplejson as json
 from channel import Channel
 
 __addon__    = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
-_addon_icon    =__addon__.getAddonInfo('icon')
+__language__ = __addon__.getLocalizedString
+addon_icon    =__addon__.getAddonInfo('icon')
 
-channel_db = Channel()
-
-def addFavorite(url, name):
-    channel = channel_db.addToFav(url)
-
-def removeFavorite(url, name):
-    channel = channel_db.removeFromFav(url)
-
-# ***** MAIN *****
 args = sys.argv[1].split("|")
 
+# TODO Replace by commonParse function
+def unescape(entity, encoding):
+    if encoding == 'utf-8':
+        return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
+    elif encoding == 'cp1251':
+        return HTMLParser.HTMLParser().unescape(entity).decode(encoding).encode('utf-8')
+        
 if(args[0] == "add"):
-    addFavorite(args[1], args[2])
+    channel = Channel().addToFav(args[1])
 
-    title = "[COLOR FF00FF00]" + "SUCCESS" + "[/COLOR]"
-    message = "Item successfully added to your favorites"
-    xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ _addon_icon +")")
+    title = __language__(1000).encode('utf-8')
+    message = __language__(1003).encode('utf-8')
+        
+    xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ addon_icon +")")
 
 elif(args[0] == "remove"):
-    removeFavorite(args[1], args[2])
+    channel = Channel().removeFromFav(args[1])
 
-    title = "[COLOR FF00FF00]" + "SUCCESS" + "[/COLOR]"
-    message = "Item successfully removed from your favorites"
+    title = __language__(1000).encode('utf-8')
+    message = __language__(1004).encode('utf-8')
 
-    xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ _addon_icon +")")
+    xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ addon_icon +")")
     xbmc.executebuiltin("Container.Refresh")
 
 else:
+    print sys.argv[0]
     print "INVALID ARG PASSED IN (sys.argv[1]=" + sys.argv[1]
