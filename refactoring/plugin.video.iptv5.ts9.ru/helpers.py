@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.6
 # -*- coding: utf-8 -*-
-# -*- encoding: utf-8 -*-
 
-import os, sys
+import os, sys, urllib2, socket
 import xbmcgui, xbmcaddon, xbmcplugin
 
 import HTMLParser
@@ -29,21 +28,21 @@ def unescape(entity, encoding):
 
 def check_url(url):
     if not url.find("rtsp") == -1: # skip rtsp check
-        print "*** Skip rtsp check for " + url
+        #print "*** Skip rtsp check for " + url
         return True
     try:
         response = urllib2.urlopen(url, None, 1)
     except urllib2.HTTPError, e:
-        print "***** Oops, HTTPError ", str(e.code)
+        #print "***** Oops, HTTPError ", str(e.code)
         return False
     except urllib2.URLError, e:
-        print "***** Oops, URLError", str(e.args)
+        #print "***** Oops, URLError", str(e.args)
         return False
     except socket.timeout, e:
-        print "***** Oops timed out! ", str(e.args)
+        #print "***** Oops timed out! ", str(e.args)
         return False
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        #print "Unexpected error:", sys.exc_info()[0]
         return False
     else:
         return True
@@ -51,6 +50,7 @@ def check_url(url):
 def xbmcItem(mode, url, title, icon=False, category=False):
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
     if not icon: icon = addon_icon
+    if title: uri += '&title=' + title
     if category: uri += '&category=' + category
 
     item = xbmcgui.ListItem(title, iconImage=icon, thumbnailImage=icon)
@@ -70,10 +70,9 @@ def xbmcPlayableItem(mode, title, url, action):
         label = __language__(1001)
     else:
         label = __language__(1002)
-        
+
     xbmcContextMenuItem(item, action, label, url, title)
     xbmcplugin.addDirectoryItem(handle, uri, item)
-
 
 def xbmcContextMenuItem(item, action, label, url, title):
     script = "special://home/addons/plugin.video.iptv5.ts9.ru/contextmenu.py"

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.6
 # -*- coding: utf-8 -*-
 
 
@@ -16,7 +16,7 @@ class Channel:
 
         self._connect()
         self.cur.execute('pragma auto_vacuum=1')
-        self.cur.execute("CREATE TABLE IF NOT EXISTS channels (name TEXT, url TEXT, category_id INTEGER, is_fav BOOLEAN DEFAULT '0' NOT NULL )")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS channels (name TEXT, url TEXT, category_id INTEGER, is_fav BOOLEAN DEFAULT '0' NOT NULL , is_broken BOOLEAN DEFAULT '0' NOT NULL )")
         self.db.commit()
         self._close()
 
@@ -37,15 +37,15 @@ class Channel:
 
     def find_by_category_id(self, category_id):
         self._connect()
-        self.cur.execute("SELECT name, url FROM channels WHERE category_id=? ORDER BY name ASC", (category_id, ))
+        self.cur.execute("SELECT name, url FROM channels WHERE category_id=? AND is_broken=? ORDER BY name ASC", (category_id, 0))
         result = [{x[0] : x[1]} for x in self.cur.fetchall()]
         self._close()
         return result
 
-    def save(self, name, url,category_id):
+    def save(self, name, url,category_id, is_broken):
         self.destroy(url)
         self._connect()
-        self.cur.execute('INSERT INTO channels(name,url,category_id) VALUES(?,?,?)', (name, url, category_id))
+        self.cur.execute('INSERT INTO channels(name,url,category_id, is_broken) VALUES(?,?,?,?)', (name, url, category_id,is_broken))
         self.db.commit()
         self._close()
 

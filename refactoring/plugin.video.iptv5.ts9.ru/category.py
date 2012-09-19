@@ -1,13 +1,24 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.6
 # -*- coding: utf-8 -*-
 
-import os, time, xbmcaddon
+import os, datetime, xbmcaddon
 import sqlite3 as sqlite
+from datetime import timedelta
 
 __addon__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
 addon_path = __addon__.getAddonInfo('path')
+
+now = datetime.datetime.today()
+if int(__addon__.getSetting('interval')) > 0:
+    past = now - datetime.timedelta(hours=int(__addon__.getSetting('interval')))
+else:
+    past = now - datetime.timedelta(seconds=10)
+
+print "Now " + str(now)
+print "Next " + str(past)
+
 
 class Category:
     def __init__(self):
@@ -15,8 +26,7 @@ class Category:
 
         self._connect()
         self.cur.execute('pragma auto_vacuum=1')
-        self.cur.execute("CREATE TABLE IF NOT EXISTS categories (created_at integer, name TEXT, optgroupid TEXT)")
-        self.cur.execute('CREATE INDEX IF NOT EXISTS time on categories(created_at desc)')
+        self.cur.execute("CREATE TABLE IF NOT EXISTS categories (created_at TIMESTAMP, name TEXT, optgroupid TEXT)")
         self.db.commit()
         self._close()
 
@@ -42,10 +52,13 @@ class Category:
         self._close()
         return result
 
-    def save(self, name, optgroupid):
+    # add timestamp and set it to last for initial scan
+    def save(self, name, optgroupid, init):
+        print "initial scan " + str(init)
+        timestamp = past if init else now
         self.destroy(name)
         self._connect()
-        self.cur.execute('INSERT INTO categories(created_at,name,optgroupid) VALUES(?,?,?)', (int(time.time()), name, optgroupid))
+        self.cur.execute('INSERT INTO categories(created_at,name,optgroupid) VALUES(?,?,?)', (timestamp, name, optgroupid))
         self.db.commit()
         self._close()
 
@@ -55,23 +68,13 @@ class Category:
         self.db.commit()
         self._close()
 
-    def checkNeeded(self, optgroupid):
+    def find_outdated(self):
         self._connect()
-        self.cur.execute("SELECT created_at FROM categories WHERE optgroupid=?", (optgroupid, ))
-        created_at = int(self.cur.fetchall()[0][0])
+        self.cur.execute("SELECT optgroupid FROM categories WHERE created_at <=?", (past, ))
+        result = [x[0] for x in self.cur.fetchall()]
         self._close()
-        
-        interval = int(__addon__.getSetting('interval'))*60*60
-        now = int(time.time())
-        created_at = created_at - interval
- 
-        if created_at+interval - now > 0:
-            print "*** Skip stream availability check"
-            return False
-        else:
-            print "*** Check stream availability"
-            return True
-            
+        return result
+
     def _connect(self):
         self.db = sqlite.connect(self.filename)
         self.db.text_factory = str
