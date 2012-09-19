@@ -40,7 +40,7 @@
 </addon>
 
 <addon id="plugin.video.go2load-reloaded.com"
-       name="[COLOR ff7CCD7C]Go2Load.com[/COLOR]"
+       name="Go2Load-reloaded.com"
        version="1.0.0"
        provider-name="Tolin">
   <requires>
