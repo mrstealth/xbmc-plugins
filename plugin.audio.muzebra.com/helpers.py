@@ -4,29 +4,15 @@
 # -*- coding: utf-8 -*-
 
 import urllib, urllib2, re, sys
-import HTMLParser
-import CommonFunctions
+import HTMLParser, CommonFunctions
+import xbmcaddon, xbmcgui, xbmcplugin
 import simplejson as json
 
+Addon = xbmcaddon.Addon(id='plugin.audio.muzebra.com')
+addon_icon  = Addon.getAddonInfo('icon')
+
+handle = int(sys.argv[1])
 common = CommonFunctions
-
-
-def get_params():
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-        params=sys.argv[2]
-        cleanedparams=params.replace('?','')
-        if (params[len(params)-1]=='/'):
-            params=params[0:len(params)-2]
-        pairsofparams=cleanedparams.split('&')
-        param={}
-        for i in range(len(pairsofparams)):
-            splitparams={}
-            splitparams=pairsofparams[i].split('=')
-            if (len(splitparams))==2:
-                param[splitparams[0]]=splitparams[1]
-    return param
 
 def construct_url(mode, url=False, title=False, artist=False, category=False):
     uri = sys.argv[0] + '?mode=' + mode
@@ -46,12 +32,34 @@ def construct_mp3_url(aid):
 
 def get_mp3_url(aid):
     page = common.fetchPage({"link":  construct_mp3_url(aid)})
-
     if page["status"] == 200:
         song = json.loads(page["content"])["response"][0]
         return song
     else:
         return False
+
+def xbmcItem(mode, url, title, icon=False, action=False):
+    uri = sys.argv[0] + '?mode='+ mode
+    uri += '&url=' + url
+    uri += '&title=' + title
+
+    if not icon: icon = addon_icon
+    item = xbmcgui.ListItem(title, iconImage=icon, thumbnailImage=icon)
+    item.setProperty('IsPlayable', 'false')
+
+    if not action:
+      xbmcplugin.addDirectoryItem(handle, uri, item, True)
+    else:
+      # FIXME: add label to params
+      label = "ContextMenuItem"
+      xbmcContextMenuItem(item, url, title, action, label)
+      xbmcplugin.addDirectoryItem(handle, uri, item)
+
+def xbmcContextMenuItem(item, url, title, action, label):
+    script = "special://home/addons/plugin.video.iptv5.ts9.ru/contextmenu.py"
+    params = action + "|%s"%url + "|%s"%title
+    runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
+    item.addContextMenuItems([(label, runner)])
 
 def check_url(url):
     if not url.find("rtsp") == -1: # skip rtsp check
@@ -113,13 +121,6 @@ def strip_html(text):
 	ret =  re.sub("(?s)<[^>]*>|&#?\w+;", fixup, text)
 	return re.sub("\n+", '\n' , ret)
 
-#
-# def remove(sub, s):  # replace first sub with empty string
-#     return s.replace(sub, "", 1)
-#
-# def remove_all(sub, s):  # replace all sub with empty string
-#     return s.replace(sub, "", -1)
-
 def remove_extra_spaces(data):  # Remove more than one consecutive white space
     p = re.compile(r'\s+')
     return p.sub(' ', data)
@@ -137,16 +138,3 @@ def uniq(alist):    # Fastest order preserving
 def duration_in_sec(duration):
   time = duration.split(':')
   return int(time[0]) * 60 + int(time[1])
-
-# def uniq(alist):    # Fastest without order preserving
-#     set = {}
-#     map(set.__setitem__, alist, [])
-#     return set.keys()
-
-
-# def uniq(input):
-#   output = []
-#   for x in input:
-#     if x not in output:
-#       output.append(x)
-#   return output

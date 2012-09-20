@@ -4,9 +4,11 @@
 # -*- coding: utf-8 -*-
 
 
-import urllib, urllib2, os, sys
+import urllib, urllib2, os, sys, socket
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import CommonFunctions
+
+from urllib2 import Request, urlopen, URLError, HTTPError
 from helpers import *
 
 common = CommonFunctions
@@ -23,6 +25,9 @@ addon_cache = xbmc.translatePath( Addon.getAddonInfo( "profile" ) )
 Language = Addon.getLocalizedString
 
 def main():
+    search = Language(5000)
+    xbmcItem('search', '', search, icon=False, action=False)
+
     radio = Language(1001)
     uri = construct_url('onlineradio', 'http://muzebra.com/radio/air/', False, False, radio)
 
@@ -66,6 +71,10 @@ def main():
     xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
 
     xbmcplugin.endOfDirectory(handle, True)
+
+def search():
+    query = common.getUserInput("Search for music", "")
+    listSongs(BASE_URL, artist=query.replace (" ", "+"), category='Search')
 
 
 def onlineradio(url, category):
@@ -146,81 +155,89 @@ def listArtists(url, artist):
 
 
 def listSongs(url, artist='Unknown', category='Unknown'):
-    print url
-    print artist
-    print category
-    if category == 'Artist':
+    if category == 'Artist' or category == 'Search':
+        url = BASE_URL + '/search/?q=' + artist
+
+    if category == 'Search':
+        values = {'_':'1348127480611', '_pjax':'true'}
+
+        try:
+            response = urlopen(Request(url, urllib.urlencode(values)))
+        except URLError, e:
+            if hasattr(e, 'reason'):
+                print 'We failed to reach a server' + ', reason: ', e.reason
+            elif hasattr(e, 'code'):
+                print 'The server couldn\'t fulfill the request,' + ' error code: ', e.code
+        else:
+            getListItems(response.read(), url, artist, category)
+    else:
+      page = common.fetchPage({"link": url})['content']
+      getListItems(page, url, artist, category)
+
+    xbmcplugin.endOfDirectory(handle, True)
+
+def getListItems(page, url, artist, category):
+    if category == 'Artist' or category == 'Search':
         css_class = "white playlist"
-        url = url + '/search/?q=' + artist
         category = artist.decode('utf-8')
     else:
         css_class = "playlist"
         category = category.decode('utf-8')
 
-    page = common.fetchPage({"link": url})
+    playlist = common.parseDOM(page, "ul", attrs = { "class": css_class })
+    identifiers = common.parseDOM(playlist, "a", attrs = { "class":"info" }, ret="data-aid")
 
-    if page["status"] == 200:
-        playlist = common.parseDOM(page["content"], "ul", attrs = { "class": css_class })
-        identifiers = common.parseDOM(playlist, "a", attrs = { "class":"info" }, ret="data-aid")
+    durations = common.parseDOM(playlist, "div", attrs = { "class":"time" })
+    info = common.parseDOM(playlist, "div", attrs = { "class":"title" })
+    songs = common.parseDOM(info, "span", attrs = { "class":"name" })
+    artists = common.parseDOM(info, "a")
 
-        durations = common.parseDOM(playlist, "div", attrs = { "class":"time" })
+    for i, identifier in enumerate(identifiers):
+        title = strip_html(songs[i].decode('utf-8'))
+        artist = strip_html(artists[i].decode('utf-8'))
+        song = artist + '-' + title
 
-        info = common.parseDOM(playlist, "div", attrs = { "class":"title" })
-        songs = common.parseDOM(info, "span", attrs = { "class":"name" })
-        artists = common.parseDOM(info, "a")
-
-        for i, identifier in enumerate(identifiers):
-            # TODO: replace by construect_url
-            uri = sys.argv[0] + '?mode=play_mp3'
-            uri += '&aid='  + identifier
-            uri += '&category=' + artists[i].decode('utf-8')
-
-            song = strip_html(songs[i].decode('utf-8'))
-            artist = strip_html(artists[i].decode('utf-8'))
-            title = artist + "-" + song
-
-            item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
-            item.setInfo(type='music', infoLabels = {
-                'title': title,
-                'album' : 'Unknown',
-                'genre': 'category',
-                'artist': artist,
-                'duration': duration_in_sec(durations[i])}
-            )
-            item.setProperty('IsPlayable', 'true')
-            xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
-
-    xbmcplugin.endOfDirectory(handle, True)
+        uri = sys.argv[0] + '?mode=play_mp3'
+        uri += '&aid=%s'%identifier
+        uri += '&title=%s'%title
+        uri += '&category=%s'%artists[i].decode('utf-8')
 
 
-def play_stream(url, title, category):
-    item = xbmcgui.ListItem(path = url)
-    item.setInfo('music', {'Title': title, 'Genre': category})
-    xbmcplugin.setResolvedUrl(handle, True, item)
+        uri = sys.argv[0] + '?mode=play_mp3'
+        uri += '&aid=%s'%identifier
+        uri += '&title=%s'%title
+        uri += '&artist=%s'%artist
 
-def play_mp3(aid, category):
-    song = get_mp3_url(aid)
-    url = song['url']
-    title = unescape(song['title'], 'utf-8')
-    artist = song['artist']
+        item = xbmcgui.ListItem(song, iconImage = addon_icon, thumbnailImage = addon_icon)
+        item.setInfo(type='music', infoLabels = {
+            'title': title,
+            'album' : 'Unknown',
+            'genre': 'category',
+            'artist': artist,
+            'duration': duration_in_sec(durations[i])}
+        )
+        item.setProperty('IsPlayable', 'true')
+        xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
 
-    item = xbmcgui.ListItem(path = url)
-    item.setInfo('music', {'Title': title, 'artist' : artist, 'Genre': category})
-    xbmcplugin.setResolvedUrl(handle, True, item)
+def play_mp3(aid, title, artist):
+    url = get_mp3_url(aid)['url']
+    title = title.decode('utf-8')
+    artist = artist.decode('utf-8')
 
-# xbmc.Player() loads faster the next item but can not play next song directly?
+    if url:
+      item = xbmcgui.ListItem(path = url)
+      item.setInfo('music', {'Title': title, 'artist':artist})
+      item.setProperty('mimetype', 'audio/mpeg')
+      xbmcplugin.setResolvedUrl(handle, True, item)
+    else:
+      xbmcplugin.endOfDirectory(handle, True)
+
 def play(url, title, category):
-    song = get_mp3_url(aid)
+    item = xbmcgui.ListItem(path = url)
+    item.setInfo('music', {'Title': title.decode('utf-8'), 'Artist': artist.decode('utf-8')})
+    xbmcplugin.setResolvedUrl(handle, True, item)
 
-    url = song['url']
-    title = unescape(song['title'], 'utf-8')
-    artist = song['artist']
-
-    item = xbmcgui.ListItem(title)
-    item.setInfo('music', {'Title': title, 'Artist': artist})
-    xbmc.Player( xbmc.PLAYER_CORE_MPLAYER ).play(url, item, True)
-
-params = get_params()
+params = common.getParameters(sys.argv[2])
 
 url  =  None
 mode =  None
@@ -259,16 +276,15 @@ try:
 except: pass
 
 
-
-if mode != None: print "*** MODE " + mode
 if mode == None:
     main()
 elif mode == 'play_stream':
-    play_stream(url, title, category)
+    #play_stream(url, title, category)
+    play(url, title, category)
 elif mode == 'play_mp3':
-    # Decide which to use play or play_mp3 ??
-    #play(aid, category)
-    play_mp3(aid, category)
+    play_mp3(aid, title, artist)
+elif mode == 'search':
+    search()
 elif mode == 'onlineradio':
     onlineradio(url, category)
 elif mode == 'show_alphabet':
@@ -276,5 +292,4 @@ elif mode == 'show_alphabet':
 elif mode == 'list_artists':
     listArtists(url, artist)
 elif mode == 'list_songs':
-    #getArtist(url, query)
     listSongs(url, artist, category)
