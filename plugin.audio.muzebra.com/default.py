@@ -232,7 +232,7 @@ def play_mp3(aid, title, artist):
     else:
       xbmcplugin.endOfDirectory(handle, True)
 
-def play(url, title, category):
+def play(url, title, artist):
     item = xbmcgui.ListItem(path = url)
     item.setInfo('music', {'Title': title.decode('utf-8'), 'Artist': artist.decode('utf-8')})
     xbmcplugin.setResolvedUrl(handle, True, item)
