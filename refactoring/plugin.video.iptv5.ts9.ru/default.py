@@ -56,9 +56,10 @@ def getCategories(url):
                 links = common.parseDOM(option, "option", ret="value")
 
                 for i, title in enumerate(titles):
-                    if links[i] != 'http://u.to/rJc0Ag':
+                    # skip authenticated channels
+                    if links[i] != 'http://u.to/rJc0Ag' or not links[i].find("inetcom") == -1:
                         print "save channel " + unescape(title, 'cp1251')
-                        channel_db.save(unescape(title, 'cp1251'), links[i], index, 0)
+                        channel_db.save(unescape(title, 'cp1251'), links[i], index, 0,False)
             return True
 
         except:
@@ -95,15 +96,16 @@ def getChannels(name, index):
                 for i, title in enumerate(titles):
                     if links[i] != 'http://u.to/rJc0Ag':
                         if __addon__.getSetting('availability_check') == 'true':
-                            if check_url(links[i]):
+                            stream = check_url(links[i])
+                            if stream:
                                 print "*** save channel: " + unescape(title, 'cp1251')
-                                channel_db.save(unescape(title, 'cp1251'), links[i], index, 0)
+                                channel_db.save(unescape(title, 'cp1251'), stream['url'], index, 0, stream['mimetype'])
                             else:
-                                print "*** mark as unavailable: " + unescape(title, 'cp1251')
-                                channel_db.save(unescape(title, 'cp1251'), links[i], index, 1)
+                                print "*** mark as unavailable: " + links[i]
+                                channel_db.save(unescape(title, 'cp1251'), links[i], index, 1,False)
                         else:
-                            print "*** save channel without availability check: " + unescape(title, 'cp1251')
-                            channel_db.save(unescape(title, 'cp1251'), links[i], index, 0)
+                            print "*** save channel without availability check: " + links[i]
+                            channel_db.save(unescape(title, 'cp1251'), links[i], index, 0,False)
         return True
     else:
         return False
@@ -115,15 +117,13 @@ def listFavorites():
     print channels
 
     for channel in channels:
-      for title,url in channel.items():
-        item = xbmcPlayableItem('PLAY', title, url, 'remove')
+        xbmcPlayableItem('PLAY', channel[0], channel[1], 'add', channel[2])
 
     xbmcplugin.endOfDirectory(handle, True)
 
 
 def listCategories(url):
     xbmcItem('FAVORITES', '', "[COLOR FF00FFF0]" + __language__(1000).encode('utf-8') + "[/COLOR]")
-    xbmcItem('ADDCHANNEL', '', "[COLOR FF00FF00]" + __language__(2000).encode('utf-8') + "[/COLOR]")
 
     categories = category_db.find_all()
     if not categories:
@@ -149,7 +149,6 @@ def listChannels(name, optgroupid):
     outdated = category_db.find_outdated()
     print "*** detect outdated categories "
     print outdated
-    #outdated = [1,2]
 
     if optgroupid in outdated:
         print "*** check " + name
@@ -158,61 +157,14 @@ def listChannels(name, optgroupid):
     channels = channel_db.find_by_category_id(optgroupid)
 
     for channel in channels:
-      for title,url in channel.items():
-        xbmcPlayableItem('PLAY', title, url, 'add')
+      xbmcPlayableItem('PLAY', channel[0], channel[1], 'add', channel[2])
 
     xbmcplugin.endOfDirectory(handle, True)
 
-
-def addChannel():
-    channel = common.getUserInput("Name", "")
-    xbmcplugin.endOfDirectory(handle, True)
-
-
-######################################
-#import xbmc, xbmcgui
-
-##get actioncodes from keymap.xml
-#ACTION_PREVIOUS_MENU = 10
-#ACTION_SELECT_ITEM = 7
-
-#class MainClass(xbmcgui.Window):
-#  def __init__(self):
-#    self.strActionInfo = xbmcgui.ControlLabel(180, 60, 200, 200, '', 'font14', '0xFFBBBBFF')
-#    self.addControl(self.strActionInfo)
-#    self.strActionInfo.setLabel('Push BACK to quit - A to open another window')
-#    self.strActionInfo = xbmcgui.ControlLabel(240, 250, 200, 200, '', 'font13', '0xFFFFFFFF')
-#    self.addControl(self.strActionInfo)
-#    self.strActionInfo.setLabel('This is the first window')
-
-#  def onAction(self, action):
-#    if action == ACTION_PREVIOUS_MENU:
-#      self.close()
-#    if action == ACTION_SELECT_ITEM:
-#      popup = ChildClass()
-#      popup .doModal()
-#      del popup
-
-#class ChildClass(xbmcgui.Window):
-#  def __init__(self):
-#    self.addControl(xbmcgui.ControlImage(0,0,800,600, 'background.png'))
-#    self.strActionInfo = xbmcgui.ControlLabel(200, 60, 200, 200, '', 'font14', '0xFFBBFFBB')
-#    self.addControl(self.strActionInfo)
-#    self.strActionInfo.setLabel('Push BACK to return to the first window')
-#    self.strActionInfo = xbmcgui.ControlLabel(240, 200, 200, 200, '', 'font13', '0xFFFFFF99')
-#    self.addControl(self.strActionInfo)
-#    self.strActionInfo.setLabel('This is the child window')
-
-#  def onAction(self, action):
-#    if action == ACTION_PREVIOUS_MENU:
-#      self.close()
-
-#######################################
 
 def play_url(url):
     item = xbmcgui.ListItem(path = url)
     xbmcplugin.setResolvedUrl(handle, True, item)
-
 
 params = common.getParameters(sys.argv[2])
 
@@ -240,10 +192,5 @@ elif mode == 'CHANNELS':
     listChannels(title, category)
 elif mode == 'FAVORITES':
     listFavorites();
-elif mode == 'ADDCHANNEL':
-    addChannel()
 elif mode == None:
     listCategories(BASE_URL)
-    #mydisplay = MainClass()
-    #mydisplay.doModal()
-    #del mydisplay

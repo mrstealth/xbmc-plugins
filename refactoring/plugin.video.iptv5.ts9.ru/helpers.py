@@ -27,25 +27,21 @@ def unescape(entity, encoding):
         return HTMLParser.HTMLParser().unescape(entity).decode(encoding).encode('utf-8')
 
 def check_url(url):
-    if not url.find("rtsp") == -1: # skip rtsp check
-        #print "*** Skip rtsp check for " + url
-        return True
+    if not url.find("rtsp") == -1 or not url.find("inetcom") == -1: # skip rtsp and authenticated
+        return []
     try:
-        response = urllib2.urlopen(url, None, 1)
+        response = urllib2.urlopen(url, None, 2)
+        return {'url':response.geturl(), 'mimetype':response.info()['Content-type']}
     except urllib2.HTTPError, e:
-        #print "***** Oops, HTTPError ", str(e.code)
-        return False
+        return []
     except urllib2.URLError, e:
-        #print "***** Oops, URLError", str(e.args)
-        return False
+        return []
     except socket.timeout, e:
-        #print "***** Oops timed out! ", str(e.args)
-        return False
+        return []
     except:
-        #print "Unexpected error:", sys.exc_info()[0]
-        return False
+        return []
     else:
-        return True
+        return url
 
 def xbmcItem(mode, url, title, icon=False, category=False):
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
@@ -58,7 +54,7 @@ def xbmcItem(mode, url, title, icon=False, category=False):
     xbmcplugin.addDirectoryItem(handle, uri, item, True)
 
 
-def xbmcPlayableItem(mode, title, url, action):
+def xbmcPlayableItem(mode, title, url, action, mimetype=False):
     print action
     uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
 

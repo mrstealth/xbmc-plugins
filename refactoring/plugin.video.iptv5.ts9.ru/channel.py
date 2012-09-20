@@ -16,13 +16,13 @@ class Channel:
 
         self._connect()
         self.cur.execute('pragma auto_vacuum=1')
-        self.cur.execute("CREATE TABLE IF NOT EXISTS channels (name TEXT, url TEXT, category_id INTEGER, is_fav BOOLEAN DEFAULT '0' NOT NULL , is_broken BOOLEAN DEFAULT '0' NOT NULL )")
+        self.cur.execute("CREATE TABLE IF NOT EXISTS channels (name TEXT, url TEXT, mimetype TEXT, category_id INTEGER, is_fav BOOLEAN DEFAULT '0' NOT NULL , is_broken BOOLEAN DEFAULT '0' NOT NULL )")
         self.db.commit()
         self._close()
 
     def find(self, url):
         self._connect()
-        self.cur.execute("SELECT name, url, category_id, is_fav FROM channels WHERE url=?", (url, ))
+        self.cur.execute("SELECT name,url,mimetype,category_id,is_fav FROM channels WHERE url=?", (url, ))
         result = [{'name': x[0], 'url': x[1], 'category_id' : x[2], 'is_fav' : x[3]} for x in self.cur.fetchall()][0]
         self._close()
 
@@ -37,15 +37,15 @@ class Channel:
 
     def find_by_category_id(self, category_id):
         self._connect()
-        self.cur.execute("SELECT name, url FROM channels WHERE category_id=? AND is_broken=? ORDER BY name ASC", (category_id, 0))
-        result = [{x[0] : x[1]} for x in self.cur.fetchall()]
+        self.cur.execute("SELECT name,url,mimetype FROM channels WHERE category_id=? AND is_broken=? ORDER BY name ASC", (category_id, 0))
+        result = [[x[0],x[1],x[2]] for x in self.cur.fetchall()]
         self._close()
         return result
 
-    def save(self, name, url,category_id, is_broken):
+    def save(self, name, url,category_id, is_broken,mimetype):
         self.destroy(url)
         self._connect()
-        self.cur.execute('INSERT INTO channels(name,url,category_id, is_broken) VALUES(?,?,?,?)', (name, url, category_id,is_broken))
+        self.cur.execute('INSERT INTO channels(name,url,mimetype,category_id, is_broken) VALUES(?,?,?,?,?)', (name, url,mimetype, category_id,is_broken))
         self.db.commit()
         self._close()
 
@@ -57,8 +57,8 @@ class Channel:
 
     def favorites(self):
         self._connect()
-        self.cur.execute("SELECT name, url FROM channels WHERE is_fav=1 ORDER BY name ASC")
-        result = [{x[0] : x[1]} for x in self.cur.fetchall()]
+        self.cur.execute("SELECT name,url,mimetype FROM channels WHERE is_fav=1 ORDER BY name ASC")
+        result = [[x[0],x[1],x[2]] for x in self.cur.fetchall()]
         self._close()
         return result
 
