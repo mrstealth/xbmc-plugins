@@ -1,3 +1,5 @@
+[B]Version 1.0.5[/B]
+- add search
 [B]Version 1.0.4[/B]
 - add artists(ru, en)
 [B]Version 1.0.3[/B]

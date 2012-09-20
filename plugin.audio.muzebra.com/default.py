@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.5
 # -*- coding: utf-8 -*-
 
 
