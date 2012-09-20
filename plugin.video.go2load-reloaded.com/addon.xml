@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.go2load-reloaded.com"
-       name="[COLOR ff7CCD7C]Go2Load.com[/COLOR]"
-       version="0.0.2"
+       name="Go2Load-reloaded.com"
+       version="1.0.0"
        provider-name="Tolin">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="0.9.1"/>
+    <import addon="script.module.parsedom" version="1.2.1"/>
   </requires>
   <extension point="xbmc.python.pluginsource"
              provides="video"
