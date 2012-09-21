@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="1000">[Фавориты]</string>
+    <string id="1001">Добавить в [фавориты]</string>
+    <string id="1002">Удалить из [фавориты]</string>
+    <string id="1003">Успешно добавлен в список фаворитов</string>
+    <string id="1004">Успешно удалён из списка фаворитов</string>
+
+
+    <string id="2000">Главная</string>
+    <string id="2001">Видео</string>
+    <string id="2002">Видеоклипы</string>
+    <string id="2003">Аудио</string>
+
+
+    <string id="3000">Мультфильмы</string>
+    <string id="3001">Мультсериалы</string>
+    <string id="3002">Советские мультфильмы</string>
+    <string id="3003">Наши мультфильмы</string>
+    <string id="3004">Зарубежные мультфильмы</string>
+    <string id="3005">Мультфильмы на языке оригинала</string>
+
+
+</strings>

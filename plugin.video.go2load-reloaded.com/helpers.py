@@ -6,24 +6,6 @@
 import urllib, sys
 import HTMLParser
 
-def get_params():
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-        params=sys.argv[2]
-        cleanedparams=params.replace('?','')
-        if (params[len(params)-1]=='/'):
-            params=params[0:len(params)-2]
-        pairsofparams=cleanedparams.split('&')
-        param={}
-        for i in range(len(pairsofparams)):
-            splitparams={}
-            splitparams=pairsofparams[i].split('=')
-            if (len(splitparams))==2:
-                param[splitparams[0]]=splitparams[1]
-    return param
-    
-    
 # *** Python helpers ***
 def strip_html(text):
 	def fixup(m):
@@ -62,37 +44,3 @@ def strip_html(text):
 		return text
 	ret =  re.sub("(?s)<[^>]*>|&#?\w+;", fixup, text)
 	return re.sub("\n+", '\n' , ret)
-	
-#     
-# def remove(sub, s):  # replace first sub with empty string
-#     return s.replace(sub, "", 1)
-# 
-# def remove_all(sub, s):  # replace all sub with empty string
-#     return s.replace(sub, "", -1)
-
-def remove_extra_spaces(data):  # Remove more than one consecutive white space
-    p = re.compile(r'\s+')
-    return p.sub(' ', data)
-
-def unescape(entity, encoding):
-  if encoding == 'utf-8':
-    return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
-  elif encoding == 'cp1251':
-    return entity.decode(encoding).encode('utf-8')
-    
-def uniq(alist):    # Fastest order preserving
-    set = {}
-    return [set.setdefault(e,e) for e in alist if e not in set]
-    
-# def uniq(alist):    # Fastest without order preserving
-#     set = {}
-#     map(set.__setitem__, alist, [])
-#     return set.keys()
-
-
-# def uniq(input):
-#   output = []
-#   for x in input:
-#     if x not in output:
-#       output.append(x)
-#   return output
