@@ -40,8 +40,8 @@
 </addon>
 
 <addon id="plugin.video.go2load-reloaded.com"
-       name="Go2Load-reloaded.com"
-       version="1.0.0"
+       name="Go2Load.com (reloaded)"
+       version="1.0.1"
        provider-name="Tolin">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -57,6 +57,25 @@
     <description>Фильмы онлайн</description>
     <platform>all</platform>
   </extension>
+</addon>
+
+<addon id="plugin.video.iptv.root-host.pro"
+       name="Iptv.root-host.pro"
+       version="1.0.0"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="1.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Stream live IPTV from iptv.root-host.pro</summary>
+        <description>Enables watching streams on iptv.root-host.pro</description>
+        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <platform>all</platform>
+    </extension>
 </addon>
 
 <addon id="plugin.video.iptv5.ts9.ru"
@@ -76,6 +95,26 @@
         <disclaimer>This is an unofficial XBMC add-on</disclaimer>
         <platform>all</platform>
     </extension>
+</addon>
+
+<addon id="plugin.video.uakino-reloaded.net"
+       name="Uakino.net (reloaded)"
+       version="1.0.0"
+       provider-name="Tolin">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="1.2.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary></summary>
+    <description>All rights reserved</description>
+    <platform>all</platform>
+  </extension>
 </addon>
 
 <addon id="plugin.video.youfreetv.net"
