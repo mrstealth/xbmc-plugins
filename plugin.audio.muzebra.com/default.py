@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.5
+# Rev. 1.0.6
 # -*- coding: utf-8 -*-
 
 
@@ -9,9 +9,11 @@ import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import CommonFunctions
 
 from urllib2 import Request, urlopen, URLError, HTTPError
+from station import Station
 from helpers import *
 
 common = CommonFunctions
+stationDB = Station()
 
 BASE_URL = 'http://muzebra.com'
 handle = int(sys.argv[1])
@@ -74,27 +76,69 @@ def main():
 
 def search():
     query = common.getUserInput("Search for music", "")
-    listSongs(BASE_URL, artist=query.replace (" ", "+"), category='Search')
+    if query != None:
+      listSongs(BASE_URL, artist=query.replace (" ", "+"), category='Search')
+    else:
+      main()
 
+def listFavorites():
+    label = __language__(1004)
+
+    radios = stationDB.favorites()
+
+    for radio in radios:
+        xbmcPlayableItem('PLAY', radio[0], radio[1], 'remove', radio[2])
+
+    xbmcplugin.endOfDirectory(handle, True)
 
 def onlineradio(url, category):
-    page = common.fetchPage({"link": url})
+    stations = stationDB.find_all()
+    check_enabled = True if Addon.getSetting('availability_check') == 'true' else False
 
-    if page["status"] == 200:
-        playlist = common.parseDOM(page["content"], "ul", attrs = { "class":"playlist" })
-        links = common.parseDOM(playlist, "a", attrs = { "class":"info" }, ret="data-url")
-        titles = common.parseDOM(playlist, "a", attrs = { "class":"info" })
+    print "Online radio"
+    print  check_enabled
 
-        for i, title in enumerate(titles):
+    if not stationDB.recheck() and stations and check_enabled:
+      for station in stations:
+        for name,url in station.items():
             uri = sys.argv[0] + '?mode=play_stream'
-            uri += '&url='  + urllib.quote_plus(links[i])
-            uri += '&title='  + title.decode('utf-8')
+            uri += '&url='  + urllib.quote_plus(url)
+            uri += '&title='  + name.decode('utf-8')
             uri += '&category='  + category.decode('utf-8')
 
-            item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
-            item.setInfo(type='music', infoLabels = {'title': title, 'genre': category })
+            item = xbmcgui.ListItem(name, iconImage = addon_icon, thumbnailImage = addon_icon)
+            item.setInfo(type='music', infoLabels = {'title': name, 'genre': category })
             item.setProperty('IsPlayable', 'true')
             xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
+    else:
+      page = common.fetchPage({"link": url})
+
+      if page["status"] == 200:
+          playlist = common.parseDOM(page["content"], "ul", attrs = { "class":"playlist" })
+          links = common.parseDOM(playlist, "a", attrs = { "class":"info" }, ret="data-url")
+          titles = common.parseDOM(playlist, "a", attrs = { "class":"info" })
+
+          for i, title in enumerate(titles):
+              uri = sys.argv[0] + '?mode=play_stream'
+              uri += '&url='  + urllib.quote_plus(links[i])
+              uri += '&title='  + titles[i].decode('utf-8')
+              uri += '&category='  + category.decode('utf-8')
+
+              if check_enabled:
+                if check_url(links[i]):
+                    stationDB.save(titles[i], links[i])
+                    item = xbmcgui.ListItem(titles[i], iconImage = addon_icon, thumbnailImage = addon_icon)
+                    item.setInfo(type='music', infoLabels = {'title': titles[i], 'genre': category })
+                    item.setProperty('IsPlayable', 'true')
+                    xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
+                else:
+                    print "*** skip broken urls"
+              else:
+                  item = xbmcgui.ListItem(titles[i], iconImage = addon_icon, thumbnailImage = addon_icon)
+                  item.setInfo(type='music', infoLabels = {'title': titles[i], 'genre': category })
+                  item.setProperty('IsPlayable', 'true')
+                  xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
+
 
     xbmcplugin.endOfDirectory(handle, True)
 
@@ -116,7 +160,6 @@ def showAlphabet(url, category):
             titles.insert(1, '\xd0\xb0')
 
         for i, link in enumerate(links):
-            # TODO: REFACTORING
             uri = sys.argv[0] + '?mode=list_artists'
             uri += '&url='  + BASE_URL
             uri += '&letter=' + links[i]
@@ -132,7 +175,7 @@ def showAlphabet(url, category):
 def listArtists(url, artist):
     url = url + artist
     page = common.fetchPage({"link": url})
-#
+
     if page["status"] == 200:
         artists = common.parseDOM(page["content"], "ul", attrs = { "class":"artists span6" })
         links = common.parseDOM(artists, "a", attrs = { "class":"hash" }, ret="href")
@@ -199,43 +242,34 @@ def getListItems(page, url, artist, category):
 
         uri = sys.argv[0] + '?mode=play_mp3'
         uri += '&aid=%s'%identifier
-        uri += '&title=%s'%title
-        uri += '&category=%s'%artists[i].decode('utf-8')
-
-
-        uri = sys.argv[0] + '?mode=play_mp3'
-        uri += '&aid=%s'%identifier
-        uri += '&title=%s'%title
-        uri += '&artist=%s'%artist
 
         item = xbmcgui.ListItem(song, iconImage = addon_icon, thumbnailImage = addon_icon)
         item.setInfo(type='music', infoLabels = {
             'title': title,
-            'album' : 'Unknown',
-            'genre': 'category',
+            'album' : category,
+            'genre': category,
             'artist': artist,
             'duration': duration_in_sec(durations[i])}
         )
         item.setProperty('IsPlayable', 'true')
         xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=False)
 
-def play_mp3(aid, title, artist):
+def play_mp3(aid):
     url = get_mp3_url(aid)['url']
-    title = title.decode('utf-8')
-    artist = artist.decode('utf-8')
 
     if url:
       item = xbmcgui.ListItem(path = url)
-      item.setInfo('music', {'Title': title, 'artist':artist})
       item.setProperty('mimetype', 'audio/mpeg')
       xbmcplugin.setResolvedUrl(handle, True, item)
     else:
       xbmcplugin.endOfDirectory(handle, True)
 
-def play(url, title, artist):
+def play(url, title, category):
     item = xbmcgui.ListItem(path = url)
-    item.setInfo('music', {'Title': title.decode('utf-8'), 'Artist': artist.decode('utf-8')})
+    #item.setInfo(type='music', infoLabels = {'title': title, 'artist': title})
+    #item.setProperty('mimetype', 'audio/mpeg')
     xbmcplugin.setResolvedUrl(handle, True, item)
+
 
 params = common.getParameters(sys.argv[2])
 
@@ -282,7 +316,7 @@ elif mode == 'play_stream':
     #play_stream(url, title, category)
     play(url, title, category)
 elif mode == 'play_mp3':
-    play_mp3(aid, title, artist)
+    play_mp3(aid)
 elif mode == 'search':
     search()
 elif mode == 'onlineradio':

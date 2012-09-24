@@ -56,28 +56,29 @@ def xbmcItem(mode, url, title, icon=False, action=False):
       xbmcplugin.addDirectoryItem(handle, uri, item)
 
 def xbmcContextMenuItem(item, url, title, action, label):
-    script = "special://home/addons/plugin.video.iptv5.ts9.ru/contextmenu.py"
+    script = "special://home/addons/plugin.audio.muzebra.com/contextmenu.py"
     params = action + "|%s"%url + "|%s"%title
     runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
     item.addContextMenuItems([(label, runner)])
 
 def check_url(url):
-    if not url.find("rtsp") == -1: # skip rtsp check
-        print "*** Skip rtsp check for " + url
-        return True
     try:
         response = urllib2.urlopen(url, None, 1)
+        #print "\n*** Info for: " + url
+        #print response.geturl()
+        #print response.info()
+
     except urllib2.HTTPError, e:
-        print "***** Oops, HTTPError ", str(e.code)
+        #print "***** Oops, HTTPError ", str(e.code)
         return False
     except urllib2.URLError, e:
-        print "***** Oops, URLError", str(e.args)
+        #print "***** Oops, URLError", str(e.args)
         return False
     except socket.timeout, e:
-        print "***** Oops timed out! ", str(e.args)
+        #print "***** Oops timed out! ", str(e.args)
         return False
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        #print "Unexpected error:", sys.exc_info()[0]
         return False
     else:
         return True
