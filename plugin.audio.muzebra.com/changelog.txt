@@ -1,5 +1,6 @@
 [B]Version 1.0.6[/B]
-- check online stations stream availability and store in DB
+- add radio station charts
+- check online station streams (enable/disable through add-on settings)
 [B]Version 1.0.5[/B]
 - add search
 [B]Version 1.0.4[/B]
