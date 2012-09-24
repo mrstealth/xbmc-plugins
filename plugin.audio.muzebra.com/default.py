@@ -199,9 +199,11 @@ def showAlphabet(url, category):
 
 
 def listStations(url, category):
+    print "*** listStations " + url
     page = common.fetchPage({"link": url})
 
     if page["status"] == 200:
+        print page
         stations = common.parseDOM(page["content"], "ul", attrs = { "class":"stations" })
         thumb_div = common.parseDOM(stations, "div", attrs = { "class":"thumb" })
         thumbs = common.parseDOM(thumb_div, "img", ret="src")
@@ -209,7 +211,7 @@ def listStations(url, category):
         name_div = common.parseDOM(stations, "div", attrs = { "class":"name" })
         links = common.parseDOM(name_div, "a", attrs = { "class":"hash" }, ret="href")
         titles = common.parseDOM(name_div, "a")
-
+        
         for i, title in enumerate(titles):
             uri = sys.argv[0] + '?mode=list_songs'
             uri += '&url='  + urllib.quote_plus(BASE_URL+links[i])
@@ -217,9 +219,8 @@ def listStations(url, category):
             uri += '&category='  + category.decode('utf-8')
 
             thumb = BASE_URL+thumbs[i]
-            print thumb
 
-            item = xbmcgui.ListItem(titles[i], iconImage = thumb)
+            item = xbmcgui.ListItem(titles[i], thumbnailImage = thumb)
             item.setInfo(type='music', infoLabels = {'title': titles[i], 'genre': category })
             xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
 
@@ -291,7 +292,7 @@ def getListItems(page, url, artist, category):
 
     for i, identifier in enumerate(identifiers):
         title = strip_html(songs[i].decode('utf-8'))
-        artist = strip_html(artists[i].decode('utf-8'))
+        artist = strip_html(artists[i]).decode('utf-8')
         song = artist + '-' + title
 
         uri = sys.argv[0] + '?mode=play_mp3'
@@ -300,8 +301,6 @@ def getListItems(page, url, artist, category):
         item = xbmcgui.ListItem(song, iconImage = addon_icon, thumbnailImage = addon_icon)
         item.setInfo(type='music', infoLabels = {
             'title': title,
-            'album' : category,
-            'genre': category,
             'artist': artist,
             'duration': duration_in_sec(durations[i])}
         )
