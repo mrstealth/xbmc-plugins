@@ -40,6 +40,31 @@ def main():
         'genre': radio,
         'artist': 'muzebra.com'
     })
+
+    xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
+
+    moskov = Language(1002)
+    uri = construct_url('list_stations', 'http://muzebra.com/radio/msk/', False, False, moskov)
+
+    item = xbmcgui.ListItem(moskov, iconImage = addon_icon, thumbnailImage = addon_icon)
+    item.setInfo(type='music', infoLabels = {
+        'title': moskov,
+        'album': BASE_URL,
+        'genre': moskov,
+        'artist': 'muzebra.com'
+    })
+    xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
+
+    piter = Language(1003)
+    uri = construct_url('list_stations', 'http://muzebra.com/radio/spb/', False, False, piter)
+
+    item = xbmcgui.ListItem(piter, iconImage = addon_icon, thumbnailImage = addon_icon)
+    item.setInfo(type='music', infoLabels = {
+        'title': piter,
+        'album': BASE_URL,
+        'genre': piter,
+        'artist': 'muzebra.com'
+    })
     xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
 
     ru_charts = Language(2001)
@@ -83,11 +108,10 @@ def search():
 
 def listFavorites():
     label = __language__(1004)
+    stations = stationDB.favorites()
 
-    radios = stationDB.favorites()
-
-    for radio in radios:
-        xbmcPlayableItem('PLAY', radio[0], radio[1], 'remove', radio[2])
+    for station in stations:
+        xbmcPlayableItem('PLAY', station[0], station[1], 'remove', station[2])
 
     xbmcplugin.endOfDirectory(handle, True)
 
@@ -101,6 +125,7 @@ def onlineradio(url, category):
     if not stationDB.recheck() and stations and check_enabled:
       for station in stations:
         for name,url in station.items():
+            print name
             uri = sys.argv[0] + '?mode=play_stream'
             uri += '&url='  + urllib.quote_plus(url)
             uri += '&title='  + name.decode('utf-8')
@@ -171,6 +196,35 @@ def showAlphabet(url, category):
             xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
 
     xbmcplugin.endOfDirectory(handle, True)
+
+
+def listStations(url, category):
+    page = common.fetchPage({"link": url})
+
+    if page["status"] == 200:
+        stations = common.parseDOM(page["content"], "ul", attrs = { "class":"stations" })
+        thumb_div = common.parseDOM(stations, "div", attrs = { "class":"thumb" })
+        thumbs = common.parseDOM(thumb_div, "img", ret="src")
+
+        name_div = common.parseDOM(stations, "div", attrs = { "class":"name" })
+        links = common.parseDOM(name_div, "a", attrs = { "class":"hash" }, ret="href")
+        titles = common.parseDOM(name_div, "a")
+
+        for i, title in enumerate(titles):
+            uri = sys.argv[0] + '?mode=list_songs'
+            uri += '&url='  + urllib.quote_plus(BASE_URL+links[i])
+            uri += '&title='  + titles[i].decode('utf-8')
+            uri += '&category='  + category.decode('utf-8')
+
+            thumb = BASE_URL+thumbs[i]
+            print thumb
+
+            item = xbmcgui.ListItem(titles[i], iconImage = thumb)
+            item.setInfo(type='music', infoLabels = {'title': titles[i], 'genre': category })
+            xbmcplugin.addDirectoryItem(handle, uri, item, isFolder=True)
+
+    xbmcplugin.endOfDirectory(handle, True)
+
 
 def listArtists(url, artist):
     url = url + artist
@@ -321,6 +375,8 @@ elif mode == 'search':
     search()
 elif mode == 'onlineradio':
     onlineradio(url, category)
+elif mode == 'list_stations':
+    listStations(url, category)
 elif mode == 'show_alphabet':
     showAlphabet(url, category)
 elif mode == 'list_artists':

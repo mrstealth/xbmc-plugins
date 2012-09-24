@@ -36,9 +36,10 @@ class Station:
 
     def find_all(self):
         self._connect()
-        self.cur.execute("SELECT name,url FROM stations ORDER BY name ASC")
+        self.cur.execute("SELECT name,url FROM stations ORDER BY name")
         result = [{x[0]:x[1]} for x in self.cur.fetchall()]
         self._close()
+        print result
         return result
 
     def save(self,name,url):
@@ -64,9 +65,10 @@ class Station:
 
     def favorites(self):
         self._connect()
-        self.cur.execute("SELECT name,url FROM stations WHERE fav=1 ORDER BY name ASC")
+        self.cur.execute("SELECT name,url FROM stations WHERE fav=1 ORDER BY name")
         result = [[x[0],x[1]] for x in self.cur.fetchall()]
         self._close()
+        print result
         return result
 
     def addToFav(self, url):
