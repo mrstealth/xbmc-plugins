@@ -1,3 +1,5 @@
+[B]Version 1.0.6[/B]
+- Minor stability improvements
 [B]Version 1.0.5[/B]
 - Fix script error
 [B]Version 1.0.4[/B]

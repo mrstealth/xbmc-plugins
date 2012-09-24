@@ -18,16 +18,6 @@ Addon = xbmcaddon.Addon(id='plugin.video.go2load-reloaded.com')
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
 
-# <li class="alt"><a href="/filmy/" style="font-size: 12px; padding-left: 10px;">FILMS</a></li>
-# <li><a href="/video/mult/" style="font-size: 12px; padding-left: 10px;">MULTFILMS</a></li>
-# <li class="alt"><a href="/documentary/" style="font-size: 12px; padding-left: 10px;">Documentary</a></li>
-# <li class="alt"><a href="/filmy/cccp/" style="font-size: 12px; padding-left: 10px;">SSSR</a></li>
-# <li><a href="/filmy/comedy_club_ukraine/">Comedy Club Ukraine</a></li>
-# <li class="alt"><a href="/529-.html">Nasha Russia</a></li>
-# <li><a href="/flash/flash_video/">Flash video</a></li>
-# <li class="alt"><a href="/filmy/actors/">Actors</a></li>
-# <li class="alt"><a href="/clips/">Clips</a></li>
-
 
 def getCategories(url):
     item = xbmcgui.ListItem('Films')
@@ -70,7 +60,8 @@ def getCategoryItems(url):
                 thumbnail = thumbnails[i] if thumbnails[i].split(':')[0] == 'http' else BASE_URL + thumbnails[i]
             except IndexError:
                 title = 'Empty'
-                thumbnail = ''
+                thumbnail = addon_icon
+                pass
             else:        
                 item = xbmcgui.ListItem(title, thumbnailImage=thumbnail)
                 uri = sys.argv[0] + '?mode=GETITEMS' + '&url=' + links[i]
@@ -78,18 +69,15 @@ def getCategoryItems(url):
             
             
         
-        if len(uniq(links)) == 25:
-            print url[-1]
-            print url[:-1]
     
             
-            next = url[:-1] + str(int(url[-1])+1)
+        next = url[:-1] + str(int(url[-1])+1)
             
-            print next
+        print "*** Next page is " + next
             
-            item = xbmcgui.ListItem('next page >>')
-            uri = sys.argv[0] + '?mode=NEXTPAGE' + '&url=' + next
-            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True) 
+        item = xbmcgui.ListItem('next page >>')
+        uri = sys.argv[0] + '?mode=NEXTPAGE' + '&url=' + next
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True) 
             
     else:
         # TODO: add error message helper
@@ -101,36 +89,60 @@ def getCategoryItems(url):
 
 def getPlayableItems(url):
     http = common.fetchPage({"link": url})
+    found = False
     
     if http["status"] == 200:
         content = common.parseDOM(http["content"], "div", attrs = { "class":"story_content" })
+        #left = common.parseDOM(content, "div", attrs = { "align":"left" })
+        
         links = common.parseDOM(content, "a", ret="href")
-        links = list(set(links))
+        print links
+
+#         links = list(set(links))
         
         for i,url in enumerate(uniq(links)):
-            if url.split(':')[0] == 'ftp' and (url.find(".mkv") != -1 or url.find(".avi") != -1):
-                found = True
-                name = url.split('/')[-1]
-                item = xbmcgui.ListItem(name)
-                uri = sys.argv[0] + '?mode=PLAY' + '&url=' + url
-                item.setProperty('IsPlayable', 'true')
-                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)                
-
+            if url.split(':')[0] == 'ftp':
+                print "*** This is a FTP link"
+                if url.find(".mkv") != -1 or url.find(".avi") != -1 or url.find(".mp4") != -1:
+                    found = True
+                    name = url.split('/')[-1]
+                    item = xbmcgui.ListItem(name)
+                    uri = sys.argv[0] + '?mode=PLAY' + '&url=' + url
+                    item.setProperty('IsPlayable', 'true')
+                    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+            elif url.split(':')[0] == 'http':
+                print "*** This is a HTTP link" 
+                if url.find(".mkv") != -1 or url.find(".avi") != -1 or url.find(".mp4") != -1:
+                    found = True
+                    name = url.split('/')[-1]
+                    item = xbmcgui.ListItem(name)
+                    uri = sys.argv[0] + '?mode=PLAY' + '&url=' + url
+                    item.setProperty('IsPlayable', 'true')
+                    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
         
         if found == False:
             print "*** FTP not found, looking for flash player"
-            
-            embed = common.parseDOM(content, "embed", ret="videoUrl")
+            url = common.parseDOM(content, "embed", ret="src")
+            videoUrl = common.parseDOM(content, "embed", ret="videoUrl")
+            mediaLink = common.parseDOM(content, "embed", ret="MediaLink")
                 
-            if len(embed) != 0:
-                url = embed[0].split('&amp;')[0]
-                print "*** Flash link found " + url
-                
+            if videoUrl or mediaLink:
+                url = videoUrl[0].split('&')[0] if videoUrl else mediaLink[0].split('&')[0]
                 name = url.split('/')[-1]
                 uri = sys.argv[0] + '?mode=PLAY' + '&url=' + url
                 item = xbmcgui.ListItem(name)
                 item.setProperty('IsPlayable', 'true')            
-                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)  
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+            elif url:
+                #if url.find(".mkv") != -1
+                print url              
+
+#                 name = url.split('/')[-1]
+#                 uri = sys.argv[0] + '?mode=PLAY' + '&url=' + url
+#                 item = xbmcgui.ListItem(name)
+#                 item.setProperty('IsPlayable', 'true')            
+#                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+                 
             else: 
                 print "### Playable URL not found :("
                                 

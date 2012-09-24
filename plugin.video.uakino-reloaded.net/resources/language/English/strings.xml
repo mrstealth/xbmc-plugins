@@ -12,13 +12,12 @@
     <string id="2002">Видеоклипы</string>
     <string id="2003">Аудио</string>
 
-
     <string id="3000">Мультфильмы</string>
-    <string id="3001">Мультсериалы</string>
-    <string id="3002">Советские мультфильмы</string>
-    <string id="3003">Наши мультфильмы</string>
-    <string id="3004">Зарубежные мультфильмы</string>
-    <string id="3005">Мультфильмы на языке оригинала</string>
+    <string id="3001">Фильмы</string>
+    <string id="3002">Сериалы</string>
+    <string id="3003">Документалистика</string>
 
-
+    <string id="4000">ПОП музыка, Eurodance, DISCO</string>
+    <string id="4001">Rock Music</string>
+    <string id="4002">Электронная музыка</string>
 </strings>

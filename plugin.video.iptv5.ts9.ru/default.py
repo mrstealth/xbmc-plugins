@@ -1,236 +1,176 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.5
+# Rev. 1.0.6
 # -*- coding: utf-8 -*-
-# -*- encoding: utf-8 -*-
 
 
 import xbmcplugin,xbmcgui,xbmcaddon
-import sys, urllib
+import os, sys, urllib
 import HTMLParser, CommonFunctions
 import socket
 import simplejson as json
+
 common = CommonFunctions
+common.plugin = "plugin.video.iptv5.ts9.ru"
+common.dbg = True # Default
+common.dbglevel = 3 # Default
 
-pluginhandle = int(sys.argv[1])
+handle = int(sys.argv[1])
 
-Addon = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
-addon_icon    = Addon.getAddonInfo('icon')
-addon_path    = Addon.getAddonInfo('path')
-__settings__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
+__addon__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
+__language__ = __addon__.getLocalizedString
+addon_icon    = __addon__.getAddonInfo('icon')
+addon_path    = __addon__.getAddonInfo('path')
 
 BASE_URL   = 'http://www.iptv5.ts9.ru/play.htm'
 
+from helpers import *
 from category import Category
-category_db = Category('category.db')
+from channel import Channel
 
+category_db = Category()
+channel_db = Channel()
 
-def unescape(entity, encoding):
-    if encoding == 'utf-8':
-        return HTMLParser.HTMLParser().unescape(entity).encode(encoding)
-    elif encoding == 'cp1251':
-        return entity.decode(encoding).encode('utf-8')
-
-def xbmcItem(mode, url, title):
-    uri = sys.argv[0] + '?mode='+ mode + '&url=' + url
-    item = xbmcgui.ListItem(title, iconImage=addon_icon, thumbnailImage=addon_icon)
-    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
-def xbmcContextMenuItem(item, action, label, url, title):
-    script = "special://home/addons/plugin.video.iptv5.ts9.ru/contextmenu.py"
-    params = action + "|%s"%url + "|%s"%title
-    runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
-    item.addContextMenuItems([(label, runner)])
-
-def listFavorites():
-    label = unescape("&#1059;&#1076;&#1072;&#1083;&#1080;&#1090;&#1100; &#1080;&#1079; &#1089;&#1087;&#1080;&#1089;&#1082;&#1072; &#1092;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1086;&#1074;", 'utf-8')
-
-
-    string = Addon.getSetting('favorites')
-    if len(string) > 0:
-      favorites = json.loads(string)
-
-      for key in favorites:
-          print "Found favorite " + key
-          uri = sys.argv[0] + '?mode=PLAY2'
-          uri += '&url=' + urllib.quote_plus(key)
-
-          item = xbmcgui.ListItem(favorites[key], iconImage=addon_icon, thumbnailImage=addon_icon)
-          item.setInfo( type='Video', infoLabels={'title': favorites[key]})
-          item.setProperty('IsPlayable', 'true')
-
-          xbmcContextMenuItem(item, 'remove', label, key, favorites[key])
-          xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
-    xbmcplugin.endOfDirectory(pluginhandle, True)
-
-
-def get_categories_from_url(url):
-    print "*** get category from URL"
+def getCategories(url):
+    url=urllib.unquote_plus(url)
     page = common.fetchPage({"link": url})
 
+
     if page["status"] == 200:
         select = common.parseDOM(page["content"], "select", attrs = { "id":"ch" })
         optgroups = common.parseDOM(select, "optgroup", ret="label")[0:-1]
         options = common.parseDOM(select, "optgroup")
+        try:
+            for index in range(len(optgroups)):
+                optgroup = optgroups[index]
+                option = options[optgroups.index(optgroup)]
+                name = unescape(optgroup, 'cp1251')
 
-        categories = []
+                if category_db.exists(name) == 1:
+                    print "### CATEGORY already in DB, skip save"
+                else:
+                    print "### Save category %s in DB"%name
+                    category_db.save(name, index, True)
 
-        for i in range(len(optgroups)):
-            category = {}
-            channels = {}
+                titles = common.parseDOM(option, "option")
+                links = common.parseDOM(option, "option", ret="value")
 
-            optgroup = optgroups[i]
-            option = options[optgroups.index(optgroup)]
-            name = optgroup.decode('cp1251').encode('utf-8')
+                for i, title in enumerate(titles):
+                    # skip authenticated channels
+                    if links[i] != 'http://u.to/rJc0Ag' or not links[i].find("inetcom") == -1:
+                        print "save channel " + unescape(title, 'cp1251')
+                        channel_db.save(unescape(title, 'cp1251'), links[i], index, 0,False)
+            return True
 
-            # collect category name
-            categories.append(name)
+        except:
+           print "Unexpected error:", sys.exc_info()[0]
+           print "Unexpected error:", sys.exc_info()[1]
+           print "Unexpected error:", sys.exc_info()[2]
 
-            titles = common.parseDOM(option, "option")
-            links = common.parseDOM(option, "option", ret="value")
 
-            for x, title in enumerate(titles):
-                channels[links[x]] = title.decode('cp1251').encode('utf-8')
-
-            # construct hash and save in DB
-            category_db.add(name, json.dumps(channels))
     else:
-        print "TODO: raise exception and show error dialog"
+        print page["status"]
+        return False
 
-    return categories
 
-def get_categories_from_db(url):
-    print "*** get category from DB"
-    fav = unescape("&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;", "utf-8")
-    xbmcItem('FAVORITES', '', "[COLOR FF00FFF0][" + fav + "][/COLOR]")
-
-    # Hotfix
-    entries = category_db.all()
-    #entries = []
-
-    # update categories once a day
-    if len(entries) > 0:
-        print "*** show categories"
-        categories = entries
-    else:
-        print "*** get page and parse categories"
-        categories = get_categories_from_url(url)
-
-    for i, category in enumerate(categories):
-        if not i == (len(categories)-1):
-            uri = sys.argv[0] + '?mode=SHOW'
-            uri += '&url=' + urllib.quote_plus(BASE_URL)
-            uri += '&group=' + category
-
-            item = xbmcgui.ListItem(category, iconImage=addon_icon, thumbnailImage=addon_icon)
-            item.setInfo( type='video', infoLabels={'title': category})
-
-            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-        else:
-            print bool(__settings__.getSetting('parent_control'))
-            if not __settings__.getSetting('parent_control') == 'true':
-                uri = sys.argv[0] + '?mode=SHOW'
-                uri += '&url=' + urllib.quote_plus(BASE_URL)
-                uri += '&group=' + category
-
-                item = xbmcgui.ListItem(category, iconImage=addon_icon, thumbnailImage=addon_icon)
-                item.setInfo( type='video', infoLabels={'title': category})
-
-                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
-    xbmcplugin.endOfDirectory(pluginhandle, True)
-
-def get_channels_from_url(category):
-    print "*** get channels from URL"
+def getChannels(name, index):
+    print "*** get channels from URL for " + name + " and id " + index
     page = common.fetchPage({"link": BASE_URL})
+    index = int(index)
 
     if page["status"] == 200:
         select = common.parseDOM(page["content"], "select", attrs = { "id":"ch" })
         optgroups = common.parseDOM(select, "optgroup", ret="label")[0:-1]
         options = common.parseDOM(select, "optgroup")
 
-        translated = []
+        print "### Save category %s in DB and update timestamp "%name
+        category_db.save(name, index, False)
+
         for i in range(len(optgroups)):
-            channels = {}
+            optgroup = optgroups[i]
+            if i == index:
+                option = options[optgroups.index(optgroup)]
+                titles = common.parseDOM(option, "option")
+                links = common.parseDOM(option, "option", ret="value")
 
-            name = optgroups[i].decode('cp1251').encode('utf-8')
-            translated.append(name)
-        print translated
+                for i, title in enumerate(titles):
+                    if links[i] != 'http://u.to/rJc0Ag':
+                        if __addon__.getSetting('availability_check') == 'true':
+                            stream = check_url(links[i])
+                            if stream:
+                                print "*** save channel: " + unescape(title, 'cp1251')
+                                channel_db.save(unescape(title, 'cp1251'), stream['url'], index, 0, stream['mimetype'])
+                            else:
+                                print "*** mark as unavailable: " + links[i]
+                                channel_db.save(unescape(title, 'cp1251'), links[i], index, 1,False)
+                        else:
+                            print "*** save channel without availability check: " + links[i]
+                            channel_db.save(unescape(title, 'cp1251'), links[i], index, 0,False)
+        return True
+    else:
+        return False
 
-            # optgroup = optgroups[i]
-#             option = options[optgroups.index(optgroup)]
-#             name = optgroup.decode('cp1251').encode('utf-8')
-#
-#             if category == name:
-#                 print "***** CATEGORY FOUND"
-#
-#             titles = common.parseDOM(option, "option")
-#             links = common.parseDOM(option, "option", ret="value")
-#
-#             for x, title in enumerate(titles):
-#                 channels[links[x]] = title.decode('cp1251').encode('utf-8')
-#
-#             # construct hash and save in DB
-#             #category_db.add(name, json.dumps(channels))
-#             return channels
-#     else:
-#         print "TODO: raise exception and show error dialog"
+def listFavorites():
+    label = __language__(1004)
 
-    return []
+    channels = channel_db.favorites()
+    print channels
 
-def get_channels_from_db(name):
-    print "*** get channels from DB"
-    category = category_db.get(name)
-    channels = json.loads(category['channels'])
+    for channel in channels:
+        xbmcPlayableItem('PLAY', channel[0], channel[1], 'add', channel[2])
 
-    label = unescape('&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100; &#1074; "&#1060;&#1072;&#1074;&#1086;&#1088;&#1080;&#1090;&#1099;"', 'utf-8')
-
-    for url in channels:
-        title = channels[url].encode('utf-8')
-        uri = sys.argv[0] + '?mode=PLAY' + '&url=' + urllib.quote_plus(url)
-
-        item = xbmcgui.ListItem(title, iconImage=addon_icon, thumbnailImage=addon_icon)
-        item.setInfo( type='video', infoLabels={'title': title})
-        item.setProperty('IsPlayable', 'true')
-
-        xbmcContextMenuItem(item, 'add', label, url, channels[url])
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
-
-    xbmcplugin.endOfDirectory(pluginhandle, True)
+    xbmcplugin.endOfDirectory(handle, True)
 
 
-def play_fav(url):
-    item = xbmcgui.ListItem(path = url)
-    xbmc.Player().play(url, item)
+def listCategories(url):
+    xbmcItem('FAVORITES', '', "[COLOR FF00FFF0]" + __language__(1000).encode('utf-8') + "[/COLOR]")
+
+    categories = category_db.find_all()
+    if not categories:
+        getCategories(url) # initial import
+        categories = category_db.find_all()
+
+    for category in categories:
+        print category
+
+        for name,optgroupid in category.items():
+            if int(optgroupid) != 8:
+                xbmcItem('CHANNELS', '', name, False, optgroupid)
+            else:
+                print optgroupid
+                if __addon__.getSetting('parent_control') == 'false':
+                    xbmcItem('CHANNELS', '', name, False, optgroupid)
+
+    xbmcplugin.endOfDirectory(handle, True)
+
+def listChannels(name, optgroupid):
+    print "*** list channels " + name + ' '+ optgroupid
+
+    outdated = category_db.find_outdated()
+    print "*** detect outdated categories "
+    print outdated
+
+    if optgroupid in outdated:
+        print "*** check " + name
+        getChannels(name, optgroupid)
+
+    channels = channel_db.find_by_category_id(optgroupid)
+
+    for channel in channels:
+      xbmcPlayableItem('PLAY', channel[0], channel[1], 'add', channel[2])
+
+    xbmcplugin.endOfDirectory(handle, True)
 
 
 def play_url(url):
     item = xbmcgui.ListItem(path = url)
-    xbmcplugin.setResolvedUrl(pluginhandle, True, item)
+    xbmcplugin.setResolvedUrl(handle, True, item)
 
-def get_params():
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-        params=sys.argv[2]
-        cleanedparams=params.replace('?','')
-        if (params[len(params)-1]=='/'):
-            params=params[0:len(params)-2]
-        pairsofparams=cleanedparams.split('&')
-        param={}
-        for i in range(len(pairsofparams)):
-            splitparams={}
-            splitparams=pairsofparams[i].split('=')
-            if (len(splitparams))==2:
-                param[splitparams[0]]=splitparams[1]
-    return param
-
-params = get_params()
+params = common.getParameters(sys.argv[2])
 
 url=None
 mode=None
-group=None
+category=None
 
 try:
     mode=params['mode']
@@ -239,17 +179,18 @@ try:
     url=urllib.unquote_plus(params['url'])
 except: pass
 try:
-    group=params['group']
+    title=params['title']
+except: pass
+try:
+    category=params['category']
 except: pass
 
 
 if mode == 'PLAY':
     play_url(url)
-elif mode == 'PLAY2':
-    play_fav(url)
-elif mode == 'SHOW':
-    get_channels_from_db(group)
+elif mode == 'CHANNELS':
+    listChannels(title, category)
 elif mode == 'FAVORITES':
     listFavorites();
 elif mode == None:
-    get_categories_from_db(BASE_URL)
+    listCategories(BASE_URL)
