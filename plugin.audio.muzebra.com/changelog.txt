@@ -1,3 +1,5 @@
+[B]Version 1.0.6[/B]
+- check online stations stream availability and store in DB
 [B]Version 1.0.5[/B]
 - add search
 [B]Version 1.0.4[/B]
