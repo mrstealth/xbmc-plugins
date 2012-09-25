@@ -1,8 +1,119 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="plugin.video.uakino-reloaded.net"
+       name="Uakino.net (reloaded)"
+       version="1.0.0"
+       provider-name="Tolin">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="1.2.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary></summary>
+    <description>All rights reserved</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.iptv5.ts9.ru"
+       name="Iptv5.ts9.ru"
+       version="1.0.6"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="1.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
+        <description>Enables watching streams oniptv5.ts9.ru</description>
+        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.youfreetv.net"
+       name="Youfreetv.net"
+       version="1.0.1"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="0.9.1"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Browse and stream live tv from youfreetv.net</summary>
+        <description>Enables watching streams on youfreetv.net</description>
+        <disclaimer>This is an unofficial XBMC addon</disclaimer>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.go2load-reloaded.com"
+       name="Go2Load.com (reloaded)"
+       version="1.0.1"
+       provider-name="Tolin">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="1.2.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Фильмы онлайн в HD/SD</summary>
+    <description>Фильмы онлайн</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
+	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
+		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
+		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
+		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Install Add-ons from MrStealth add-on repository</summary>
+		<description>Download and install add-ons by mrstealth</description>
+		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.iptv.root-host.pro"
+       name="Iptv.root-host.pro"
+       version="1.0.0"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="1.1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Stream live IPTV from iptv.root-host.pro</summary>
+        <description>Enables watching streams on iptv.root-host.pro</description>
+        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <platform>all</platform>
+    </extension>
+</addon>
+
 <addon id="plugin.audio.muzebra.com"
        name="Muzebra"
-       version="1.0.6"
+       version="1.0.7"
        provider-name="mrstealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -37,117 +148,6 @@
         <disclaimer>This is an unofficial XBMC addon</disclaimer>
         <platform>all</platform>
     </extension>
-</addon>
-
-<addon id="plugin.video.go2load-reloaded.com"
-       name="Go2Load.com (reloaded)"
-       version="1.0.1"
-       provider-name="Tolin">
-  <requires>
-    <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="1.2.1"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-             provides="video"
-             library="default.py">
-    <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Фильмы онлайн в HD/SD</summary>
-    <description>Фильмы онлайн</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.video.iptv.root-host.pro"
-       name="Iptv.root-host.pro"
-       version="1.0.0"
-       provider-name="mrstealth">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="1.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point= "xbmc.addon.metadata">
-        <summary>Stream live IPTV from iptv.root-host.pro</summary>
-        <description>Enables watching streams on iptv.root-host.pro</description>
-        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
-        <platform>all</platform>
-    </extension>
-</addon>
-
-<addon id="plugin.video.iptv5.ts9.ru"
-       name="Iptv5.ts9.ru"
-       version="1.0.6"
-       provider-name="mrstealth">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="1.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point= "xbmc.addon.metadata">
-        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
-        <description>Enables watching streams oniptv5.ts9.ru</description>
-        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
-        <platform>all</platform>
-    </extension>
-</addon>
-
-<addon id="plugin.video.uakino-reloaded.net"
-       name="Uakino.net (reloaded)"
-       version="1.0.0"
-       provider-name="Tolin">
-  <requires>
-    <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="1.2.1"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-             provides="video"
-             library="default.py">
-    <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary></summary>
-    <description>All rights reserved</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.video.youfreetv.net"
-       name="Youfreetv.net"
-       version="1.0.1"
-       provider-name="mrstealth">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="0.9.1"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point= "xbmc.addon.metadata">
-        <summary>Browse and stream live tv from youfreetv.net</summary>
-        <description>Enables watching streams on youfreetv.net</description>
-        <disclaimer>This is an unofficial XBMC addon</disclaimer>
-        <platform>all</platform>
-    </extension>
-</addon>
-
-<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
-	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
-		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
-		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Install Add-ons from MrStealth add-on repository</summary>
-		<description>Download and install add-ons by mrstealth</description>
-		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
-		<platform>all</platform>
-	</extension>
 </addon>
 
 <addon id='script.module.parsedom' version='1.2.1' name='Parsedom for xbmc plugins' provider-name='TheCollective'>

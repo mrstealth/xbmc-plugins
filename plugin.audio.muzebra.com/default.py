@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.6
+# Rev. 1.0.7
 # -*- coding: utf-8 -*-
 
 
@@ -211,7 +211,7 @@ def listStations(url, category):
         name_div = common.parseDOM(stations, "div", attrs = { "class":"name" })
         links = common.parseDOM(name_div, "a", attrs = { "class":"hash" }, ret="href")
         titles = common.parseDOM(name_div, "a")
-        
+
         for i, title in enumerate(titles):
             uri = sys.argv[0] + '?mode=list_songs'
             uri += '&url='  + urllib.quote_plus(BASE_URL+links[i])
