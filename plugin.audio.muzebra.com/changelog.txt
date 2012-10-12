@@ -1,3 +1,5 @@
+[B]Version 1.0.7[/B]
+- fix update issue
 [B]Version 1.0.6[/B]
 - add radio station charts
 - check online station streams (enable/disable through add-on settings)

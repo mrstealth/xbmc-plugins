@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uakino-reloaded.net"
        name="Uakino.net (reloaded)"
-       version="1.0.0"
-       provider-name="Tolin">
+       version="1.0.2"
+       provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.parsedom" version="1.2.1"/>
@@ -13,8 +13,8 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary></summary>
-    <description>All rights reserved</description>
+    <summary>Uakino.net (reloaded)</summary>
+    <description>For personal use only</description>
     <platform>all</platform>
   </extension>
 </addon>
