@@ -29,6 +29,15 @@ elif(args[0] == "remove"):
     xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ addon_icon +")")
     xbmc.executebuiltin("Container.Refresh")
 
+elif(args[0] == "reset"):
+    channel = Channel().removeFromFav(args[1])
+
+    title = __language__(1000).encode('utf-8')
+    message = __language__(1004).encode('utf-8')
+
+    xbmc.executebuiltin("XBMC.Notification("+ title +","+ message +","+ str(3*1000) +","+ addon_icon +")")
+    xbmc.executebuiltin("Container.Refresh")
+
 else:
     print sys.argv[0]
     print "INVALID ARG PASSED IN (sys.argv[1]=" + sys.argv[1]

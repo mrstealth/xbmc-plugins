@@ -3,7 +3,8 @@
 # Rev. 1.0.6
 # -*- coding: utf-8 -*-
 
-import os, datetime, xbmcaddon
+import os, datetime, xbmcaddon, xbmcvfs
+
 import sqlite3 as sqlite
 from datetime import timedelta
 
@@ -80,11 +81,15 @@ class Category:
         self.db.text_factory = str
         self.cur = self.db.cursor()
 
-    def _drop(self):
-        self._connect()
-        self.cur.execute('DROP TABLE IF EXISTS categories')
-        self.db.commit()
-        self._close()
+    def drop(self):
+        if xbmcvfs.exists(self.filename):
+            self._connect()
+            self.cur.execute('DELETE FROM categories')
+            self.db.commit()
+            self._close()
+            return True
+        else:
+            return False
 
     def _close(self):
         self.cur.close()
