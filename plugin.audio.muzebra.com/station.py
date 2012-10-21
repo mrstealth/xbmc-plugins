@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.6
+# Rev. 1.0.9
 # -*- coding: utf-8 -*-
 
 
@@ -12,6 +12,7 @@ __addon__ = xbmcaddon.Addon(id='plugin.audio.muzebra.com')
 addon_path = __addon__.getAddonInfo('path')
 
 now = datetime.datetime.today()
+
 if int(__addon__.getSetting('interval')) > 0:
     past = now - datetime.timedelta(hours=int(__addon__.getSetting('interval')))
 else:
@@ -39,7 +40,6 @@ class Station:
         self.cur.execute("SELECT name,url FROM stations ORDER BY name")
         result = [{x[0]:x[1]} for x in self.cur.fetchall()]
         self._close()
-        print result
         return result
 
     def save(self,name,url):
@@ -60,7 +60,6 @@ class Station:
         self.cur.execute("SELECT created_at FROM stations WHERE created_at <=?", (past, ))
         result = [x[0] for x in self.cur.fetchall()]
         self._close()
-
         return True if result else False
 
     def favorites(self):
@@ -68,7 +67,6 @@ class Station:
         self.cur.execute("SELECT name,url FROM stations WHERE fav=1 ORDER BY name")
         result = [[x[0],x[1]] for x in self.cur.fetchall()]
         self._close()
-        print result
         return result
 
     def addToFav(self, url):

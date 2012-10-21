@@ -2,11 +2,11 @@
 <addons>
 <addon id="plugin.audio.muzebra.com"
        name="Muzebra"
-       version="1.0.7"
+       version="1.1.1"
        provider-name="mrstealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="0.9.1"/>
+    <import addon="script.module.parsedom" version="1.2.1"/>
   </requires>
   <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
         <provides>audio</provides>

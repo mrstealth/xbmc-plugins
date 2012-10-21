@@ -10,6 +10,8 @@ import simplejson as json
 
 Addon = xbmcaddon.Addon(id='plugin.audio.muzebra.com')
 addon_icon  = Addon.getAddonInfo('icon')
+addon_path  = Addon.getAddonInfo('path')
+language = Addon.getLocalizedString
 
 handle = int(sys.argv[1])
 common = CommonFunctions
@@ -23,20 +25,10 @@ def construct_url(mode, url=False, title=False, artist=False, category=False):
 
 def construct_mp3_url(aid):
     if len(aid) > 0:
-        url = "https://api.vk.com/method/audio.getById.json"
-        url += "?access_token=cccbeac0c9bf906fc9bf906ff6c991a752cc9bfc9be906709d6d3b8b2d7606d"
-        url += "&audios=" + aid
+        url = 'http://savestreaming.com/t/%s'%aid + '_a625de3a4e/'
         return url
     else:
         return ''
-
-def get_mp3_url(aid):
-    page = common.fetchPage({"link":  construct_mp3_url(aid)})
-    if page["status"] == 200:
-        song = json.loads(page["content"])["response"][0]
-        return song
-    else:
-        return False
 
 def xbmcItem(mode, url, title, icon=False, action=False):
     uri = sys.argv[0] + '?mode='+ mode
@@ -51,15 +43,13 @@ def xbmcItem(mode, url, title, icon=False, action=False):
       xbmcplugin.addDirectoryItem(handle, uri, item, True)
     else:
       # FIXME: add label to params
-      label = "ContextMenuItem"
-      xbmcContextMenuItem(item, url, title, action, label)
-      xbmcplugin.addDirectoryItem(handle, uri, item)
+      print "Add context menu to item"
 
-def xbmcContextMenuItem(item, url, title, action, label):
-    script = "special://home/addons/plugin.audio.muzebra.com/contextmenu.py"
-    params = action + "|%s"%url + "|%s"%title
+def xbmcContextMenuItem(item, title, identifier):
+    script = addon_path + '/downloader.py'
+    params = "%s"%construct_mp3_url(identifier)
     runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
-    item.addContextMenuItems([(label, runner)])
+    item.addContextMenuItems([(language(6000), runner)])
 
 def check_url(url):
     try:
