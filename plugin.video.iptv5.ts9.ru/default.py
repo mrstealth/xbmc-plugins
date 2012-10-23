@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.6
+# Rev. 1.0.7
 # -*- coding: utf-8 -*-
 
 
@@ -141,6 +141,7 @@ def listCategories(url):
                 if __addon__.getSetting('parent_control') == 'false':
                     xbmcItem('CHANNELS', '', name, False, optgroupid)
 
+    xbmcItem('RESET', '', "[COLOR FFFF0000][" + __language__(1005).encode('utf-8') + "][/COLOR]")
     xbmcplugin.endOfDirectory(handle, True)
 
 def listChannels(name, optgroupid):
@@ -166,6 +167,18 @@ def play_url(url):
     item = xbmcgui.ListItem(path = url)
     xbmcplugin.setResolvedUrl(handle, True, item)
 
+
+def resetDB():
+    print "RESET DB"
+    category_db.drop()
+    channel_db.drop()
+    EXIT()
+
+def EXIT():
+    xbmc.executebuiltin("XBMC.Container.Update(path,replace)")
+    xbmc.executebuiltin("XBMC.ActivateWindow(Home)")
+    xbmc.executebuiltin("XBMC.Notification("+ 'iptv5.ru' +","+ __language__(1006).encode('utf-8') +","+ str(3*1000) +","+ addon_icon +")")
+    
 params = common.getParameters(sys.argv[2])
 
 url=None
@@ -192,5 +205,7 @@ elif mode == 'CHANNELS':
     listChannels(title, category)
 elif mode == 'FAVORITES':
     listFavorites();
+elif mode == 'RESET':
+    resetDB();
 elif mode == None:
     listCategories(BASE_URL)

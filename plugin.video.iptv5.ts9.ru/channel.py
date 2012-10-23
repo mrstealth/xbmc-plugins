@@ -4,7 +4,7 @@
 # -*- coding: utf-8 -*-
 
 
-import os, time, xbmcaddon
+import os, time, xbmcaddon, xbmcvfs
 import sqlite3 as sqlite
 
 __addon__ = xbmcaddon.Addon(id='plugin.video.iptv5.ts9.ru')
@@ -82,11 +82,12 @@ class Channel:
         except:
           raise "*** Cann't connect to channels DB !!!"
 
-    def _drop(self):
-        self._connect()
-        self.cur.execute('DROP TABLE IF EXISTS channels')
-        self.db.commit()
-        self._close()
+    def drop(self):
+        if xbmcvfs.exists(self.filename):
+            self._connect()
+            self.cur.execute('DELETE FROM channels')
+            self.db.commit()
+            self._close()
 
     def _close(self):
         self.cur.close()
