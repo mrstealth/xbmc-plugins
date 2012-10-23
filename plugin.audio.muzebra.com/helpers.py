@@ -3,16 +3,58 @@
 # Rev. 1.0.0
 # -*- coding: utf-8 -*-
 
-import urllib, urllib2, re, sys
+import urllib, urllib2, re, os, sys, socket, cookielib
 import HTMLParser, CommonFunctions
 import xbmcaddon, xbmcgui, xbmcplugin
 import simplejson as json
 
 Addon = xbmcaddon.Addon(id='plugin.audio.muzebra.com')
 addon_icon  = Addon.getAddonInfo('icon')
+addon_path  = Addon.getAddonInfo('path')
+language = Addon.getLocalizedString
 
 handle = int(sys.argv[1])
 common = CommonFunctions
+
+# http://stackoverflow.com/questions/9541677/urllib2-post-request
+def getAPIkey():
+  url = 'http://muzebra.com/service/user/playerparams/'
+  http_header = {
+                "Accept" : "application/json, text/javascript, */*; q=0.01",
+                "Accept-Language" : "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3",
+                "Accept-Charset" : "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
+                "DNT" : "1",
+                "Host" : "muzebra.com",
+                "Origin" : "http://muzebra.com",
+                "Referer" : "http://muzebra.com/",
+                "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0",
+                "X-Requested-With" : "XMLHttpRequest"
+  }
+
+  params = {}
+
+  # setup socket connection timeout
+  timeout = 15
+  socket.setdefaulttimeout(timeout)
+
+  # setup cookie handler
+  cookie_jar = cookielib.LWPCookieJar()
+  cookie = urllib2.HTTPCookieProcessor(cookie_jar)
+
+  # setup proxy handler, in case some-day you need to use a proxy server
+  proxy = {} # example: {"http" : "www.blah.com:8080"}
+
+  # create an urllib2 opener()
+  #opener = urllib2.build_opener(proxy, cookie) # with proxy
+  opener = urllib2.build_opener(cookie) # we are not going to use proxy now
+
+  # create your HTTP request
+  req = urllib2.Request(url, urllib.urlencode(params), http_header)
+
+  # submit your request
+  res = opener.open(req)
+  html = res.read()
+  return json.loads(html)['hash'] + '/'
 
 def construct_url(mode, url=False, title=False, artist=False, category=False):
     uri = sys.argv[0] + '?mode=' + mode
@@ -22,21 +64,12 @@ def construct_url(mode, url=False, title=False, artist=False, category=False):
     return uri
 
 def construct_mp3_url(aid):
+    key  = getAPIkey()
     if len(aid) > 0:
-        url = "https://api.vk.com/method/audio.getById.json"
-        url += "?access_token=cccbeac0c9bf906fc9bf906ff6c991a752cc9bfc9be906709d6d3b8b2d7606d"
-        url += "&audios=" + aid
+        url = 'http://savestreaming.com/t/%s'%aid + '_%s'%key
         return url
     else:
         return ''
-
-def get_mp3_url(aid):
-    page = common.fetchPage({"link":  construct_mp3_url(aid)})
-    if page["status"] == 200:
-        song = json.loads(page["content"])["response"][0]
-        return song
-    else:
-        return False
 
 def xbmcItem(mode, url, title, icon=False, action=False):
     uri = sys.argv[0] + '?mode='+ mode
@@ -51,15 +84,13 @@ def xbmcItem(mode, url, title, icon=False, action=False):
       xbmcplugin.addDirectoryItem(handle, uri, item, True)
     else:
       # FIXME: add label to params
-      label = "ContextMenuItem"
-      xbmcContextMenuItem(item, url, title, action, label)
-      xbmcplugin.addDirectoryItem(handle, uri, item)
+      print "Add context menu to item"
 
-def xbmcContextMenuItem(item, url, title, action, label):
-    script = "special://home/addons/plugin.audio.muzebra.com/contextmenu.py"
-    params = action + "|%s"%url + "|%s"%title
+def xbmcContextMenuItem(item, title, identifier):
+    script = addon_path + '/downloader.py'
+    params = "%s"%identifier
     runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
-    item.addContextMenuItems([(label, runner)])
+    item.addContextMenuItems([(language(6000), runner)])
 
 def check_url(url):
     try:
