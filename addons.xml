@@ -98,8 +98,8 @@
 </addon>
 
 <addon id="plugin.video.uakino-reloaded.net"
-       name="Uakino.net (reloaded)"
-       version="1.0.2"
+       name="Uakino.net"
+       version="1.0.4"
        provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -111,7 +111,7 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>Uakino.net (reloaded)</summary>
+    <summary>Uakino HD Online Videos </summary>
     <description>For personal use only</description>
     <platform>all</platform>
   </extension>

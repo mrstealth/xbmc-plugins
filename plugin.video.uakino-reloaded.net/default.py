@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.4
 # -*- coding: utf-8 -*-
 
 import urllib, urllib2, re, os, sys, socket
@@ -25,27 +25,48 @@ handle = int(sys.argv[1])
 def construct_uri(params):
   return '%s?%s' % (sys.argv[0], urllib.urlencode(params))
 
-def home():
-    #item = xbmcgui.ListItem(lang(2000))
-    #uri = sys.argv[0] + '?mode=CATALOG&path=/' + '&category=' + lang(2000)
-    #xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+def uniq(a):
+    if len(a) == 0:
+        return []
+    else:
+        return [a[0]] + uniq([x for x in a if x != a[0]])
 
-    item = xbmcgui.ListItem(lang(2001))
-    uri = sys.argv[0] + '?mode=CATALOG&path=video' + '&category=' + lang(2001)
+def home():
+    item = xbmcgui.ListItem(lang(3005))
+    uri = sys.argv[0] + '?mode=SUBCATEGORY&path=category/video/900' + '&category=' + lang(3005)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    item = xbmcgui.ListItem(lang(3004))
+    uri = sys.argv[0] + '?mode=SUBCATEGORY&path=category/video/137' + '&category=' + lang(3004)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    item = xbmcgui.ListItem(lang(3000))
+    uri = sys.argv[0] + '?mode=CATEGORY&path=category/video/59' + '&category=' + lang(3000)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    item = xbmcgui.ListItem(lang(3001))
+    uri = sys.argv[0] + '?mode=CATEGORY&path=category/video/64' + '&category=' + lang(3001)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    item = xbmcgui.ListItem(lang(3002))
+    uri = sys.argv[0] + '?mode=CATEGORY&path=category/video/65' + '&category=' + lang(3002)
+    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
+    item = xbmcgui.ListItem(lang(3003))
+    uri = sys.argv[0] + '?mode=CATEGORY&path=category/video/68' + '&category=' + lang(3003)
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     item = xbmcgui.ListItem(lang(2002))
     uri = sys.argv[0] + '?mode=CATALOG&path=videoclip' + '&category=' + lang(2002)
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
-    #item = xbmcgui.ListItem(lang(2003))
-    #uri = sys.argv[0] + '?mode=CATALOG&path=audio' + '&category=' + lang(2003)
-    #xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
 def getCatalogs(url, category, path):
+    print "*** getCatalogs %s"%category
+    print "*** getCatalogs %s"%path
+
     if path == '/':
         getSubCategories(BASE_URL,'',0,category)
     elif path == 'video':
@@ -76,19 +97,6 @@ def getCatalogs(url, category, path):
         item = xbmcgui.ListItem(lang(4002))
         uri = sys.argv[0] + '?mode=CATEGORY&path=category/videoclip/158' + '&category=' + lang(4002)
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-    elif path == 'audio':
-        item = xbmcgui.ListItem(lang(4000))
-        uri = sys.argv[0] + '?mode=CATEGORY&path=category/audio/89' + '&category=' + lang(4000)
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
-        item = xbmcgui.ListItem(lang(4001))
-        uri = sys.argv[0] + '?mode=CATEGORY&path=category/audio/98' + '&category=' + lang(4001)
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
-        item = xbmcgui.ListItem(lang(4002))
-        uri = sys.argv[0] + '?mode=CATEGORY&path=category/audio/106' + '&category=' + lang(4002)
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
-
 
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
@@ -96,12 +104,13 @@ def getCatalogs(url, category, path):
 # get links for given category
 def getCategories(url, category):
     print "### getCategories:%s"%category
+    print url
 
     page = common.fetchPage({"link": url})
     media_line = common.parseDOM(page["content"], "div", attrs = { "class":"tab media_line" })
     about = common.parseDOM(media_line, "div", attrs = { "class":"about" })
-    titles = common.parseDOM(about, "a", ret="title")
-    paths = common.parseDOM(about, "a", ret="href")
+    titles = common.parseDOM(media_line, "a", ret="title")
+    paths = uniq(common.parseDOM(media_line, "a", ret="href"))
 
     for i, title in enumerate(titles):
         item = xbmcgui.ListItem(title)
@@ -113,6 +122,7 @@ def getCategories(url, category):
 
 def getSubCategories(url,path,offset,category):
     print "### getSubCategories:%s"%category
+    print url
 
     page = common.fetchPage({"link": url})
     media_line = common.parseDOM(page["content"], "div", attrs = { "class":"tab media_line" })
@@ -130,16 +140,15 @@ def getSubCategories(url,path,offset,category):
     if titlesA and titlesB:
         next = False if len(titlesA) + len(titlesB) < 16 else True
         print "*** this is a mix of both"
-
         for i, title in enumerate(titlesA):
-            thumb = BASE_URL + thumbs[i] if not url.find("http") == -1 else thumbs[i]
+            thumb = BASE_URL + thumbs[i] if thumbs[i].find("http") == -1 else thumbs[i]
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = thumb)
             uri = sys.argv[0] + '?mode=SUBCATEGORY&path=%s'%pathsA[i] + '&category=' + category
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
         for i, title in enumerate(titlesB):
-            thumb = BASE_URL + thumbs[i] if not url.find("http") == -1 else thumbs[i]
-            item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = thumb)
+            thumb = BASE_URL + thumbs[len(titlesA)+i] if not thumbs[i].find("http") == -1 else thumbs[len(titlesA)+i]
+            item = xbmcgui.ListItem(title, iconImage = thumb, thumbnailImage = thumb)
             uri = sys.argv[0] + '?mode=ITEMS&path=%s'%pathsB[i] + '&category=' + category
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
@@ -147,14 +156,13 @@ def getSubCategories(url,path,offset,category):
         next = False if len(titlesA) < 16 else True
 
         print "*** this is a list of season with multiple items?"
-        #folder = addon_icons + '/folder.png'
 
         if url == 'http://uakino.net/category/video/52':
             print "*** this is a list of links " + category
             getCategories(url, category)
         else:
             for i, title in enumerate(titlesA):
-                thumb = BASE_URL + thumbs[i] if not url.find("http") == -1 else thumbs[i]
+                thumb = BASE_URL + thumbs[i] if thumbs[i].find("http") == -1 else thumbs[i]
                 item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = thumb)
                 uri = sys.argv[0] + '?mode=SUBCATEGORY&path=%s'%pathsA[i] + '&category=' + category
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
@@ -166,16 +174,14 @@ def getSubCategories(url,path,offset,category):
         ul = common.parseDOM(media_line, "ul")
 
         for i, title in enumerate(titlesB):
-#            print common.parseDOM(ul[i], "li")[1] #artists
-
-            thumb = BASE_URL + thumbs[i] if url.find("http") == -1 else thumbs[i]
+            thumb = BASE_URL + thumbs[i] if thumbs[i].find("http") == -1 else thumbs[i]
             genres = common.stripTags(common.parseDOM(ul[i], "li")[0])
-            
+
             try:
                 description = common.stripTags(common.parseDOM(ul[i], "li")[2])
             except IndexError:
                 description = common.stripTags(common.parseDOM(ul[i], "li")[1])
-                
+
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = thumb)
             info = {'title': title, 'genre': genres, 'plot': description}
             item.setInfo( type='Video', infoLabels=info)
@@ -183,6 +189,8 @@ def getSubCategories(url,path,offset,category):
             uri = sys.argv[0] + '?mode=ITEMS&path=%s'%pathsB[i] + '&category=%s'%category
             item.setProperty('IsPlayable', 'true')
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+    else:
+      next = False
 
     if next:
         item = xbmcgui.ListItem('NEXT PAGE >>')
@@ -205,8 +213,6 @@ def getPlayableItems(url,category):
 def play(url):
     print "### play:%s"%url
     item = xbmcgui.ListItem(path = url)
-    #item.setInfo('video', {'Title': title.decode('utf-8')})
-    #item.setProperty('mimetype', mimetype)
     xbmcplugin.setResolvedUrl(handle, True, item)
 
 
