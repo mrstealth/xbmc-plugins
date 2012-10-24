@@ -1,14 +1,13 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.1
+# Rev. 1.1.3
 # -*- coding: utf-8 -*-
 
 
-import urllib, urllib2, os, sys, socket
+import urllib, urllib2
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import CommonFunctions
 
-from urllib2 import Request, urlopen, URLError, HTTPError
 from station import Station
 from helpers import *
 
@@ -264,6 +263,7 @@ def listSongs(url, artist, category, page):
     xbmcplugin.endOfDirectory(handle, True)
 
 def getListItems(response, url, artist, category, page):
+    print url
     if category == 'Artist' or category == 'Search':
         css_class = "white playlist"
     else:
@@ -345,7 +345,6 @@ params = common.getParameters(sys.argv[2])
 
 url  =  None
 mode =  None
-
 title =  None
 category = None
 artist = None
