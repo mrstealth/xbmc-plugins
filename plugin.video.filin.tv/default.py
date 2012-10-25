@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.8
+# Rev. 1.0.9
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -21,6 +21,7 @@ Addon = xbmcaddon.Addon(id='plugin.video.filin.tv')
 language      = Addon.getLocalizedString
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
+
 
 # *** Python helpers ***
 def strip_html(text):
@@ -133,7 +134,8 @@ def getWatched():
     try:
         file_path = os.path.join( addon_cache , "watched.db" )
         with open(file_path) as infile:
-            data = json.load(infile)
+            watched = infile.read().replace(']"]]', '')
+            data = json.loads(watched)
         return data
 
     except IOError, e:
@@ -311,7 +313,6 @@ def listFavorites():
         item.setProperty('IsPlayable', 'false')
         xbmcplugin.addDirectoryItem(pluginhandle, '', item, True)
     else:
-        #favorites = json.loads(string)
         favorites = json.loads(string.replace('\x00', ''))
         for key in favorites:
             item = xbmcgui.ListItem(favorites[key])

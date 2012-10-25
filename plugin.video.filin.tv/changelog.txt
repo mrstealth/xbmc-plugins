@@ -1,3 +1,6 @@
+[B]Version 1.0.9[/B]
+- next try to fix watched.db
+
 [B]Version 1.0.8[/B]
 - fix JSON issue = raise ValueError(errmsg("Extra data", s, end, len(s)))
 
