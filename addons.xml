@@ -1,40 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.audio.muzebra.com"
-       name="Muzebra"
-       version="1.1.3"
-       provider-name="mrstealth">
+<addon id="plugin.video.uakino-reloaded.net"
+       name="Uakino.net"
+       version="1.0.4"
+       provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.parsedom" version="1.2.1"/>
   </requires>
-  <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
-        <provides>audio</provides>
+  <extension point="xbmc.python.pluginsource"
+             provides="video"
+             library="default.py">
+    <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
+    <summary>Uakino HD Online Videos </summary>
+    <description>For personal use only</description>
     <platform>all</platform>
-    <summary lang="en">Listen to music with only the best site muzebra.com</summary>
-    <summary lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки.</summary>
-    <description lang="en">Listen to music with only the best site muzebra.com</description>
-    <description lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки.</description>
   </extension>
 </addon>
 
-<addon id="plugin.video.filin.tv"
-       name="Filin.tv"
-       version="1.0.8"
+<addon id="plugin.video.iptv5.ts9.ru"
+       name="Iptv5.ts9.ru"
+       version="1.0.7"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="1.2.1"/>
+        <import addon="script.module.parsedom" version="1.1.0"/>
     </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
         <provides>video</provides>
     </extension>
     <extension point= "xbmc.addon.metadata">
-        <summary>Browse and stream from filin.tv</summary>
-        <description>Enables watching streams on filin.tv that are flash enabled.</description>
-        <description>For personal use only</description>
+        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
+        <description>Enables watching streams oniptv5.ts9.ru</description>
+        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.youfreetv.net"
+       name="Youfreetv.net"
+       version="1.0.1"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="0.9.1"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Browse and stream live tv from youfreetv.net</summary>
+        <description>Enables watching streams on youfreetv.net</description>
+        <disclaimer>This is an unofficial XBMC addon</disclaimer>
         <platform>all</platform>
     </extension>
 </addon>
@@ -59,6 +78,20 @@
   </extension>
 </addon>
 
+<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
+	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
+		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
+		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
+		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Install Add-ons from MrStealth add-on repository</summary>
+		<description>Download and install add-ons by mrstealth</description>
+		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
 <addon id="plugin.video.iptv.root-host.pro"
        name="Iptv.root-host.pro"
        version="1.0.0"
@@ -78,28 +111,29 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.iptv5.ts9.ru"
-       name="Iptv5.ts9.ru"
-       version="1.0.7"
+<addon id="plugin.audio.muzebra.com"
+       name="Muzebra"
+       version="1.1.3"
        provider-name="mrstealth">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="1.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point= "xbmc.addon.metadata">
-        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
-        <description>Enables watching streams oniptv5.ts9.ru</description>
-        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
-        <platform>all</platform>
-    </extension>
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.parsedom" version="1.2.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
+        <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">Listen to music with only the best site muzebra.com</summary>
+    <summary lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки.</summary>
+    <description lang="en">Listen to music with only the best site muzebra.com</description>
+    <description lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки.</description>
+  </extension>
 </addon>
 
-<addon id="plugin.video.uakino-reloaded.net"
-       name="Uakino.net"
-       version="1.0.4"
+<addon id="plugin.video.imtv.at.ua"
+       name="Imtv.at.ua"
+       version="1.0.0"
        provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -111,43 +145,29 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>Uakino HD Online Videos </summary>
+    <summary>imtv.at.ua</summary>
     <description>For personal use only</description>
     <platform>all</platform>
   </extension>
 </addon>
 
-<addon id="plugin.video.youfreetv.net"
-       name="Youfreetv.net"
-       version="1.0.1"
+<addon id="plugin.video.filin.tv"
+       name="Filin.tv"
+       version="1.0.9"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="0.9.1"/>
+        <import addon="script.module.parsedom" version="1.2.1"/>
     </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
         <provides>video</provides>
     </extension>
     <extension point= "xbmc.addon.metadata">
-        <summary>Browse and stream live tv from youfreetv.net</summary>
-        <description>Enables watching streams on youfreetv.net</description>
-        <disclaimer>This is an unofficial XBMC addon</disclaimer>
+        <summary>Browse and stream from filin.tv</summary>
+        <description>Enables watching streams on filin.tv that are flash enabled.</description>
+        <description>For personal use only</description>
         <platform>all</platform>
     </extension>
-</addon>
-
-<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
-	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
-		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
-		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Install Add-ons from MrStealth add-on repository</summary>
-		<description>Download and install add-ons by mrstealth</description>
-		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
-		<platform>all</platform>
-	</extension>
 </addon>
 
 <addon id='script.module.parsedom' version='1.2.1' name='Parsedom for xbmc plugins' provider-name='TheCollective'>
