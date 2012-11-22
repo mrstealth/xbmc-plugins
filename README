@@ -4,9 +4,4 @@ MrStealth's xbmc plugin repository!
 XBMC repository: https://github.com/downloads/mrstealth/xbmc-plugins/repository.mrstealth.zip
 
 To install the repository, download from: https://github.com/downloads/mrstealth/xbmc-plugins/repository.mrstealth.zip
-and use 'Add from zip' in XBMC.
-
-Contents:
- - filin.tv (Plays flash enabled streams from filin.tv)
- - youfreetv.net (Plays live stream from http://www.youfreetv.net)
- - iptv5.ts9.ru (Plays live stream from http://www.iptv5.ts9.ru/)
+and use 'Add from zip' in XBMC
