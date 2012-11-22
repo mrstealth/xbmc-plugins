@@ -24,12 +24,11 @@ import io
 import inspect
 import time
 import HTMLParser
+import json
 
-version = "1.2.1"
-plugin = "CommonFunctions-" + version
-print plugin
-
-USERAGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8"
+version = u"2.0.0"
+plugin = u"CommonFunctions-" + version
+USERAGENT = u"Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:16.0.1) Gecko/20121011 Firefox/16.0.1"
 
 if hasattr(sys.modules["__main__"], "xbmc"):
     xbmc = sys.modules["__main__"].xbmc
@@ -56,13 +55,13 @@ if hasattr(sys.modules["__main__"], "opener"):
 
 
 # This function raises a keyboard for user input
-def getUserInput(title="Input", default="", hidden=False):
+def getUserInput(title=u"Input", default=u"", hidden=False):
     log("", 5)
     result = None
 
     # Fix for when this functions is called with default=None
     if not default:
-        default = ""
+        default = u""
 
     keyboard = xbmc.Keyboard(default, title)
     keyboard.setHiddenInput(hidden)
@@ -76,13 +75,13 @@ def getUserInput(title="Input", default="", hidden=False):
 
 
 # This function raises a keyboard numpad for user input
-def getUserInputNumbers(title="Input", default=""):
+def getUserInputNumbers(title=u"Input", default=u""):
     log("", 5)
     result = None
 
     # Fix for when this functions is called with default=None
     if not default:
-        default = ""
+        default = u""
 
     keyboard = xbmcgui.Dialog()
     result = keyboard.numeric(0, title, default)
@@ -95,6 +94,7 @@ def getUserInputNumbers(title="Input", default=""):
 def getParameters(parameterString):
     log("", 5)
     commands = {}
+    parameterString = urllib.unquote_plus(parameterString)
     splitCommands = parameterString[parameterString.find('?') + 1:].split('&')
 
     for command in splitCommands:
@@ -115,7 +115,7 @@ def replaceHTMLCodes(txt):
     txt = re.sub("(&#[0-9]+)([^;^0-9]+)", "\\1;\\2", makeUTF8(txt))
 
     txt = HTMLParser.HTMLParser().unescape(txt)
-
+    txt = txt.replace("&amp;", "&")
     log(repr(txt), 5)
     return txt
 
@@ -153,7 +153,7 @@ def _getDOMContent(html, name, match, ret):  # Cleanup
 
     log("start: %s, len: %s, end: %s" % (start, len(match), end), 3)
     if start == -1 and end == -1:
-        result = ""
+        result = u""
     elif start > -1 and end > -1:
         result = html[start + len(match):end]
     elif end > -1:
@@ -228,18 +228,31 @@ def _getDOMElements(item, name, attrs):
     log("Done: " + str(type(lst)), 3)
     return lst
 
-def parseDOM(html, name="", attrs={}, ret=False):
+def parseDOM(html, name=u"", attrs={}, ret=False):
     log("Name: " + repr(name) + " - Attrs:" + repr(attrs) + " - Ret: " + repr(ret) + " - HTML: " + str(type(html)), 3)
+    #log("BLA: " + repr(type(html)) + " - " + repr(type(name)))
 
-    if isinstance(html, str) or isinstance(html, unicode):
+    if isinstance(name, str): # Should be handled
+        try:
+            name = name #.decode("utf-8")
+        except:
+            log("Couldn't decode name binary string: " + repr(name))
+
+    if isinstance(html, str):
+        try:
+            html = [html.decode("utf-8")] # Replace with chardet thingy
+        except:
+            log("Couldn't decode html binary string. Data length: " + repr(len(html)))
+            html = [html]
+    elif isinstance(html, unicode):
         html = [html]
     elif not isinstance(html, list):
         log("Input isn't list or string/unicode.")
-        return ""
+        return u""
 
     if not name.strip():
         log("Missing tag name")
-        return ""
+        return u""
 
     ret_lst = []
     for item in html:
@@ -301,9 +314,9 @@ def extractJS(data, function=False, variable=False, match=False, evaluate=False,
             del lst[i]
         else:
             log("Cleaning item: " + repr(lst[i]), 4)
-            if lst[i][0] == "\n":
+            if lst[i][0] == u"\n":
                 lst[i] == lst[i][1:]
-            if lst[i][len(lst) -1] == "\n":
+            if lst[i][len(lst) -1] == u"\n":
                 lst[i] == lst[i][:len(lst)- 2]
             lst[i] = lst[i].strip()
 
@@ -318,15 +331,15 @@ def extractJS(data, function=False, variable=False, match=False, evaluate=False,
             elif variable:
                 tlst = re.compile(variable +".*?=.*?;", re.M | re.S).findall(lst[i])
                 data = []
-                for tmp in tlst:
+                for tmp in tlst: # This breaks for some stuff. "ad_tag": "http://ad-emea.doubleclick.net/N4061/pfadx/com.ytpwatch.entertainment/main_563326'' # ends early, must end with }
                     cont_char = tmp[0]
                     cont_char = tmp[tmp.find("=") + 1:].strip()
                     cont_char = cont_char[0]
                     if cont_char in "'\"":
-                        log("Using %s as quotation mark" % cont_char, 3)
+                        log("Using %s as quotation mark" % cont_char, 1)
                         tmp = tmp[tmp.find(cont_char) + 1:tmp.rfind(cont_char)]
                     else:
-                        log("No quotation mark found", 3)
+                        log("No quotation mark found", 1)
                         tmp = tmp[tmp.find("=") + 1: tmp.rfind(";")]
 
                     tmp = tmp.strip()
@@ -344,7 +357,11 @@ def extractJS(data, function=False, variable=False, match=False, evaluate=False,
             log("Evaluating %s" % lst[i])
             data = lst[i].strip()
             try:
-                lst[i] = eval(data)
+                try:
+                    lst[i] = json.loads(data)
+                except:
+                    log("Couldn't json.loads, trying eval")
+                    lst[i] = eval(data)
             except:
                 log("Couldn't eval: %s from %s" % (repr(data), repr(lst[i])))
 
@@ -393,10 +410,13 @@ def fetchPage(params={}):
         log("connecting to server...", 1)
 
         con = urllib2.urlopen(request)
-        ret_obj["header"] = str(con.info())
+        ret_obj["header"] = con.info()
         ret_obj["new_url"] = con.geturl()
-        if get("no-content", "false") == "false":
-            ret_obj["content"] = con.read()
+        if get("no-content", "false") == u"false" or get("no-content", "false") == "false":
+            inputdata = con.read()
+            #data_type = chardet.detect(inputdata)
+            #inputdata = inputdata.decode(data_type["encoding"])
+            ret_obj["content"] = inputdata #.decode("utf-8")
 
         con.close()
 
@@ -457,7 +477,7 @@ def makeAscii(data):
         return data.encode('ascii', "ignore")
     except:
         log("Hit except on : " + repr(data))
-        s = ""
+        s = u""
         for i in data:
             try:
                 i.encode("ascii", "ignore")
@@ -474,14 +494,15 @@ def makeAscii(data):
 # This function handles stupid utf handling in python.
 def makeUTF8(data):
     log(repr(data), 5)
+    return data
     try:
-        return data.decode('utf8', 'ignore')
+        return data.decode('utf8', 'xmlcharrefreplace') # was 'ignore'
     except:
         log("Hit except on : " + repr(data))
-        s = ""
+        s = u""
         for i in data:
             try:
-                i.decode("utf8", "ignore")
+                i.decode("utf8", "xmlcharrefreplace")
             except:
                 log("Can't convert character", 4)
                 continue
@@ -491,12 +512,12 @@ def makeUTF8(data):
         return s
 
 
-def openFile(filepath, options="r"):
+def openFile(filepath, options=u"r"):
     log(repr(filepath) + " - " + repr(options))
     if options.find("b") == -1:  # Toggle binary mode on failure
-        alternate = options + "b"
+        alternate = options + u"b"
     else:
-        alternate = options.replace("b", "")
+        alternate = options.replace(u"b", u"")
 
     try:
         log("Trying normal: %s" % options)
@@ -509,6 +530,6 @@ def openFile(filepath, options="r"):
 def log(description, level=0):
     if dbg and dbglevel > level:
         try:
-            xbmc.log("[%s] %s : '%s'" % (plugin, inspect.stack()[1][3], description.encode("utf-8", "ignore")), xbmc.LOGNOTICE)
+            xbmc.log((u"[%s] %s : '%s'" % (plugin, inspect.stack()[1][3], description)).decode("utf-8"), xbmc.LOGNOTICE)
         except:
-            xbmc.log("[%s] %s : '%s'" % (plugin, inspect.stack()[1][3], description), xbmc.LOGNOTICE)
+            xbmc.log(u"FALLBACK [%s] %s : '%s'" % (plugin, inspect.stack()[1][3], repr(description)), xbmc.LOGNOTICE)

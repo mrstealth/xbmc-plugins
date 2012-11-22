@@ -1,3 +1,14 @@
+[B]Version 1.1.2[/B]
+- use default XBMC player
+- add fanart image
+
+[B]Version 1.1.1[/B]
+- advanced search: titles only
+
+[B]Version 1.1.0[/B]
+- use translit plugin
+- fix search
+
 [B]Version 1.0.9[/B]
 - next try to fix watched.db
 

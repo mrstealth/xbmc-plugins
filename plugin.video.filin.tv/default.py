@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.9
+# Rev. 1.1.1
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -10,8 +10,6 @@ import CommonFunctions
 import simplejson as json
 
 from urllib2 import Request, urlopen, URLError, HTTPError
-from flashplayer import *
-
 common = CommonFunctions
 
 BASE_URL = 'http://www.filin.tv'
@@ -22,6 +20,8 @@ language      = Addon.getLocalizedString
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
 
+import Translit as translit
+translit = translit.Translit(encoding='cp1251')
 
 # *** Python helpers ***
 def strip_html(text):
@@ -130,19 +130,6 @@ def getTitle(block):
     title = common.parseDOM(block, "a")
     return title[len(title)-1]
 
-def getWatched():
-    try:
-        file_path = os.path.join( addon_cache , "watched.db" )
-        with open(file_path) as infile:
-            watched = infile.read().replace(']"]]', '')
-            data = json.loads(watched)
-        return data
-
-    except IOError, e:
-        data = []
-        return data
-
-
 # *** UI functions ***
 def search():
     kbd = xbmc.Keyboard()
@@ -152,18 +139,43 @@ def search():
     keyword=''
 
     if kbd.isConfirmed():
-        try:
-            keyword = trans.detranslify(kbd.getText())
-            keyword=keyword.encode("utf-8")
-        except:
-            keyword = kbd.getText()
+      keyword = kbd.getText()
+
+    if Addon.getSetting('translit') == 'true':
+      keyword = translit.rus(kbd.getText())
+      print "*** Translit search enabled %s"%keyword.decode('cp1251').encode('utf-8')
 
     path = "/do=search"
-    values = {'do' : 'search',
-              'subaction' : 'search',
-              'story' : keyword,
-              'x' : '0',
-              'y' : '0'}
+
+    # Quick search: titles + descriptions
+    #    values = {
+    #        'do' : 'search',
+    #        'subaction' : 'search',
+    #        'story' : keyword,
+    #        'x' : '0',
+    #        'y' : '0'
+    #    }
+
+    # Advanced search: titles only
+    values = {
+      'beforeafter' : 'after',
+      'catlist[]' : '0',
+      'do' : 'search',
+      'full_search' : '1',
+      'replyless' : '0',
+      'replylimit' : '0',
+      'resorder' : 'desc',
+      'result_from' : '1',
+      'result_num' : '30',
+      'search_start' : '1',
+      'searchdate' : '0',
+      'searchuser' : '',
+      'showposts' : '0',
+      'sortby' : 'date',
+      'story' : keyword,
+      'subaction' : 'search',
+      'titleonly' : '3'
+    }
 
     data = urllib.urlencode(values)
     req = Request(BASE_URL+path, data)
@@ -414,27 +426,30 @@ def showItem(url, thumbnail):
         uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
         item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), thumbnailImage=thumbnail)
 
-        if locations[i] in getWatched():
-            overlay = xbmcgui.ICON_OVERLAY_WATCHED
-            info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 1}
-        else:
-            info = {"Title": title, 'genre' : genre, "Plot": desc}
+#         if locations[i] in getWatched():
+#             overlay = xbmcgui.ICON_OVERLAY_WATCHED
+#             info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
+#         else:
+#             info = {"Title": title, 'genre' : genre, "Plot": desc}
 
+        overlay = xbmcgui.ICON_OVERLAY_WATCHED
+        info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
         item.setInfo( type='Video', infoLabels=info)
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item)
+        item.setProperty('IsPlayable', 'true')
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
 
     # set view mode to List2 (quarz3 skin)
-    xbmc.executebuiltin('Container.SetViewMode(52)')
+    xbmc.executebuiltin('Container.SetViewMode(51)')
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
 def playItem(url):
     item = xbmcgui.ListItem(path = url)
-    player = FlashPlayer()
-    player.play(url, item)
+    item.setProperty('mimetype', 'video/x-flv')
+    xbmcplugin.setResolvedUrl(pluginhandle, True, item)    
 
-    while(1):
-        xbmc.sleep(500)
+        
+
 
 
 # MAIN()

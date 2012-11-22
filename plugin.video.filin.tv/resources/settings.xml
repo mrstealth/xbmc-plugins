@@ -1,2 +1,3 @@
 <settings>
+  <setting id="translit" type="bool" label="Enable translit search" default="true" />
 </settings>

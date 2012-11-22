@@ -1,3 +1,16 @@
+[B]Version 2.0.2[/B]
+- Change add-on name
+
+[B]Version 2.0.1[/B]
+- Change add-on name
+
+[B]Version 2.0.0[/B]
+- Get stream URL directly and do not store in DB
+- Simplify plaugin structure
+- New IPTV plugin icon and fanart
+- Enhansed URL resolver
+- Rename add-on
+
 [B]Version 1.0.7[/B]
 - Hotfix for double channels in category
 [B]Version 1.0.6[/B]
