@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.2
+# Rev. 2.0.3
 # -*- coding: utf-8 -*-
 
 import urllib, urllib2, httplib
@@ -52,12 +52,6 @@ class IPTV():
 
     def menu(self):
       self.listCategories(self.url)
-
-      if self.addon.getSetting('parent_control') == 'false':
-        uri = sys.argv[0] + '?mode=channel&url=http://iptv5.ts9.ru/playtv_18.htm&index=0'
-        item = xbmcgui.ListItem(self.language(1001), iconImage = self.icon, thumbnailImage = self.icon)
-        xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-
       xbmcplugin.endOfDirectory(self.handle, True)
 
     def listCategories(self, url):
