@@ -21,8 +21,8 @@
 </addon>
 
 <addon id="plugin.video.iptv5.ts9.ru"
-       name="Iptv5.ts9.ru"
-       version="1.0.7"
+       name="IPTV (iptv5.ts9.ru)"
+       version="2.0.2"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -32,9 +32,8 @@
         <provides>video</provides>
     </extension>
     <extension point= "xbmc.addon.metadata">
-        <summary>Stream live IPTV from iptv5.ts9.ru</summary>
-        <description>Enables watching streams oniptv5.ts9.ru</description>
-        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <summary>Stream live IPTV from http://iptv5.ts9.ru</summary>
+        <description>For personal use only</description>
         <platform>all</platform>
     </extension>
 </addon>
@@ -78,6 +77,37 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.iptv.root.host.pro"
+       name="IPTV (iptv.root-host.pro)"
+       version="1.0.2"
+       provider-name="mrstealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.parsedom" version="1.2.1"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Stream live IPTV from iptv.root-host.pro</summary>
+        <description>Enables watching streams on iptv.root-host.pro</description>
+        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id='script.module.translit' version='1.0.3' name='Translit for xbmc plugins' provider-name='MrStealth'>
+  <requires>
+    <import addon='xbmc.python' version='2.0'/>
+  </requires>
+  <extension point='xbmc.service' library="default.py" />
+  <extension point='xbmc.addon.metadata'>
+    <platform>all</platform>
+    <summary lang='en'>Translit for xbmc plugins.</summary>
+  </extension>
+  <extension point='xbmc.python.module' library='lib' />
+</addon>
+
 <addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
 	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
 		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
@@ -90,25 +120,6 @@
 		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
 		<platform>all</platform>
 	</extension>
-</addon>
-
-<addon id="plugin.video.iptv.root-host.pro"
-       name="Iptv.root-host.pro"
-       version="1.0.0"
-       provider-name="mrstealth">
-    <requires>
-        <import addon="xbmc.python" version="2.0"/>
-        <import addon="script.module.parsedom" version="1.1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
-        <provides>video</provides>
-    </extension>
-    <extension point= "xbmc.addon.metadata">
-        <summary>Stream live IPTV from iptv.root-host.pro</summary>
-        <description>Enables watching streams on iptv.root-host.pro</description>
-        <disclaimer>This is an unofficial XBMC add-on</disclaimer>
-        <platform>all</platform>
-    </extension>
 </addon>
 
 <addon id="plugin.audio.muzebra.com"
@@ -133,11 +144,12 @@
 
 <addon id="plugin.video.filin.tv"
        name="Filin.tv"
-       version="1.0.9"
+       version="1.1.2"
        provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
         <import addon="script.module.parsedom" version="1.2.1"/>
+        <import addon="script.module.translit" version="1.0.2"/>
     </requires>
     <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
         <provides>video</provides>
@@ -150,7 +162,7 @@
     </extension>
 </addon>
 
-<addon id='script.module.parsedom' version='1.2.1' name='Parsedom for xbmc plugins' provider-name='TheCollective'>
+<addon id='script.module.parsedom' version='2.0.0' name='Parsedom for xbmc plugins' provider-name='TheCollective'>
   <requires>
     <import addon='xbmc.python' version='2.0'/>
   </requires>
