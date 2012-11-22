@@ -26,7 +26,7 @@ import time
 import HTMLParser
 import json
 
-version = u"2.0.0"
+version = u"2.0.1"
 plugin = u"CommonFunctions-" + version
 USERAGENT = u"Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:16.0.1) Gecko/20121011 Firefox/16.0.1"
 
@@ -94,7 +94,7 @@ def getUserInputNumbers(title=u"Input", default=u""):
 def getParameters(parameterString):
     log("", 5)
     commands = {}
-    parameterString = urllib.unquote_plus(parameterString)
+    #parameterString = urllib.unquote_plus(parameterString)
     splitCommands = parameterString[parameterString.find('?') + 1:].split('&')
 
     for command in splitCommands:

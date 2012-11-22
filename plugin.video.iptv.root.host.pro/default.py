@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.3
 # -*- coding: utf-8 -*-
-
-# http://trakt.tv/show/homeland
 
 import xbmcplugin,xbmcgui,xbmcaddon
 import os, sys, urllib, urllib2, httplib, socket
@@ -39,10 +37,11 @@ class SmartRedirectHandler(urllib2.HTTPRedirectHandler):
         return headers['Location']
 
 def listCategories():
-    print "List cat"
+    print "List categories"
     for i, category in enumerate(sorted(CATEGORIES)):
         url = 'http://iptv.root-host.pro/kat.php?kat='+category
-        uri = sys.argv[0] + '?mode=channels&url=%s'%urllib.quote(url)
+
+        uri = sys.argv[0] + '?mode=channels&url=%s'%urllib.quote_plus(url)
         item = xbmcgui.ListItem(category, iconImage=addon_icon, thumbnailImage=addon_icon)
         xbmcplugin.addDirectoryItem(handle, uri, item, True)
 
@@ -50,18 +49,14 @@ def listCategories():
 
 
 def listChannels(url):
+    print "listChannels"
     print url
+
     page = common.fetchPage({"link": url})
 
     if page["status"] == 200:
         titles = common.parseDOM(page["content"], "title")
         links = common.parseDOM(page["content"], "stream_url")
-
-        print titles
-        print links
-
-        print len(titles)
-        print len(links)
 
         try:
             for i, title in enumerate(titles):

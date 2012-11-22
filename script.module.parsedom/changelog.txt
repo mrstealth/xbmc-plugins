@@ -1,3 +1,6 @@
+[B]Version 2.0.1[/B]
+- Do not unquote url in parsedom module
+
 [B]Version 2.0.0[/B]
 - Fix decoding issue with none utf-8 sites
 

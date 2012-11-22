@@ -1,3 +1,8 @@
+[B]Version 1.0.3[/B]
+- Change add-on name
+- Use new tv icon
+- Use latest script.module.parsedom
+
 [B]Version 1.0.2[/B]
 - Change add-on name
 
