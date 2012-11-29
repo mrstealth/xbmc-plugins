@@ -77,17 +77,18 @@ def getDownloadFolder():
     folder = Addon.getSetting('folder')
     return False if folder == 'None' else folder
 
-def download(aid, path):
+def download(aid, title, path):
     url = construct_mp3_url(aid)
 
     if url:
-      title = getFileName(url).replace('\"', "")
+      #title = getFileName(url).replace('\"', "")
+      title = title + '.mp3'
       source = url
       destination = path + title
 
       try:
           dialog = xbmcgui.DialogProgress()
-          dialog.create("MP3 Downloader","Downloading file to play")
+          dialog.create("MP3 Downloader","Please wait, downloading file ...")
           xbmcvfs.copy(source, destination)
 
       except:
@@ -100,17 +101,20 @@ def download(aid, path):
 
 # ***** MAIN *****
 args = sys.argv[1]
+args = sys.argv[1].split("|")
+
+print args
 
 if sys.argv[1]:
   folder = getDownloadFolder()
   if folder:
-    download(sys.argv[1], folder)
+    download(args[0], args[1], folder)
   else:
     dialog = xbmcgui.Dialog()
     path = dialog.browse(0, 'Choose download directory', 'music', '', False, False)
 
     if path:
-      download(sys.argv[1], path)
+      download(args[0], args[1], path)
     else:
       print "Please select a path"
 else:

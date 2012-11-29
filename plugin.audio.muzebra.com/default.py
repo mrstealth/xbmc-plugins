@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.3
+# Rev. 1.1.5
 # -*- coding: utf-8 -*-
 
 
@@ -10,6 +10,9 @@ import CommonFunctions
 
 from station import Station
 from helpers import *
+
+import Translit as translit
+translit = translit.Translit()
 
 common = CommonFunctions
 stationDB = Station()
@@ -100,6 +103,12 @@ def main():
 
 def search():
     query = common.getUserInput("Search for music", "")
+
+    if Addon.getSetting('translit') == 'true':
+    	query = translit.rus(query)
+    else:
+	print query
+
     page = '0'
     if query != None:
       listSongs(BASE_URL, query, 'Search', page)
@@ -127,8 +136,8 @@ def onlineradio(url, category):
         for name,url in station.items():
             uri = sys.argv[0] + '?mode=play_stream'
             uri += '&url='  + urllib.quote_plus(url)
-            uri += '&title='  + name.decode('utf-8')
-            uri += '&category='  + category.decode('utf-8')
+            uri += '&title='  + name
+            uri += '&category='  + category
 
             item = xbmcgui.ListItem(name, iconImage = addon_icon, thumbnailImage = addon_icon)
             item.setInfo(type='music', infoLabels = {'title': name, 'genre': category })
@@ -145,8 +154,8 @@ def onlineradio(url, category):
           for i, title in enumerate(titles):
               uri = sys.argv[0] + '?mode=play_stream'
               uri += '&url='  + urllib.quote_plus(links[i])
-              uri += '&title='  + titles[i].decode('utf-8')
-              uri += '&category='  + category.decode('utf-8')
+              uri += '&title='  + titles[i]
+              uri += '&category='  + category.decode('cp1251')
 
               if check_enabled:
                 if check_url(links[i]):
@@ -187,7 +196,7 @@ def showAlphabet(url, category):
             uri = sys.argv[0] + '?mode=list_artists'
             uri += '&url='  + BASE_URL
             uri += '&letter=' + links[i]
-            title = titles[i].decode('utf-8').upper()
+            title = titles[i].upper()
 
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
             item.setInfo(type='music', infoLabels = {'title': title})
@@ -212,9 +221,9 @@ def listStations(url, category):
         for i, title in enumerate(titles):
             uri = sys.argv[0] + '?mode=list_songs'
             uri += '&url='  + urllib.quote_plus(BASE_URL+links[i])
-            uri += '&title='  + titles[i].decode('utf-8')
-            uri += '&artist=' + titles[i].decode('utf-8')
-            uri += '&category='  + category.decode('utf-8')
+            uri += '&title='  + titles[i]
+            uri += '&artist=' + titles[i]
+            uri += '&category=' + category.decode('cp1251')
 
             thumb = BASE_URL+thumbs[i]
 
@@ -240,7 +249,7 @@ def listArtists(url, artist):
             uri += '&artist=' + links[i].split('=')[-1]
             uri += '&category=Artist'
 
-            title = titles[i].decode('utf-8').upper()
+            title = titles[i].upper()
 
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage = addon_icon)
             item.setInfo(type='music', infoLabels = {'title': title})
@@ -291,8 +300,8 @@ def getListItems(response, url, artist, category, page):
         print "Not artist image found"
 
     for i, identifier in enumerate(identifiers):
-        t = strip_html(songs[i].decode('utf-8')).capitalize()
-        a = strip_html(artists[i]).decode('utf-8').capitalize()
+        t = strip_html(songs[i]).capitalize()
+        a = strip_html(artists[i]).capitalize()
         s = t + ' (%s)'%a
 
         uri = sys.argv[0] + '?mode=play_mp3'

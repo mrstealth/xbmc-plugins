@@ -88,7 +88,7 @@ def xbmcItem(mode, url, title, icon=False, action=False):
 
 def xbmcContextMenuItem(item, title, identifier):
     script = addon_path + '/downloader.py'
-    params = "%s"%identifier
+    params = "%s|%s"%(identifier, title)
     runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
     item.addContextMenuItems([(language(6000), runner)])
 

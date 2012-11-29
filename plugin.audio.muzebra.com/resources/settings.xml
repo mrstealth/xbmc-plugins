@@ -1,5 +1,6 @@
 <settings>
     <setting id="folder" type="folder" label="Download folder" default="None" />
-    <setting id="availability_check" type="bool" label="Enable stream availability check" default="true" />
-    <setting id="interval" type="number" label="Check stream availability (hours)" default="24" />
+    <setting id="translit" type="bool" label="Enable translit search" default="true" />
+    <setting id="availability_check" type="bool" label="Enable stream availability check" default="false" />
+    <setting id="interval" type="number" label="Check stream availability (hours)" default="48" />
 </settings>
