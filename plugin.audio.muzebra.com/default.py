@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.5
+# Rev. 1.2.0
 # -*- coding: utf-8 -*-
 
 
@@ -155,7 +155,7 @@ def onlineradio(url, category):
               uri = sys.argv[0] + '?mode=play_stream'
               uri += '&url='  + urllib.quote_plus(links[i])
               uri += '&title='  + titles[i]
-              uri += '&category='  + category.encode('utf-8')
+              uri += '&category='  + category
 
               if check_enabled:
                 if check_url(links[i]):
