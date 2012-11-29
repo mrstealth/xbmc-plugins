@@ -155,7 +155,7 @@ def onlineradio(url, category):
               uri = sys.argv[0] + '?mode=play_stream'
               uri += '&url='  + urllib.quote_plus(links[i])
               uri += '&title='  + titles[i]
-              uri += '&category='  + category.decode('cp1251')
+              uri += '&category='  + category.encode('utf-8')
 
               if check_enabled:
                 if check_url(links[i]):
@@ -223,8 +223,8 @@ def listStations(url, category):
             uri += '&url='  + urllib.quote_plus(BASE_URL+links[i])
             uri += '&title='  + titles[i]
             uri += '&artist=' + titles[i]
-            uri += '&category=' + category.decode('cp1251')
-
+            uri += '&category=' + category
+            
             thumb = BASE_URL+thumbs[i]
 
             item = xbmcgui.ListItem(titles[i], iconImage = addon_icon, thumbnailImage = thumb)

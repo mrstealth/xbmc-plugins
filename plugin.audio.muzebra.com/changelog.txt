@@ -1,5 +1,5 @@
 [B]Version 1.1.5[/B]
-- use item title as mp3 file name
+- fix encoding issue
 [B]Version 1.1.4[/B]
 - fix encoding issue
 [B]Version 1.1.3[/B]
