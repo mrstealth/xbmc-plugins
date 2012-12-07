@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.audio.muzebra.com"
-       name="Muzebra"
-       version="1.2.0"
-       provider-name="mrstealth">
+<addon id="plugin.audio.muzebra.com" name="Muzebra.com" version="2.0.3" provider-name="mrstealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.parsedom" version="2.0.1"/>
   </requires>
   <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
-        <provides>audio</provides>
+    <provides>audio</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <summary lang="en">Listen to music with only the best site muzebra.com</summary>
-    <summary lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки.</summary>
-    <description lang="en">Listen to music with only the best site muzebra.com</description>
-    <description lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки.</description>
+    <summary lang="ru">Muzebra (ex Z-Music.Org) поисковик музыки и онлайн плеер музыки</summary>
+    <description lang="en">For personal use only</description>
+    <description lang="ru">For personal use only</description>
   </extension>
 </addon>
