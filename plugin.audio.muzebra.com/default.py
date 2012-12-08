@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.4
+# Rev. 2.0.5
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -143,7 +143,7 @@ class Muzebra():
       item.setProperty('IsPlayable', 'true')
       xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
 
-    #self.showMore(content)
+    self.showMore(url, content)
     xbmcplugin.endOfDirectory(self.handle, True)
 
 
@@ -203,15 +203,21 @@ class Muzebra():
     
     xbmcplugin.endOfDirectory(self.handle, True)
     
-  def showMore(self, content):
+  def showMore(self, url, content):
     pagination = common.parseDOM(content, "div", attrs = { "class":"pagination" })
 
     if pagination:
       title = common.parseDOM(content, "a", attrs = {"class": "stat"})[0]
       link = common.parseDOM(content, "a", ret="href", attrs = {"class": "stat"})[0]
       
-      uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', self.url+link)
-      item = xbmcgui.ListItem('[COLOR=FF00FF00]%s[/COLOR]'%title, iconImage = self.icon, thumbnailImage = self.icon)
+      if url.find('page') == -1:
+        url = url.replace(' ', '+') + '&page=2'
+      else:
+        page = int(url.split('=')[-1])
+        url = url[:-1]+str(page+1)
+        
+      uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', urllib.quote_plus(url))
+      item = xbmcgui.ListItem('[COLOR=FF00FFF0]%s[/COLOR]'%title, iconImage = self.icon, thumbnailImage = self.icon)
       xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
   
   
@@ -256,8 +262,6 @@ class Muzebra():
         self.showErrorMessage('The server couldn\'t fulfill the request. %s'%e.code)
 
 
-
-
   def search(self):
     query = common.getUserInput(self.language(1000), "")
     url = self.url + '/search/?q=' + query
@@ -266,6 +270,7 @@ class Muzebra():
       self.getSongs(url, self.language(1000))
     else:
       main()
+      
 
   # login to muzebra.com
   def login(self):
