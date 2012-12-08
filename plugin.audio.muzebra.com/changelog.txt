@@ -1,3 +1,6 @@
+[B]Version 2.0.4[/B]
+- Fix artist listing
+
 [B]Version 2.0.3[/B]
 - Artist listing
 

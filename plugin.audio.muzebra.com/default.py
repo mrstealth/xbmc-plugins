@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.3
+# Rev. 2.0.4
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -40,8 +40,8 @@ class Muzebra():
 
     mode = params['mode'] if params.has_key('mode') else None
     url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
-    playlist = params['playlist'] if params.has_key('playlist') else None
-    artists = params['artists'] if params.has_key('artists') else None
+    playlist = params['playlist'] if params.has_key('playlist') else 'Unknown'
+    artists = params['artists'] if params.has_key('artists') else 'Unknown'
     lang = params['lang'] if params.has_key('lang') else None
     page = params['page'] if params.has_key('page') else 1
 
@@ -164,8 +164,8 @@ class Muzebra():
         titles = common.parseDOM(artists, "a")
 
         for i, link in enumerate(links):
-          uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', urllib.quote_plus(self.url+link))
           title = titles[i].upper()
+          uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', urllib.quote_plus(self.url+link), title)
 
           item = xbmcgui.ListItem(title, iconImage = self.icon, thumbnailImage = self.icon)
           xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
