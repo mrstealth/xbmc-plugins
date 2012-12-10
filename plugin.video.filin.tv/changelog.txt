@@ -1,3 +1,9 @@
+[B]Version 1.1.4[/B]
+- update icon
+
+[B]Version 1.1.3[/B]
+- fix thumbnail issue in favorite
+
 [B]Version 1.1.2[/B]
 - use default XBMC player
 - add fanart image

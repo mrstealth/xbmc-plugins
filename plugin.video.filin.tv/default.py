@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.1
+# Rev. 1.1.4
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -411,7 +411,11 @@ def showItem(url, thumbnail):
 
     genre = unescape(" ".join(str(g) for g in common.parseDOM(mainf, "a")), 'cp1251')
 
-    if len(thumbnail) == 0: thumbnail = getThumbnail(block)
+    if not thumbnail or len(thumbnail) == 0:
+        thumbnail = getThumbnail(block)
+    else:
+        thumbnail = addon_icon
+
     title = beatify_title(getTitle(block))
     desc = getDescription(block)
 
@@ -446,9 +450,9 @@ def showItem(url, thumbnail):
 def playItem(url):
     item = xbmcgui.ListItem(path = url)
     item.setProperty('mimetype', 'video/x-flv')
-    xbmcplugin.setResolvedUrl(pluginhandle, True, item)    
+    xbmcplugin.setResolvedUrl(pluginhandle, True, item)
 
-        
+
 
 
 
