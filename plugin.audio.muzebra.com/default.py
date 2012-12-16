@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.7
+# Rev. 2.0.9
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import json, CommonFunctions
+import json, HTMLParser, CommonFunctions
+from random import randint
 
 common = CommonFunctions
 
@@ -20,7 +21,7 @@ class Muzebra():
     self.language = self.addon.getLocalizedString
     self.handle = int(sys.argv[1])
     self.url = 'http://muzebra.com'
-    
+
     self.playlists_url = 'http://muzebra.com/user/playlist'
 
     self.username = self.addon.getSetting('username') if self.addon.getSetting('username') else None
@@ -31,7 +32,7 @@ class Muzebra():
     self.cookie = cookielib.LWPCookieJar()
 
     self.authenticated = False
-    self.token = self.getAPIkey()
+    self.api_keys = self.getAPIkey()
 
 
   def main(self):
@@ -46,9 +47,11 @@ class Muzebra():
     lang = params['lang'] if params.has_key('lang') else None
     page = params['page'] if params.has_key('page') else 1
 
+    dataid = params['dataid'] if params.has_key('dataid') else None
+    datalink = params['datalink'] if params.has_key('datalink') else None
 
     if mode == 'play':
-      self.play(url)
+      self.play(dataid, datalink)
     if mode == 'search':
       self.search()
     if mode == 'songs':
@@ -59,6 +62,8 @@ class Muzebra():
       self.showPlaylists()
     if mode == 'artists':
       self.listArtists(url)
+    if mode == 'radio':
+      self.listStations(url)
     if mode == 'alphabet':
         self.alphabet(url, lang)
     elif mode == None:
@@ -67,7 +72,7 @@ class Muzebra():
 
   def menu(self):
     self.login()
-
+    
     uri = sys.argv[0] + '?mode=%s'%('search')
     item = xbmcgui.ListItem('[COLOR=FF00FF00][%s][/COLOR]'%self.language(1000), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
@@ -87,6 +92,14 @@ class Muzebra():
     item = xbmcgui.ListItem(self.language(4002), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
+    uri = sys.argv[0] + '?mode=%s&url=%s'%('radio', 'http://muzebra.com/radio/')
+    item = xbmcgui.ListItem(self.language(3001), iconImage=self.icon)
+    xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
+
+    uri = sys.argv[0] + '?mode=%s&url=%s'%('radio', 'http://muzebra.com/radio/spb/')
+    item = xbmcgui.ListItem(self.language(3002), iconImage=self.icon)
+    xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
+
     uri = sys.argv[0] + '?mode=%s&url=%s&lang=%s'%('alphabet', 'http://muzebra.com/artists/', 'ru')
     item = xbmcgui.ListItem(self.language(5001), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
@@ -101,7 +114,7 @@ class Muzebra():
   def showPlaylists(self):
     print "*** Show playlists"
     playlists = self.getPlaylists()
-    
+
     for name, pid in playlists.items():
       uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', urllib.quote_plus("http://muzebra.com/playlist/%s/"%pid), name)
       item = xbmcgui.ListItem(name, iconImage=self.icon)
@@ -118,30 +131,30 @@ class Muzebra():
     content = common.parseDOM(page["content"], "ul", attrs = { "data.id":"Playlist" })
     hashes = common.parseDOM(content, "a", attrs = { "class":"hash" })
     pids = common.parseDOM(content, "li", ret = "data-id")
-    
+
     playlists = {}
-    
+
     for i, name in enumerate(hashes):
-      playlists[name] = pids[i]        
-    
+      playlists[name] = pids[i]
+
     return playlists
-    
+
 
   def addToPlaylist(self, song):
     print "*** add to playlist"
     playlists = self.getPlaylists()
-    
+
     names = []
     pids = []
-    
+
     for name,pid in playlists.items():
       names.append(name)
       pids.append(pid)
-        
+
     selected = xbmcgui.Dialog().select('Choose a playlist', names)
 
     url = "http://muzebra.com/user/song/addSongs"
-    
+
     data = urllib.urlencode({
         "isExistName" : "true",
         "pl_name" : pids[selected],
@@ -168,13 +181,16 @@ class Muzebra():
       self.showSuccessMessage('Song was successfully added to %s playlist'%names[selected])
     else:
       self.showErrorMessage('Adding song to playlist %s failed'%names[selected])
-           
-    
+
+
   def getSongs(self, url, playlist):
     print "*** GET SONGS FOR PLAYLIST: %s songs"%url
 
     page = common.fetchPage({"link": url})
     content = common.parseDOM(page["content"], "div", attrs = { "id" : "content" })
+    breadcrumbs = common.parseDOM(content, "div", attrs = { "class":"hash breadcrumbs" })
+    header = common.parseDOM(breadcrumbs, "span")
+
     playlists = common.parseDOM(content, "ul")
 
     artists = common.parseDOM(playlists, "a", attrs = { "class":"hash artist" })
@@ -183,32 +199,38 @@ class Muzebra():
     datalinks = common.parseDOM(playlists, "a", attrs = { "class":"info" }, ret="data-link")
     times = common.parseDOM(playlists, "div", attrs = { "class":"time" })
 
-    for i, title in enumerate(titles):
-      song = "%s - %s"%(common.stripTags(title), artists[i])
+    playlist = self.stripHtmlEntitites(header[0].replace('&quot;', '').decode('utf-8')) if header else playlist
+    image = self.getArtistPhoto(playlist.encode('utf-8'), content)
 
-      uri = sys.argv[0] + '?mode=%s&url=%s'%('play', dataids[i])
-      item = xbmcgui.ListItem(song, iconImage=self.icon, thumbnailImage=self.icon)
+
+    for i, title in enumerate(titles):
+      #title = self.stripHtmlEntitites(common.stripTags(self.encode(title)))
+      #artist = common.stripTags(self.stripHtmlEntitites(self.encode(artists[i])))
+
+      title = common.stripTags(self.stripHtmlEntitites(title.decode('utf-8'))).encode('utf-8')
+      artist = common.stripTags(self.stripHtmlEntitites(artists[i].decode('utf-8'))).encode('utf-8')
+      song = "%s - %s"%(title.capitalize(), artist)
+      
+      uri = sys.argv[0] + '?mode=%s&dataid=%s&datalink=%s'%('play', dataids[i], datalinks[i])
+      item = xbmcgui.ListItem(song, iconImage=self.icon, thumbnailImage=image)
 
       item.setInfo(type='music',
         infoLabels = {
-          'title': song,
+          'title': title,
+          'artist' : artist,
           'album' : playlist,
           'genre': 'muzebra.com',
-          'duration' : self.duration(times[i]),
-          'rating' : '5'
+          'duration' : self.duration(times[i])
         }
       )
 
       script = os.path.join(xbmc.translatePath(self.path), 'downloader.py')
       params = "%s|%s"%(datalinks[i], song)
-      
-      
+
       runner1 = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
       runner2 = "XBMC.RunPlugin(plugin://plugin.audio.muzebra.com/" + "?mode=add&url=" + datalinks[i] + ")"
-      
+
       item.addContextMenuItems([(self.language(8001), runner1), (self.language(2001), runner2)])
-    
-      
 
       item.setProperty('IsPlayable', 'true')
       xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
@@ -217,10 +239,40 @@ class Muzebra():
     xbmcplugin.endOfDirectory(self.handle, True)
 
 
-  def getSongByID(self, sid):
-    api = "https://api.vk.com/method/audio.getById.json?&access_token=%s&audios=%s"%(self.token, sid)
-    response = json.loads(common.fetchPage({"link": api})["content"])['response'][0]
-    return {'url' : response['url'], 'title' : response['title'], 'artist' : response['artist']}
+  def getSongByID(self, dataid, datalink):
+    api = "https://api.vk.com/method/audio.getById.json?access_token=%s&audios=%s"%(self.api_keys['token'], dataid)
+
+    try:
+      print "*** try to get the song from api.vk.com"
+      response = json.loads(common.fetchPage({"link": api})["content"])['response'][0]
+      return {'url' : response['url'], 'title' : response['title'], 'artist' : response['artist']}
+    except KeyError:
+      print "*** try to get the song from savestreaming.com"
+      return {'url' : 'http://savestreaming.com/t/%s_%s'%(datalink, self.api_keys['hash'])}
+
+
+  def getArtistPhoto(self, artist, content):
+    LastfmApiKey = 'fbd57a1baddb983d1848a939665310f6'
+    LastfmURL = 'http://ws.audioscrobbler.com/2.0/?autocorrect=1&api_key=' + LastfmApiKey
+    url = LastfmURL + '&method=artist.getInfo&artist=' + artist
+
+    photo = ""
+    
+    try:
+        print "*** Get artist photos from last.fm"
+        response = response = urllib.urlopen(url).read()
+        images = common.parseDOM(response, "image", attrs={"size":"large"})
+        photo = images[0]
+    except:
+        print "last.fm error"
+
+    if photo:
+        return photo   
+    else:
+        print "*** Get artist photos from muzebra.com"
+        photo = common.parseDOM(content, "img", attrs = { "class":"artist_image" }, ret="src")
+        return photo[0] if photo else self.icon
+        
 
 
   def listArtists(self, url):
@@ -241,6 +293,28 @@ class Muzebra():
           xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
     xbmcplugin.addSortMethod(self.handle, xbmcplugin.SORT_METHOD_TITLE)
+    xbmcplugin.endOfDirectory(self.handle, True)
+
+
+  def listStations(self, url):
+    print "*** list stations %s"%url
+    page = common.fetchPage({"link": url})
+
+    if page["status"] == 200:
+        stations = common.parseDOM(page["content"], "ul", attrs = { "class":"stations" })
+        thumbs = common.parseDOM(stations, "div", attrs = { "class":"thumb" })
+
+        images = common.parseDOM(thumbs, "img", ret="src")
+        links = common.parseDOM(thumbs, "a", attrs = { "class":"hash" }, ret="href")
+        titles = common.parseDOM(thumbs, "img", ret="alt")
+
+        for i, link in enumerate(links):
+          title = titles[i].upper()
+          uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', urllib.quote_plus(self.url+link), title)
+
+          item = xbmcgui.ListItem(title, iconImage = self.url+images[i])
+          xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
+
     xbmcplugin.endOfDirectory(self.handle, True)
 
 
@@ -268,7 +342,7 @@ class Muzebra():
         uri += '&url='  + url
         title = titles[i]
 
-        item = xbmcgui.ListItem(title.upper(), iconImage = self.icon, thumbnailImage = self.icon)
+        item = xbmcgui.ListItem(title.decode('utf-8').upper(), iconImage = self.icon, thumbnailImage = self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
     xbmcplugin.endOfDirectory(self.handle, True)
@@ -292,10 +366,10 @@ class Muzebra():
       xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
 
-  def play(self, sid):
-    song = self.getSongByID(sid)
+  def play(self, dataid, datalink):
+    song = self.getSongByID(dataid, datalink)
     item = xbmcgui.ListItem(path = song['url'], iconImage=self.icon)
-    item.setInfo(type='music', infoLabels = {'title': song['title'], 'artist' : song['artist'] })
+    #item.setInfo(type='music', infoLabels = {'title': song['title'], 'artist' : song['artist'] })
     item.setProperty('mimetype', 'audio/mpeg')
     xbmcplugin.setResolvedUrl(self.handle, True, item)
 
@@ -323,8 +397,9 @@ class Muzebra():
 
     try:
       request = urllib2.Request(url, urllib.urlencode({}), headers)
-      response = urllib2.urlopen(request).read()
-      return json.loads(response)['token']
+      response = json.loads(urllib2.urlopen(request).read())
+      return {'token' : response['token'], 'hash' : response['hash']}
+
     except  urllib2.URLError, e:
       if hasattr(e, 'reason'):
         self.showErrorMessage('We failed to reach a muzebra.com server %s'%e.reason)
@@ -367,7 +442,7 @@ class Muzebra():
         "Referer" : self.url,
         "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/17.0 Firefox/17.0"
       }
-      
+
       if os.path.isfile(self.cookie_file):
         print "### Load cookie from file"
         self.cookie.load(self.cookie_file)
@@ -406,6 +481,8 @@ class Muzebra():
   def encode(self, string):
     return string.decode('cp1251').encode('utf-8')
 
+  def stripHtmlEntitites(self, string):
+    return HTMLParser.HTMLParser().unescape(string)
 
 muzebra = Muzebra()
 muzebra.main()
