@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.9
+# Rev. 2.0.8
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import json, HTMLParser, CommonFunctions
-from random import randint
 
 common = CommonFunctions
 
@@ -72,7 +71,7 @@ class Muzebra():
 
   def menu(self):
     self.login()
-    
+
     uri = sys.argv[0] + '?mode=%s'%('search')
     item = xbmcgui.ListItem('[COLOR=FF00FF00][%s][/COLOR]'%self.language(1000), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
@@ -84,11 +83,11 @@ class Muzebra():
       item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s (muzebra.com)[/COLOR]"%self.language(2000), iconImage=self.icon)
       xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-    uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', 'http://muzebra.com/charts/')
+    uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/', self.language(4001))
     item = xbmcgui.ListItem(self.language(4001), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-    uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', 'http://muzebra.com/charts/en/')
+    uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/en/', self.language(4002))
     item = xbmcgui.ListItem(self.language(4002), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
@@ -188,9 +187,6 @@ class Muzebra():
 
     page = common.fetchPage({"link": url})
     content = common.parseDOM(page["content"], "div", attrs = { "id" : "content" })
-    breadcrumbs = common.parseDOM(content, "div", attrs = { "class":"hash breadcrumbs" })
-    header = common.parseDOM(breadcrumbs, "span")
-
     playlists = common.parseDOM(content, "ul")
 
     artists = common.parseDOM(playlists, "a", attrs = { "class":"hash artist" })
@@ -199,20 +195,16 @@ class Muzebra():
     datalinks = common.parseDOM(playlists, "a", attrs = { "class":"info" }, ret="data-link")
     times = common.parseDOM(playlists, "div", attrs = { "class":"time" })
 
-    playlist = self.stripHtmlEntitites(header[0].replace('&quot;', '').decode('utf-8')) if header else playlist
-    image = self.getArtistPhoto(playlist.encode('utf-8'), content)
-
+    image = self.getArtistPhoto(page["content"])
 
     for i, title in enumerate(titles):
-      #title = self.stripHtmlEntitites(common.stripTags(self.encode(title)))
-      #artist = common.stripTags(self.stripHtmlEntitites(self.encode(artists[i])))
+      title = self.stripHtmlEntitites(common.stripTags(title))
+      artist = self.stripHtmlEntitites(common.stripTags(artists[i]))
 
-      title = common.stripTags(self.stripHtmlEntitites(title.decode('utf-8'))).encode('utf-8')
-      artist = common.stripTags(self.stripHtmlEntitites(artists[i].decode('utf-8'))).encode('utf-8')
-      song = "%s - %s"%(title.capitalize(), artist)
-      
+      song = "%s - %s"%(title, artist)
+
       uri = sys.argv[0] + '?mode=%s&dataid=%s&datalink=%s'%('play', dataids[i], datalinks[i])
-      item = xbmcgui.ListItem(song, iconImage=self.icon, thumbnailImage=image)
+      item = xbmcgui.ListItem(self.stripHtmlEntitites(song), iconImage=self.icon, thumbnailImage=image)
 
       item.setInfo(type='music',
         infoLabels = {
@@ -220,7 +212,8 @@ class Muzebra():
           'artist' : artist,
           'album' : playlist,
           'genre': 'muzebra.com',
-          'duration' : self.duration(times[i])
+          'duration' : self.duration(times[i]),
+          'rating' : '0'
         }
       )
 
@@ -251,28 +244,9 @@ class Muzebra():
       return {'url' : 'http://savestreaming.com/t/%s_%s'%(datalink, self.api_keys['hash'])}
 
 
-  def getArtistPhoto(self, artist, content):
-    LastfmApiKey = 'fbd57a1baddb983d1848a939665310f6'
-    LastfmURL = 'http://ws.audioscrobbler.com/2.0/?autocorrect=1&api_key=' + LastfmApiKey
-    url = LastfmURL + '&method=artist.getInfo&artist=' + artist
-
-    photo = ""
-    
-    try:
-        print "*** Get artist photos from last.fm"
-        response = response = urllib.urlopen(url).read()
-        images = common.parseDOM(response, "image", attrs={"size":"large"})
-        photo = images[0]
-    except:
-        print "last.fm error"
-
-    if photo:
-        return photo   
-    else:
-        print "*** Get artist photos from muzebra.com"
-        photo = common.parseDOM(content, "img", attrs = { "class":"artist_image" }, ret="src")
-        return photo[0] if photo else self.icon
-        
+  def getArtistPhoto(self, content):
+    photo = common.parseDOM(content, "img", attrs = { "class":"artist_image" }, ret="src")
+    return photo[0] if photo else self.icon
 
 
   def listArtists(self, url):
@@ -342,7 +316,7 @@ class Muzebra():
         uri += '&url='  + url
         title = titles[i]
 
-        item = xbmcgui.ListItem(title.decode('utf-8').upper(), iconImage = self.icon, thumbnailImage = self.icon)
+        item = xbmcgui.ListItem(title.upper(), iconImage = self.icon, thumbnailImage = self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
     xbmcplugin.endOfDirectory(self.handle, True)
