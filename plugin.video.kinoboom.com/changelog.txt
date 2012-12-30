@@ -1,0 +1,6 @@
+[B]Version 1.0.2[/B]
+- Show XBMC notification on error
+[B]Version 1.0.1[/B]
+- Reorder category items
+[B]Version 1.0.0[/B]
+- Initial version

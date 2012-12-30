@@ -1,0 +1,4 @@
+<settings>
+    <setting id="translit" type="bool" label="2000" default="true" />
+    <setting id="a_z" type="bool" label="2001" default="true" />
+</settings>

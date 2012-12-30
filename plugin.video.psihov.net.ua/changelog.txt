@@ -1,0 +1,17 @@
+[B]Version 1.0.3[/B]
+- Fix IMDB rating issue
+
+[B]Version 1.0.2[/B]
+- Add search
+- Fix pagination
+- Show more movie infos (IMDB, genre)
+
+- List movies by IMDB
+- List movies by alphabet
+- List movies by genres
+
+[B]Version 1.0.1[/B]
+- Season listing
+
+[B]Version 1.0.0[/B]
+- Initial version

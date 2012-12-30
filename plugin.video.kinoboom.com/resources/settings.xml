@@ -1,0 +1,3 @@
+<settings>
+    <setting id="info" type="bool" label="Get film description, rating and year(slow)" default="false" />
+</settings>

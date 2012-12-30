@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="1000">Фильмы</string>
+    <string id="1001">Сериалы</string>
+    <string id="1002">Мультфильмы</string>
+
+    <string id="1003">По алфавиту</string>
+    <string id="1004">По жанрам</string>
+    <string id="1005">По рейтингу IMDB</string>
+
+    <string id="1010">Жанр: </string>
+    <string id="1011">Рейтинг IMDB: </string>
+
+    <string id="2000">Использовать транслитерацию при поиске</string>
+    <string id="2001">Показывать серии в порядке возрастания (1 сезон 1 серия)</string>
+
+    <string id="5000">Поиск</string>
+</strings>
