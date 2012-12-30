@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="1000">Поиск</string>
+    <string id="1001">Поиск (ru)</string>
+    <string id="1002">Поиск (en)</string>
+    
+    <string id="1003">Новинки кинопроката</string>
+    <string id="1004">[COLOR=FF00FFF0]Фильмы 2012[/COLOR]</string>
+
+    <string id="8000">Использовать транслитерацию при поиске</string>
+
+    <string id="9000">[COLOR=FF00FFF0]следующая страница >>[/COLOR]</string>
+    <string id="9001">К сожалению, поиск по сайту не дал никаких результатов.</string>
+</strings>

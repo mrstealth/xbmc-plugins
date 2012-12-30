@@ -89,21 +89,16 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.uakino-reloaded.net"
-       name="Uakino.net"
-       version="1.0.4"
-       provider-name="MrStealth">
+<addon id="plugin.video.uakino.net" name="Uakino.net" version="2.0.1" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="1.2.1"/>
+    <import addon="script.module.parsedom" version="2.0.1"/>
   </requires>
-  <extension point="xbmc.python.pluginsource"
-             provides="video"
-             library="default.py">
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>Uakino HD Online Videos </summary>
+    <summary>Новинки кино, мультфильмы, сериалы</summary>
     <description>For personal use only</description>
     <platform>all</platform>
   </extension>
