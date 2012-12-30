@@ -1,0 +1,11 @@
+[B]Version 1.0.3[/B]
+- Fix Frodo encoding issues
+
+[B]Version 1.0.2[/B]
+- Fix pagination
+
+[B]Version 1.0.1[/B]
+- Fix clips section
+
+[B]Version 1.0.0[/B]
+- Initial version

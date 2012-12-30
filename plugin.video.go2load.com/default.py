@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.0
+# Rev. 1.0.3
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -21,23 +21,23 @@ addon_path    = Addon.getAddonInfo('path')
 
 def getCategories(url):
     item = xbmcgui.ListItem('Films')
-    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/filmy/page/1/'
+    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/filmy/page/1'
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
     
     item = xbmcgui.ListItem('Multfilms')
-    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/filmy/mult/page/1/'
+    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/filmy/mult/page/1'
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     item = xbmcgui.ListItem('USSR films')
-    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/filmy/cccp/page/1/'
+    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/filmy/cccp/page/1'
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
         
     item = xbmcgui.ListItem('Documentary')
-    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/documentary/page/1/'
+    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/documentary/page/1'
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     item = xbmcgui.ListItem('Clips')
-    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/clips/page/1/'
+    uri = sys.argv[0] + '?mode=CATEGORYITEMS' + '&url=' + url + '/clips/page/1'
     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
@@ -67,11 +67,11 @@ def getCategoryItems(url):
                 uri = sys.argv[0] + '?mode=GETITEMS' + '&url=' + links[i]
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
             
-            
+        #page = url[-1]
+        #next = str(url[:-1]) + str(page+1)
         
-    
-            
-        next = url[:-1] + str(int(url[-1])+1)
+
+        next = str(url[:-1]) + str(int(url[-1])+1)
             
         print "*** Next page is " + next
             

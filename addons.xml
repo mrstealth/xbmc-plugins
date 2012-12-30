@@ -37,22 +37,17 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.go2load-reloaded.com"
-       name="Go2Load.com (reloaded)"
-       version="1.0.1"
-       provider-name="Tolin">
+<addon id="plugin.video.go2load.com" name="Go2Load.com" version="1.0.3" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="1.2.1"/>
+    <import addon="script.module.parsedom" version="2.0.1"/>
   </requires>
-  <extension point="xbmc.python.pluginsource"
-             provides="video"
-             library="default.py">
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary>Фильмы онлайн в HD/SD</summary>
-    <description>Фильмы онлайн</description>
+    <description>For personal use only</description>
     <platform>all</platform>
   </extension>
 </addon>
