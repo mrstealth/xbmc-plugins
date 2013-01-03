@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.3
+# Rev. 1.0.4
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -14,7 +14,7 @@ BASE_URL = 'http://go2load.com'
 common = CommonFunctions
 pluginhandle = int(sys.argv[1])
 
-Addon = xbmcaddon.Addon(id='plugin.video.go2load-reloaded.com')
+Addon = xbmcaddon.Addon(id='plugin.video.go2load.com')
 addon_icon    = Addon.getAddonInfo('icon')
 addon_path    = Addon.getAddonInfo('path')
 

@@ -1,3 +1,6 @@
+[B]Version 1.0.4[/B]
+- Fix wrong add-on id
+
 [B]Version 1.0.3[/B]
 - Fix Frodo encoding issues
 
