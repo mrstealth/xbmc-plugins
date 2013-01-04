@@ -187,15 +187,15 @@
 	</extension>
 </addon>
 
-<addon id='script.module.parsedom' version='2.0.1' name='Parsedom for xbmc plugins' provider-name='TheCollective'>
+<addon id="script.module.parsedom" name="Parsedom for xbmc plugins" provider-name="TheCollective" version="3.0.0">
   <requires>
-    <import addon='xbmc.python' version='2.0'/>
+    <import addon="xbmc.python" version="2.1.0" />
   </requires>
-  <extension point='xbmc.addon.metadata'>
+  <extension point="xbmc.addon.metadata">
     <platform>all</platform>
-    <summary lang='en'>Parsedom for xbmc plugins.</summary>
+    <summary lang="en">Parsedom for xbmc plugins.</summary>
   </extension>
-  <extension point='xbmc.python.module' library='lib' />
+  <extension library="lib" point="xbmc.python.module" />
 </addon>
 
 <addon id='script.module.translit' version='1.0.3' name='Translit for xbmc plugins' provider-name='MrStealth'>
