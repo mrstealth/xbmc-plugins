@@ -1,17 +1,17 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.5
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import CommonFunctions
+import XbmcHelpers
 
 from helpers import * 
 
 BASE_URL = 'http://go2load.com'
 
-common = CommonFunctions
+common = XbmcHelpers
 pluginhandle = int(sys.argv[1])
 
 Addon = xbmcaddon.Addon(id='plugin.video.go2load.com')
