@@ -27,7 +27,7 @@ import HTMLParser
 #import chardet
 import json
 
-version = u"2.5.1"
+version = u"3.0.0"
 plugin = u"CommonFunctions-" + version
 print plugin
 

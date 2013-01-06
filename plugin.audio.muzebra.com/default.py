@@ -40,7 +40,9 @@ class Muzebra():
     #title = artist = playlist = language = None
 
     mode = params['mode'] if params.has_key('mode') else None
-    url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
+    #url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
+    url = params['url'] if params.has_key('url') else None
+
     playlist = params['playlist'] if params.has_key('playlist') else 'Unknown'
     artists = params['artists'] if params.has_key('artists') else 'Unknown'
     lang = params['lang'] if params.has_key('lang') else None
@@ -251,6 +253,8 @@ class Muzebra():
 
   def listArtists(self, url):
     print "*** list artists %s"%url
+    
+    #url = urllib.quote(url)
 
     page = common.fetchPage({"link": url})
 
@@ -299,23 +303,25 @@ class Muzebra():
 
     if page["status"] == 200:
       if lang == 'ru':
-        letters = common.parseDOM(page["content"], "ul", attrs = { "class":"ru" })
+        letters = common.parseDOM(page["content"], "ul", attrs = { "class":"ru clearfix" })
       else:
-        letters = common.parseDOM(page["content"], "ul", attrs = { "class":"en" })
+        letters = common.parseDOM(page["content"], "ul", attrs = { "class":"en clearfix" })
 
       links = common.parseDOM(letters, "a", attrs = { "class":"hash" }, ret="href")
       titles = common.parseDOM(letters, "a")
 
       if lang == 'ru':
         links.insert(1, '/artists/%D0%B0/')
-        titles.insert(1, '\xd0\xb0')
+        titles.insert(1, 'A')
 
       for i, link in enumerate(links):
-        url = urllib.quote_plus(self.url + links[i])
+        link = link.encode('utf-8')
+        url = urllib.quote_plus(self.url + link)
+
         uri = sys.argv[0] + '?mode=artists'
         uri += '&url='  + url
         title = titles[i]
-
+        
         item = xbmcgui.ListItem(title.upper(), iconImage = self.icon, thumbnailImage = self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
