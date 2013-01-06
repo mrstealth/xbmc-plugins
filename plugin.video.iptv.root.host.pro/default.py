@@ -1,12 +1,12 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.3
+# Rev. 1.0.4
 # -*- coding: utf-8 -*-
 
 import xbmcplugin,xbmcgui,xbmcaddon
 import os, sys, urllib, urllib2, httplib, socket
-import CommonFunctions
-common = CommonFunctions
+import XbmcHelpers
+common = XbmcHelpers
 
 handle = int(sys.argv[1])
 
