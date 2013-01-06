@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.1
+# Rev. 1.0.2
 
 import re
 import urllib,urllib2,re,sys,os,time
 import xbmcplugin,xbmcgui,xbmcaddon
-import CommonFunctions
+import XbmcHelpers
 
-common = CommonFunctions
+common = XbmcHelpers
 common.plugin = "Youfreetv.net"
 common.dbg = False # Default (True)
 common.dbglevel = 3 # Default
