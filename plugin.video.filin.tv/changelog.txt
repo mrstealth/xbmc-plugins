@@ -1,3 +1,6 @@
+[B]Version 1.1.5[/B]
+- use xbmc.helpers module
+
 [B]Version 1.1.4[/B]
 - update icon
 

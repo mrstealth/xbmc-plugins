@@ -1,16 +1,16 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.4
+# Rev. 1.1.5
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import HTMLParser
-import CommonFunctions
+import XbmcHelpers
 import simplejson as json
 
 from urllib2 import Request, urlopen, URLError, HTTPError
-common = CommonFunctions
+common = XbmcHelpers
 
 BASE_URL = 'http://www.filin.tv'
 pluginhandle = int(sys.argv[1])
