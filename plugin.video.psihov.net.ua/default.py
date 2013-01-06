@@ -1,16 +1,13 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.3
+# Rev. 1.0.4
 # -*- coding: utf-8 -*-
 
 import os, urllib, urllib2, sys, socket, cookielib, errno
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import CommonFunctions
-common = CommonFunctions
+import XbmcHelpers
+common = XbmcHelpers
 
-
-#from FavoritesHelpers import FavoritesHelpers
-#favorites = FavoritesHelpers('plugin.video.psihov.net.ua', encoding='cp1251')
 
 class Addon():
     def __init__(self):
