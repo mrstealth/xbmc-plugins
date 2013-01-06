@@ -1,15 +1,24 @@
+[B]Version 2.0.2[/B]
+- use script.module.xbmc.helpers
+
 [B]Version 2.0.1[/B]
 - Fix incorrect images in mix categories
+
 [B]Version 2.0.0[/B]
 - Rewrite the add-on
+
 [B]Version 1.0.4[/B]
 - Fix empty categories
+
 [B]Version 1.0.3[/B]
 - Reorder category items
+
 [B]Version 1.0.2[/B]
 - Fix IndexError in some categories
+
 [B]Version 1.0.1[/B]
 - Show video thumbnails
 - Show video description and genre
+
 [B]Version 1.0.0[/B]
 - Initial version

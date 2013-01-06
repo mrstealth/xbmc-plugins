@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.1
+# Rev. 2.0.2
 # -*- coding: utf-8 -*-
 
 import os, urllib, urllib2, sys, socket, cookielib, errno
 import xbmc, xbmcplugin, xbmcgui, xbmcaddon
 import json
-import CommonFunctions
-common = CommonFunctions
+import XbmcHelpers
+common = XbmcHelpers
 
 timeout = 5
 socket.setdefaulttimeout(timeout)
