@@ -1,12 +1,12 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.3
 # -*- coding: utf-8 -*-
 
 import urllib, urllib2, socket
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import CommonFunctions
-common = CommonFunctions
+import XbmcHelpers
+common = XbmcHelpers
 
 class Kinoboom():
     def __init__(self):
