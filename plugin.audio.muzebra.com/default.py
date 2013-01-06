@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.8
+# Rev. 2.1.0
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import json, HTMLParser, CommonFunctions
+import json, HTMLParser, XbmcHelpers
 
-common = CommonFunctions
+common = XbmcHelpers
 
 class Muzebra():
   def __init__(self):

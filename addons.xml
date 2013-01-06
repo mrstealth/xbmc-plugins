@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.audio.muzebra.com" name="Muzebra.com" version="2.0.9" provider-name="mrstealth">
+<addon id="plugin.audio.muzebra.com" name="Muzebra.com" version="2.1.0" provider-name="mrstealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
-    <import addon="script.module.parsedom" version="3.0.0"/>
+    <import addon="script.module.xbmc.helpers" version="3.0.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" provides="audio" library="default.py">
     <provides>audio</provides>
@@ -206,6 +206,17 @@
   <extension point='xbmc.addon.metadata'>
     <platform>all</platform>
     <summary lang='en'>Translit for xbmc plugins.</summary>
+  </extension>
+  <extension point='xbmc.python.module' library='lib' />
+</addon>
+
+<addon id='script.module.xbmc.helpers' version='2.0.1' name='XbmcHelpers based on Parsedom module' provider-name='MrStealth'>
+  <requires>
+    <import addon='xbmc.python' version='2.0'/>
+  </requires>
+  <extension point='xbmc.addon.metadata'>
+    <platform>all</platform>
+    <summary lang='en'>XbmcHelpers based on Parsedom module.</summary>
   </extension>
   <extension point='xbmc.python.module' library='lib' />
 </addon>
