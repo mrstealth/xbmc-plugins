@@ -1,3 +1,6 @@
+[B]Version 2.1.1[/B]
+- raise add-on version
+
 [B]Version 2.1.0[/B]
 - use XbmcHelpers in all modules
 
