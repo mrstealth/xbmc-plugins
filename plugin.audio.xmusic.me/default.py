@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.1
+# Rev. 1.0.2
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
-import json, CommonFunctions
+import json, XbmcHelpers
 
-common = CommonFunctions
+common = XbmcHelpers
 
 class Xmusic():
   def __init__(self):
