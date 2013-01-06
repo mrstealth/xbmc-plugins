@@ -40,8 +40,8 @@ class Muzebra():
     #title = artist = playlist = language = None
 
     mode = params['mode'] if params.has_key('mode') else None
-    #url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
-    url = params['url'] if params.has_key('url') else None
+    url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
+    #url = params['url'] if params.has_key('url') else None
 
     playlist = params['playlist'] if params.has_key('playlist') else 'Unknown'
     artists = params['artists'] if params.has_key('artists') else 'Unknown'
