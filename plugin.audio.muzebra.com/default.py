@@ -1,12 +1,14 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.1
+# Rev. 2.1.2
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import json, HTMLParser, XbmcHelpers
+import Translit as translit
 
+translit = translit.Translit(encoding='cp1251')
 common = XbmcHelpers
 
 class Muzebra():
@@ -129,8 +131,9 @@ class Muzebra():
     self.login()
 
     page = common.fetchPage({"link": self.playlists_url})
-    content = common.parseDOM(page["content"], "ul", attrs = { "data.id":"Playlist" })
-    hashes = common.parseDOM(content, "a", attrs = { "class":"hash" })
+    content = common.parseDOM(page["content"], "div", attrs = { "id":"content" })
+    playlist = common.parseDOM(content, "ul", attrs = { "data-id":"Playlist" })[0]
+    hashes = common.parseDOM(playlist, "a", attrs = { "class":"hash" })
     pids = common.parseDOM(content, "li", ret = "data-id")
 
     playlists = {}
@@ -201,7 +204,11 @@ class Muzebra():
 
     for i, title in enumerate(titles):
       title = self.stripHtmlEntitites(common.stripTags(title))
-      artist = self.stripHtmlEntitites(common.stripTags(artists[i]))
+
+      try:
+        artist = self.stripHtmlEntitites(common.stripTags(artists[i]))
+      except IndexError:
+        artist = "unknown"
 
       song = "%s - %s"%(title, artist)
 
@@ -253,7 +260,7 @@ class Muzebra():
 
   def listArtists(self, url):
     print "*** list artists %s"%url
-    
+
     #url = urllib.quote(url)
 
     page = common.fetchPage({"link": url})
@@ -321,7 +328,7 @@ class Muzebra():
         uri = sys.argv[0] + '?mode=artists'
         uri += '&url='  + url
         title = titles[i]
-        
+
         item = xbmcgui.ListItem(title.upper(), iconImage = self.icon, thumbnailImage = self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
@@ -349,6 +356,7 @@ class Muzebra():
   def play(self, dataid, datalink):
     song = self.getSongByID(dataid, datalink)
     item = xbmcgui.ListItem(path = song['url'], iconImage=self.icon)
+
     #item.setInfo(type='music', infoLabels = {'title': song['title'], 'artist' : song['artist'] })
     item.setProperty('mimetype', 'audio/mpeg')
     xbmcplugin.setResolvedUrl(self.handle, True, item)
@@ -391,8 +399,15 @@ class Muzebra():
   def search(self):
     query = common.getUserInput(self.language(1000), "")
     if query:
-      url = self.url + '/search/?q=' + query
+      if self.addon.getSetting('translit') == 'true':
+        keyword = translit.rus(query).decode('cp1251').encode('utf-8')
+      else:
+        keyword = query
+
+      url = self.url + '/search/?q=' + keyword.replace(' ', '+')
       self.getSongs(url, self.language(1000))
+    else:
+      print "Empty query"
 
 
   # login to muzebra.com
@@ -403,46 +418,58 @@ class Muzebra():
         self.authenticated = False
         return False
     else:
-      url = 'http://muzebra.com/user/login'
-      #url = 'http://muzebra.com/service/forms/login'
-
-      data = urllib.urlencode({
-        "UserLogin[username]" : self.username,
-        "UserLogin[password]" : self.password,
-        "UserLogin[rememberMe]" : "1"
-      })
-
-      headers = {
-        "Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding": "gzip,deflate",
-        "Accept-Language" : "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3",
-        "Connection" : "keep-alive",
-        "Content-Type" : "application/x-www-form-urlencoded",
-        "Host" : "muzebra.com",
-        "Referer" : self.url,
-        "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/17.0 Firefox/17.0"
-      }
-
       if os.path.isfile(self.cookie_file):
-        print "### Load cookie from file"
-        self.cookie.load(self.cookie_file)
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
+        print "*** Cookie file found, load cookies from file\n"
+
+        cj = cookielib.MozillaCookieJar()
+        cj.load(self.cookie_file)
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
         urllib2.install_opener(opener)
 
         self.authenticated = True
         return True
       else:
-        print "### Get cookie from server"
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
-        urllib2.install_opener(opener)
-        request = urllib2.Request(url, data, headers)
-        response = urllib2.urlopen(request)
+        print "*** Cookie file not found, get cookies from server\n"
 
-        print response.geturl()
+        cj = cookielib.MozillaCookieJar()
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        urllib2.install_opener(opener)
+
+        url = "http://muzebra.com/user/login"
+
+        values = {
+            "UserLogin[password]" : self.password,
+            "UserLogin[rememberMe]" : "1",
+            "UserLogin[username]" : self.username,
+            "yt0":"%D0%92%D1%85%D0%BE%D0%B4"
+        }
+
+        request = urllib2.Request(url, urllib.urlencode(values))
+        request.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
+        request.add_header('Accept-Encoding', 'gzip,deflate')
+        request.add_header('Accept-Language', 'de-de,de;q=0.8,en-us;q=0.5,en;q=0.3')
+        request.add_header('Connection', 'keep-alive')
+        request.add_header('Content-Type', 'application/x-www-form-urlencoded')
+        request.add_header('Host', 'muzebra.com')
+        request.add_header('Referer', 'http://muzebra.com/user/playlist')
+        request.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/17.0 Firefox/17.0')
+
+        try:
+            response =  urllib2.urlopen(request)
+        except  urllib2.URLError, e:
+            if hasattr(e, 'reason'):
+                print 'We failed to reach a server.'
+                print 'Reason: ', e.reason
+            elif hasattr(e, 'code'):
+                print 'The server couldn\'t fulfill the request.'
+                print 'Error code: ', e.code
+
+        response = urllib2.urlopen(request)
+#
         if response.geturl() == "http://muzebra.com/user/profile":
           self.authenticated = True
-          #save cookies
-          self.cookie.save(self.cookie_file)
+          print "save cookies"
+          cj.save(self.cookie_file)
           return True
         else:
           print "*** Authentication failed"

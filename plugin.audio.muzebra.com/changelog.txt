@@ -1,3 +1,7 @@
+[B]Version 2.1.2[/B]
+- fix authentication
+- fix search
+
 [B]Version 2.1.1[/B]
 - raise add-on version
 
