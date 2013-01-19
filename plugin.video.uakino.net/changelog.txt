@@ -1,3 +1,6 @@
+[B]Version 2.0.3[/B]
+- add Translit module to import list
+
 [B]Version 2.0.2[/B]
 - use script.module.xbmc.helpers
 

@@ -1,3 +1,6 @@
+[B]Version 2.1.4[/B]
+- add Translit module to import list
+
 [B]Version 2.1.3[/B]
 - fix invalid cookies
 
