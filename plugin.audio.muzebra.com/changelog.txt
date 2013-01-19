@@ -1,3 +1,6 @@
+[B]Version 2.1.3[/B]
+- fix invalid cookies
+
 [B]Version 2.1.2[/B]
 - fix authentication
 - fix search

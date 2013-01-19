@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.2
+# Rev. 2.1.3
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -421,13 +421,18 @@ class Muzebra():
       if os.path.isfile(self.cookie_file):
         print "*** Cookie file found, load cookies from file\n"
 
-        cj = cookielib.MozillaCookieJar()
-        cj.load(self.cookie_file)
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-        urllib2.install_opener(opener)
-
-        self.authenticated = True
-        return True
+        try:
+            cj = cookielib.MozillaCookieJar()
+            cj.load(self.cookie_file)
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+            urllib2.install_opener(opener)
+            self.authenticated = True
+            return True
+        except cookielib.LoadError:
+            print "*** remove existing cookie file and try again"
+            os.remove(self.cookie_file)
+            
+            
       else:
         print "*** Cookie file not found, get cookies from server\n"
 
