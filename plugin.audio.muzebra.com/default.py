@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.5
+# Rev. 2.1.6
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib

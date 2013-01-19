@@ -1,4 +1,5 @@
 <settings>
+    <setting id="authentication" type="bool" label="7000" default="true"/>
     <setting id="username" type="text" label="7001" default=""/>
     <setting id="password" type="text" label="7002" option="hidden"  enable="!eq(-1,)" default=""/>
     <setting id="folder" type="folder" label="8003" default="None" />
