@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.3
+# Rev. 2.1.5
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -8,7 +8,7 @@ import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import json, HTMLParser, XbmcHelpers
 import Translit as translit
 
-translit = translit.Translit(encoding='cp1251')
+translit = translit.Translit()
 common = XbmcHelpers
 
 class Muzebra():
@@ -74,7 +74,7 @@ class Muzebra():
 
 
   def menu(self):
-    self.login()
+    if self.addon.getSetting('authentication') == 'true': self.login() 
 
     uri = sys.argv[0] + '?mode=%s'%('search')
     item = xbmcgui.ListItem('[COLOR=FF00FF00][%s][/COLOR]'%self.language(1000), iconImage=self.icon)
@@ -188,7 +188,7 @@ class Muzebra():
 
 
   def getSongs(self, url, playlist):
-    print "*** GET SONGS FOR PLAYLIST: %s songs"%url
+    print "*** GET SONGS FOR PLAYLIST"
 
     page = common.fetchPage({"link": url})
     content = common.parseDOM(page["content"], "div", attrs = { "id" : "content" })
@@ -400,11 +400,11 @@ class Muzebra():
     query = common.getUserInput(self.language(1000), "")
     if query:
       if self.addon.getSetting('translit') == 'true':
-        keyword = translit.rus(query).decode('cp1251').encode('utf-8')
+        keyword = translit.rus(query).encode('utf-8','ignore')        
       else:
         keyword = query
-
-      url = self.url + '/search/?q=' + keyword.replace(' ', '+')
+        
+      url =self.url + '/search/?q=' +  urllib.quote_plus(keyword.replace(' ', '+'))
       self.getSongs(url, self.language(1000))
     else:
       print "Empty query"

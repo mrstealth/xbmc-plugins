@@ -22,7 +22,7 @@
 
   <string id="6000">Алфавит</string>
 
-  <string id="7000">Аутентификация</string>
+  <string id="7000">Аутентификация пользователя</string>
   <string id="7001">Логин</string>
   <string id="7002">Пароль</string>
   <string id="7003">Проверьте ваш логин и пароль в настройках дополнения</string>
