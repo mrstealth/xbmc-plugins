@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.7
+# Rev. 1.1.8
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -155,15 +155,6 @@ def search():
 
     path = "/do=search"
 
-    # Quick search: titles + descriptions
-    #    values = {
-    #        'do' : 'search',
-    #        'subaction' : 'search',
-    #        'story' : keyword,
-    #        'x' : '0',
-    #        'y' : '0'
-    #    }
-
     # Advanced search: titles only
     values = {
       'beforeafter' : 'after',
@@ -180,16 +171,22 @@ def search():
       'searchuser' : '',
       'showposts' : '0',
       'sortby' : 'date',
-      'story' : keyword.encode('cp1251'),
       'subaction' : 'search',
       'titleonly' : '3'
-    }
-
-    print keyword.encode('utf-8')
-    
-    data = urllib.urlencode(values)
-    req = Request(BASE_URL+path, data)
-    
+    }    
+    try:
+        # Apple TV
+        values['story'] = keyword
+     
+        data = urllib.urlencode(values)
+        req = Request(BASE_URL+path, data)
+    except UnicodeEncodeError:
+        # Desktop
+        values['story'] = keyword.encode('cp1251')
+     
+        data = urllib.urlencode(values)
+        req = Request(BASE_URL+path, data)
+            
     try:
         response = urlopen(req)
     except URLError, e:

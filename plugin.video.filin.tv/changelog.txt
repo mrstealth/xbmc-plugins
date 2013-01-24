@@ -1,3 +1,6 @@
+[B]Version 1.1.8[/B]
+- exception handling UnicodeEncodeError in search()
+
 [B]Version 1.1.7[/B]
 - fix broken image path in episode
 
