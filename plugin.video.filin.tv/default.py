@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.5
+# Rev. 1.1.7
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -22,6 +22,15 @@ addon_path    = Addon.getAddonInfo('path')
 
 import Translit as translit
 translit = translit.Translit(encoding='cp1251')
+
+VIEW_MODES = {
+    "List" : '50',
+    "Big List" : '51',
+    "Media Info" : '52',
+    "Media Info 2" : '54',
+    "Fanart" : '57',
+    "Fanart 2" : '59'
+}
 
 # *** Python helpers ***
 def strip_html(text):
@@ -143,7 +152,6 @@ def search():
 
     if Addon.getSetting('translit') == 'true':
       keyword = translit.rus(kbd.getText())
-      print "*** Translit search enabled %s"%keyword.decode('cp1251').encode('utf-8')
 
     path = "/do=search"
 
@@ -172,14 +180,16 @@ def search():
       'searchuser' : '',
       'showposts' : '0',
       'sortby' : 'date',
-      'story' : keyword,
+      'story' : keyword.encode('cp1251'),
       'subaction' : 'search',
       'titleonly' : '3'
     }
 
+    print keyword.encode('utf-8')
+    
     data = urllib.urlencode(values)
     req = Request(BASE_URL+path, data)
-
+    
     try:
         response = urlopen(req)
     except URLError, e:
@@ -379,7 +389,6 @@ def getItems(url):
 
         for i, title in enumerate(titles):
             if images[i][0] == '/': images[i] = BASE_URL+images[i]
-#            title = unescape(titles[i], 'cp1251').replace(language(5000).encode('utf-8'),"")
             title = beatify_title(title)
             genre = unescape(str(genres[i]), 'cp1251')
             description =  unescape(strip_html(descriptions[i]), 'cp1251')
@@ -400,7 +409,15 @@ def getItems(url):
     next = url + '/page/2' if url.find("page") == -1 else url[:-1] + str(int(url[-1])+1)
 
     xbmcItem(next, localize(language(3000)), 'RNEXT')
-    xbmc.executebuiltin('Container.SetViewMode(52)')
+
+    try:
+        mode = VIEW_MODES[Addon.getSetting('seasonsViewMode')]
+        xbmc.executebuiltin("Container.SetViewMode(" + mode +")")
+    except Exception, e:
+        print "*** Exception"
+        print e
+        xbmc.executebuiltin('Container.SetViewMode(50)')
+        
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
@@ -409,12 +426,10 @@ def showItem(url, thumbnail):
     mainf = common.parseDOM(content, "div", attrs = { "class":"categ" })
     block = common.parseDOM(content, "div", attrs = { "class":"ssc" })[0]
 
-    genre = unescape(" ".join(str(g) for g in common.parseDOM(mainf, "a")), 'cp1251')
+    image_container = common.parseDOM(block, "td", attrs = { 'valign':'top' })
+    image = common.parseDOM(image_container, "img", ret="src")[0]
 
-    if not thumbnail or len(thumbnail) == 0:
-        thumbnail = getThumbnail(block)
-    else:
-        thumbnail = addon_icon
+    genre = unescape(" ".join(str(g) for g in common.parseDOM(mainf, "a")), 'cp1251')
 
     title = beatify_title(getTitle(block))
     desc = getDescription(block)
@@ -428,13 +443,7 @@ def showItem(url, thumbnail):
 
     for i in range(0, len(locations)):
         uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
-        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), thumbnailImage=thumbnail)
-
-#         if locations[i] in getWatched():
-#             overlay = xbmcgui.ICON_OVERLAY_WATCHED
-#             info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
-#         else:
-#             info = {"Title": title, 'genre' : genre, "Plot": desc}
+        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage=addon_icon, thumbnailImage=image)
 
         overlay = xbmcgui.ICON_OVERLAY_WATCHED
         info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
@@ -443,7 +452,14 @@ def showItem(url, thumbnail):
         xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
 
     # set view mode to List2 (quarz3 skin)
-    xbmc.executebuiltin('Container.SetViewMode(51)')
+    try:
+        mode = VIEW_MODES[Addon.getSetting('episodsViewMode')]
+        xbmc.executebuiltin("Container.SetViewMode(" + mode +")")
+    except Exception, e:
+        print "*** Exception"
+        print e
+        xbmc.executebuiltin('Container.SetViewMode(50)')
+        
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
