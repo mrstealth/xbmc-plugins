@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.6
+# Rev. 2.1.7
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -132,12 +132,11 @@ class Muzebra():
 
     page = common.fetchPage({"link": self.playlists_url})
     content = common.parseDOM(page["content"], "div", attrs = { "id":"content" })
-    playlist = common.parseDOM(content, "ul", attrs = { "data-id":"Playlist" })[0]
-    hashes = common.parseDOM(playlist, "a", attrs = { "class":"hash" })
-    pids = common.parseDOM(content, "li", ret = "data-id")
+    hashes = common.parseDOM(content, "a", attrs = { "class":"hash" })[:-1]
+    pids = common.parseDOM(content, "li", ret = "data-id")[:-1]
 
     playlists = {}
-
+    
     for i, name in enumerate(hashes):
       playlists[name] = pids[i]
 
@@ -398,14 +397,21 @@ class Muzebra():
 
   def search(self):
     query = common.getUserInput(self.language(1000), "")
+    
     if query:
       if self.addon.getSetting('translit') == 'true':
-        keyword = translit.rus(query).encode('utf-8','ignore')        
+        print "Module translit enabled"
+        
+        try:
+            keyword = translit.rus(query).encode('utf-8','ignore')        
+        except Exception, e:
+            keyword = translit.rus(query)
       else:
         keyword = query
         
       url =self.url + '/search/?q=' +  urllib.quote_plus(keyword.replace(' ', '+'))
       self.getSongs(url, self.language(1000))
+
     else:
       print "Empty query"
 
