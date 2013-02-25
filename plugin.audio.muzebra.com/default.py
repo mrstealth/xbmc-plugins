@@ -1,12 +1,15 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.7
+# Rev. 2.1.8
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import json, HTMLParser, XbmcHelpers
 import Translit as translit
+
+import time
+from datetime import datetime
 
 translit = translit.Translit()
 common = XbmcHelpers
@@ -74,7 +77,7 @@ class Muzebra():
 
 
   def menu(self):
-    if self.addon.getSetting('authentication') == 'true': self.login() 
+    if self.addon.getSetting('authentication') == 'true': self.login()
 
     uri = sys.argv[0] + '?mode=%s'%('search')
     item = xbmcgui.ListItem('[COLOR=FF00FF00][%s][/COLOR]'%self.language(1000), iconImage=self.icon)
@@ -136,7 +139,7 @@ class Muzebra():
     pids = common.parseDOM(content, "li", ret = "data-id")[:-1]
 
     playlists = {}
-    
+
     for i, name in enumerate(hashes):
       playlists[name] = pids[i]
 
@@ -397,18 +400,18 @@ class Muzebra():
 
   def search(self):
     query = common.getUserInput(self.language(1000), "")
-    
+
     if query:
       if self.addon.getSetting('translit') == 'true':
         print "Module translit enabled"
-        
+
         try:
-            keyword = translit.rus(query).encode('utf-8','ignore')        
+            keyword = translit.rus(query).encode('utf-8','ignore')
         except Exception, e:
             keyword = translit.rus(query)
       else:
         keyword = query
-        
+
       url =self.url + '/search/?q=' +  urllib.quote_plus(keyword.replace(' ', '+'))
       self.getSongs(url, self.language(1000))
 
@@ -424,9 +427,7 @@ class Muzebra():
         self.authenticated = False
         return False
     else:
-      if os.path.isfile(self.cookie_file):
-        print "*** Cookie file found, load cookies from file\n"
-
+      if self.checkCookieFile(self.cookie_file):
         try:
             cj = cookielib.MozillaCookieJar()
             cj.load(self.cookie_file)
@@ -437,8 +438,8 @@ class Muzebra():
         except cookielib.LoadError:
             print "*** remove existing cookie file and try again"
             os.remove(self.cookie_file)
-            
-            
+
+
       else:
         print "*** Cookie file not found, get cookies from server\n"
 
@@ -476,7 +477,7 @@ class Muzebra():
                 print 'Error code: ', e.code
 
         response = urllib2.urlopen(request)
-#
+
         if response.geturl() == "http://muzebra.com/user/profile":
           self.authenticated = True
           print "save cookies"
@@ -486,6 +487,23 @@ class Muzebra():
           print "*** Authentication failed"
           print response.geturl()
           return False
+
+
+  def checkCookieFile(self, cookie):
+    if os.path.isfile(cookie):
+      print "Cookie file found"
+
+      if (time.mktime(datetime.now().timetuple()) - os.path.getmtime(cookie)) > 86400:
+        print "Remove cookie file and get new one from server"
+        os.remove(cookie)
+        return False
+      else:
+        print "Cookie file is up-to-date"
+        return True
+    else:
+      return False
+
+    #print "Cookie file created at: %s" % datetime.fromtimestamp(os.path.getmtime(cookie))
 
 
   def showErrorMessage(self, msg):

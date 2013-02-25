@@ -1,3 +1,6 @@
+[B]Version 2.1.8[/B]
+- get new cookie file every day
+
 [B]Version 2.1.7[/B]
 - fix playlists listing
 - try to fix search on apple tv
