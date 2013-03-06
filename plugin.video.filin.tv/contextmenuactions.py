@@ -11,6 +11,8 @@ language = __addon__.getLocalizedString
 
 
 def addFavorite(url, name):
+    print url, name
+
     favorites = {} if len(__addon__.getSetting('favorites')) == 0 else json.loads(__addon__.getSetting('favorites'))
     favorites[url] = name
 

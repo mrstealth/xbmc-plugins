@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.8
+# Rev. 1.2.0
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -124,20 +124,30 @@ def get_params():
 def beatify_title(title):
   title = unescape(title, 'cp1251').replace(language(5000).encode('utf-8'),"")
   return title.replace(language(5001).encode('utf-8'),"")
+
+
 def getDescription(block):
     html = block[block.find('</h2>'):len(block)]
     return unescape(strip_html(remove_extra_spaces(html)), 'cp1251')
 
     #return unescape(remove_extra_spaces(remove_html_tags(html)), 'cp1251')
 
+
 def getThumbnail(block):
     thumbnail = common.parseDOM(block, "img", ret = "src")[0]
     if thumbnail[0] == '/': thumbnail = BASE_URL+thumbnail
     return thumbnail
 
+
 def getTitle(block):
     title = common.parseDOM(block, "a")
     return title[len(title)-1]
+
+
+def calculateRating(x):
+    rating = (int(x)*100)/85
+    xbmc_rating = (rating*10)/100
+    return xbmc_rating
 
 # *** UI functions ***
 def search():
@@ -173,20 +183,20 @@ def search():
       'sortby' : 'date',
       'subaction' : 'search',
       'titleonly' : '3'
-    }    
+    }
     try:
         # Apple TV
         values['story'] = keyword
-     
+
         data = urllib.urlencode(values)
         req = Request(BASE_URL+path, data)
     except UnicodeEncodeError:
         # Desktop
         values['story'] = keyword.encode('cp1251')
-     
+
         data = urllib.urlencode(values)
         req = Request(BASE_URL+path, data)
-            
+
     try:
         response = urlopen(req)
     except URLError, e:
@@ -251,6 +261,7 @@ def getCategories(url):
 
 
 def getCategoryItems(url, categorie, page):
+    print "*** getCategoryItems"
     path = url + "?onlyjanr=" + categorie
     page = int(page)
 
@@ -328,9 +339,8 @@ def listFavorites():
     string = Addon.getSetting('favorites')
 
     if len(string) == 0:
-        item = xbmcgui.ListItem()
-        item.setProperty('IsPlayable', 'false')
-        xbmcplugin.addDirectoryItem(pluginhandle, '', item, True)
+        item = xbmcgui.ListItem(language(3002))
+        xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
     else:
         favorites = json.loads(string.replace('\x00', ''))
         for key in favorites:
@@ -342,13 +352,23 @@ def listFavorites():
 
             # TODO: move to "addFavorite" function
             script = "special://home/addons/plugin.video.filin.tv/contextmenuactions.py"
-            params = "remove|%s"%key + "|%s"%favorites[key]
+            params = "remove|%s" % key + "|%s" % favorites[key]
             runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
             item.addContextMenuItems([(localize(language(3004)), runner)])
             xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
 
+        item = xbmcgui.ListItem("[COLOR=FFFF4000]%s[/COLOR]" % language(3006))
+        uri = sys.argv[0] + '?mode=RESET'
+        item.setProperty('IsPlayable', 'true')
+        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
+def resetFavorites():
+    dialog = xbmcgui.Dialog()
+    answer = dialog.yesno(language(3006), language(3007))
+    if answer == 1:
+      Addon.setSetting('favorites', '')
 
 # Get latest income from index page
 def getRecentItems(url):
@@ -363,6 +383,8 @@ def getRecentItems(url):
 
 
 def getItems(url):
+    print "*** getItems"
+
     response = common.fetchPage({"link": url})
 
     if response["status"] == 200:
@@ -379,6 +401,7 @@ def getItems(url):
 
         images = common.parseDOM(blocktext, "img", ret = "src")
         descriptions = common.parseDOM(blocktext, "div", attrs = { "style":"display:inline;" })
+        ratings = common.parseDOM(blocktext, "li", attrs={"class": "current-rating"})
 
         genres = []
         for i, g in enumerate(common.parseDOM(blocknews, "div", attrs = { "class":"categ" })):
@@ -388,11 +411,20 @@ def getItems(url):
             if images[i][0] == '/': images[i] = BASE_URL+images[i]
             title = beatify_title(title)
             genre = unescape(str(genres[i]), 'cp1251')
-            description =  unescape(strip_html(descriptions[i]), 'cp1251')
+            description = unescape(strip_html(descriptions[i]), 'cp1251')
 
             uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + '&thumbnail=' + images[i]
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage=images[i])
-            item.setInfo( type='Video', infoLabels={'title': title, 'genre' : genre, 'plot': description})
+
+
+            infoLabels={'title': title, 'genre' : genre, 'plot': description}
+
+            if calculateRating(ratings[i]) > 0:
+                infoLabels['rating'] = calculateRating(ratings[i])
+
+            print "Rating: %s - %d" % (ratings[i], calculateRating(ratings[i]))
+
+            item.setInfo( type='Video', infoLabels=infoLabels)
             item.setProperty( "isFolder", 'True')
 
             # TODO: move to "addFavorite" function
@@ -414,7 +446,7 @@ def getItems(url):
         print "*** Exception"
         print e
         xbmc.executebuiltin('Container.SetViewMode(50)')
-        
+
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
@@ -456,7 +488,7 @@ def showItem(url, thumbnail):
         print "*** Exception"
         print e
         xbmc.executebuiltin('Container.SetViewMode(50)')
-        
+
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
 
@@ -495,6 +527,7 @@ try:
     page=params['page']
 except: pass
 
+
 if mode == 'RNEXT':
     getRecentItems(url)
 elif mode == 'CATEGORIES':
@@ -513,6 +546,8 @@ elif mode == 'SEARCH':
     search();
 elif mode == 'FAVORITES':
     listFavorites();
+elif mode == 'RESET':
+    resetFavorites();
 elif mode == None:
     url = BASE_URL if url == None else url
     getRecentItems(url)
