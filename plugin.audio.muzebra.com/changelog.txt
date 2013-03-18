@@ -1,4 +1,7 @@
 [B]Version 2.1.8[/B]
+- fix charts
+
+[B]Version 2.1.8[/B]
 - get new cookie file every day
 
 [B]Version 2.1.7[/B]

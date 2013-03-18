@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.8
+# Rev. 2.1.9
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -90,11 +90,11 @@ class Muzebra():
       item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s (muzebra.com)[/COLOR]"%self.language(2000), iconImage=self.icon)
       xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-    uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/', self.language(4001))
+    uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/russian', self.language(4001))
     item = xbmcgui.ListItem(self.language(4001), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-    uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/en/', self.language(4002))
+    uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/worldwide', self.language(4002))
     item = xbmcgui.ListItem(self.language(4002), iconImage=self.icon)
     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
