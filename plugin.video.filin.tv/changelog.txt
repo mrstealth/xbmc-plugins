@@ -1,3 +1,6 @@
+[B]Version 1.2.1[/B]
+- embed tag was renamed to EMBED
+
 [B]Version 1.2.0[/B]
 - show user rating
 - allow to reset list of favorites

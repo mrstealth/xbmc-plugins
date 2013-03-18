@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.0
+# Rev. 1.2.1
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -422,7 +422,7 @@ def getItems(url):
             if calculateRating(ratings[i]) > 0:
                 infoLabels['rating'] = calculateRating(ratings[i])
 
-            print "Rating: %s - %d" % (ratings[i], calculateRating(ratings[i]))
+            # print "Rating: %s - %d" % (ratings[i], calculateRating(ratings[i]))
 
             item.setInfo( type='Video', infoLabels=infoLabels)
             item.setProperty( "isFolder", 'True')
@@ -463,7 +463,7 @@ def showItem(url, thumbnail):
     title = beatify_title(getTitle(block))
     desc = getDescription(block)
 
-    flashvars = common.parseDOM(content, "embed", ret="flashvars")[0]
+    flashvars = common.parseDOM(content, "EMBED", ret="flashvars")[0]
     url = get_url(flashvars)
 
     xml = common.fetchPage({"link": url})["content"]
