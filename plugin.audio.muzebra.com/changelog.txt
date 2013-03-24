@@ -1,4 +1,7 @@
-[B]Version 2.1.8[/B]
+[B]Version 2.2.0[/B]
+- fix playlist listing
+
+[B]Version 2.1.9[/B]
 - fix charts
 
 [B]Version 2.1.8[/B]

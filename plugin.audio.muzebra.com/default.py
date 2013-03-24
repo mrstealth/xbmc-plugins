@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.9
+# Rev. 2.2.0
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -194,7 +194,14 @@ class Muzebra():
 
     page = common.fetchPage({"link": url})
     content = common.parseDOM(page["content"], "div", attrs = { "id" : "content" })
-    playlists = common.parseDOM(content, "ul")
+    
+    playlists = common.parseDOM(content, "ul", attrs = {"class": "white playlist"})
+
+    if not playlists:
+      playlists = common.parseDOM(content, "ul", attrs = {"class": "playlist"})
+
+      if not playlists:
+        playlists = common.parseDOM(content, "ul")
 
     artists = common.parseDOM(playlists, "a", attrs = { "class":"hash artist" })
     titles = common.parseDOM(playlists, "span", attrs = { "class":"name" })
@@ -221,7 +228,7 @@ class Muzebra():
         infoLabels = {
           'title': title,
           'artist' : artist,
-          'album' : playlist,
+          'album' : 'N/A',
           'genre': 'muzebra.com',
           'duration' : self.duration(times[i]),
           'rating' : '0'
@@ -279,7 +286,8 @@ class Muzebra():
           item = xbmcgui.ListItem(title, iconImage = self.icon, thumbnailImage = self.icon)
           xbmcplugin.addDirectoryItem(self.handle, uri, item, isFolder=True)
 
-    xbmcplugin.addSortMethod(self.handle, xbmcplugin.SORT_METHOD_TITLE)
+    # xbmcplugin.addSortMethod(self.handle, xbmcplugin.SORT_METHOD_TITLE)
+    # xbmcplugin.addSortMethod( handle=self.handle, sortMethod=xbmcplugin.SORT_METHOD_TITLE )
     xbmcplugin.endOfDirectory(self.handle, True)
 
 
