@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.2.0
+# Rev. 2.2.1
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -61,7 +61,7 @@ class Muzebra():
     if mode == 'search':
       self.search()
     if mode == 'songs':
-      self.getSongs(url, playlist)
+      self.getSongs(url)
     if mode == 'add':
       self.addToPlaylist(url)
     if mode == 'playlists':
@@ -188,26 +188,27 @@ class Muzebra():
     else:
       self.showErrorMessage('Adding song to playlist %s failed'%names[selected])
 
-
-  def getSongs(self, url, playlist):
-    print "*** GET SONGS FOR PLAYLIST"
+  def getSongs(self, url):
+    print "*** GET SONGS FOR PLAYLIST %s" % url
 
     page = common.fetchPage({"link": url})
-    content = common.parseDOM(page["content"], "div", attrs = { "id" : "content" })
-    
-    playlists = common.parseDOM(content, "ul", attrs = {"class": "white playlist"})
+    content = common.parseDOM(page["content"], "div", attrs={"id": "content"})
+
+    playlists = common.parseDOM(content, "ul", attrs={"class": "white playlist"})
 
     if not playlists:
-      playlists = common.parseDOM(content, "ul", attrs = {"class": "playlist"})
+      playlists = common.parseDOM(content, "ul", attrs={"class": "playlist"})
 
       if not playlists:
         playlists = common.parseDOM(content, "ul")
 
-    artists = common.parseDOM(playlists, "a", attrs = { "class":"hash artist" })
-    titles = common.parseDOM(playlists, "span", attrs = { "class":"name" })
-    dataids = common.parseDOM(playlists, "a", attrs = { "class":"info" }, ret="data-aid")
-    datalinks = common.parseDOM(playlists, "a", attrs = { "class":"info" }, ret="data-link")
-    times = common.parseDOM(playlists, "div", attrs = { "class":"time" })
+    artists = common.parseDOM(playlists, "li", attrs={"class": "track"}, ret="data-artist")
+    titles = common.parseDOM(playlists, "li", attrs={"class": "track"}, ret="data-title")
+
+    dataids = common.parseDOM(playlists, "li", attrs={"class": "track"}, ret="data-aid")
+    datalinks = common.parseDOM(playlists, "li", attrs = {"class": "track"}, ret="data-link")
+
+    durations = common.parseDOM(playlists, "li", attrs = {"class": "track"}, ret="data-duration")
 
     image = self.getArtistPhoto(page["content"])
 
@@ -219,7 +220,7 @@ class Muzebra():
       except IndexError:
         artist = "unknown"
 
-      song = "%s - %s"%(title, artist)
+      song = "%s - %s" % (title, artist)
 
       uri = sys.argv[0] + '?mode=%s&dataid=%s&datalink=%s'%('play', dataids[i], datalinks[i])
       item = xbmcgui.ListItem(self.stripHtmlEntitites(song), iconImage=self.icon, thumbnailImage=image)
@@ -227,10 +228,10 @@ class Muzebra():
       item.setInfo(type='music',
         infoLabels = {
           'title': title,
-          'artist' : artist,
-          'album' : 'N/A',
+          'artist': artist,
+          'album': 'N/A',
           'genre': 'muzebra.com',
-          'duration' : self.duration(times[i]),
+          'duration': durations[i],
           'rating' : '0'
         }
       )
@@ -251,13 +252,14 @@ class Muzebra():
 
 
   def getSongByID(self, dataid, datalink):
+    print "DataID: %s DataLink: %s " % (dataid, datalink)
     api = "https://api.vk.com/method/audio.getById.json?access_token=%s&audios=%s"%(self.api_keys['token'], dataid)
 
     try:
       print "*** try to get the song from api.vk.com"
       response = json.loads(common.fetchPage({"link": api})["content"])['response'][0]
       return {'url' : response['url'], 'title' : response['title'], 'artist' : response['artist']}
-    except KeyError:
+    except (KeyError, IndexError) as e:
       print "*** try to get the song from savestreaming.com"
       return {'url' : 'http://savestreaming.com/t/%s_%s'%(datalink, self.api_keys['hash'])}
 
@@ -280,7 +282,10 @@ class Muzebra():
         titles = common.parseDOM(artists, "a")
 
         for i, link in enumerate(links):
-          title = titles[i].upper()
+          title = titles[i].upper().replace('%26', 'and').encode('utf-8')
+
+          print title
+          print link
           uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', urllib.quote_plus(self.url+link), title)
 
           item = xbmcgui.ListItem(title, iconImage = self.icon, thumbnailImage = self.icon)
@@ -421,7 +426,7 @@ class Muzebra():
         keyword = query
 
       url =self.url + '/search/?q=' +  urllib.quote_plus(keyword.replace(' ', '+'))
-      self.getSongs(url, self.language(1000))
+      self.getSongs(url)
 
     else:
       print "Empty query"
@@ -433,6 +438,7 @@ class Muzebra():
 
     if self.username is None or self.password is None or self.username is '' or self.password is '':
         self.authenticated = False
+        print "Username and password missing, continue"
         return False
     else:
       if self.checkCookieFile(self.cookie_file):
