@@ -1,3 +1,6 @@
+[B]Version 1.2.2[/B]
+- get playlist url from javascript
+
 [B]Version 1.2.1[/B]
 - embed tag was renamed to EMBED
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.1
+# Rev. 1.2.2
 # -*- coding: utf-8 -*-
 
 import urllib, re, os, sys
@@ -462,23 +462,31 @@ def showItem(url, thumbnail):
 
     title = beatify_title(getTitle(block))
     desc = getDescription(block)
+    flashvar = re.findall('<script language="javascript">.*flashvars = .*?pl:[ "]*(.*?)"\r\n.*', content, re.S|re.DOTALL)
+    locations = []
+    titles = []
 
-    flashvars = common.parseDOM(content, "EMBED", ret="flashvars")[0]
-    url = get_url(flashvars)
+    if flashvar:
+        import json
+        url2json = BASE_URL+'/'+flashvar[0]
+        response = common.fetchPage({"link":url2json})["content"]
+        json = json.loads(response)["playlist"]
 
-    xml = common.fetchPage({"link": url})["content"]
-    locations = common.parseDOM(xml, "location")
-    titles = common.parseDOM(xml, "title")
+        for season in json:
+            seasonName = season['comment']
+            for obj in season['playlist']:
+                locations.append(obj['file'])
+                titles.append(seasonName+" - "+obj['comment'])
 
-    for i in range(0, len(locations)):
-        uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
-        item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage=addon_icon, thumbnailImage=image)
+        for i in range(0, len(locations)):
+            uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
+            item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage=addon_icon, thumbnailImage=image)
 
-        overlay = xbmcgui.ICON_OVERLAY_WATCHED
-        info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
-        item.setInfo( type='Video', infoLabels=info)
-        item.setProperty('IsPlayable', 'true')
-        xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+            overlay = xbmcgui.ICON_OVERLAY_WATCHED
+            info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
+            item.setInfo( type='Video', infoLabels=info)
+            item.setProperty('IsPlayable', 'true')
+            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
 
     # set view mode to List2 (quarz3 skin)
     try:
@@ -490,6 +498,7 @@ def showItem(url, thumbnail):
         xbmc.executebuiltin('Container.SetViewMode(50)')
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
+
 
 
 def playItem(url):
