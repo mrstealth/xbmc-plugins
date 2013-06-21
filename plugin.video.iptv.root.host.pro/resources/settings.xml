@@ -1,5 +1,0 @@
-<settings>
-    <setting id="parent_control" type="bool" label="Parent control" default="false" />
-    <setting id="availability_check" type="bool" label="Enable stream availability check" default="true" />
-    <setting id="interval" type="number" label="Check stream availability (hours), if 0 always check availability" default="24" />
-</settings>
