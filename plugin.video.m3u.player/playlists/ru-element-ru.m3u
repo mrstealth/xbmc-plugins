@@ -1,0 +1,249 @@
+#EXTM3U
+#EXTINF:0, channel M-37 (1)(0) (ru-element.ru/iptv)-0
+http://ru-element.ru/playlist/playlist.php?ch=0&d=21.06.13
+#EXTINF:0, channel M-39 (1)(1) (ru-element.ru/iptv)-1
+http://ru-element.ru/playlist/playlist.php?ch=1&d=21.06.13
+#EXTINF:0, channel M-62 (1)(2) (ru-element.ru/iptv)-2
+http://ru-element.ru/playlist/playlist.php?ch=2&d=21.06.13
+#EXTINF:0, channel M-63 (1)(3) (ru-element.ru/iptv)-3
+http://ru-element.ru/playlist/playlist.php?ch=3&d=21.06.13
+#EXTINF:0, channel M-69 (1)(4) (ru-element.ru/iptv)-4
+http://ru-element.ru/playlist/playlist.php?ch=4&d=21.06.13
+#EXTINF:0, channel M-70 (1)(5) (ru-element.ru/iptv)-5
+http://ru-element.ru/playlist/playlist.php?ch=5&d=21.06.13
+#EXTINF:0, channel M-71 (1)(6) (ru-element.ru/iptv)-6
+http://ru-element.ru/playlist/playlist.php?ch=6&d=21.06.13
+#EXTINF:0, channel M-72 (1)(7) (ru-element.ru/iptv)-7
+http://ru-element.ru/playlist/playlist.php?ch=7&d=21.06.13
+#EXTINF:0, channel M-73 (1)(8) (ru-element.ru/iptv)-8
+http://ru-element.ru/playlist/playlist.php?ch=8&d=21.06.13
+#EXTINF:0, channel M-75 (1)(9) (ru-element.ru/iptv)-9
+http://ru-element.ru/playlist/playlist.php?ch=9&d=21.06.13
+#EXTINF:0, channel M-76 (1)(10) (ru-element.ru/iptv)-10
+http://ru-element.ru/playlist/playlist.php?ch=10&d=21.06.13
+#EXTINF:0, channel M-86 (1)(11) (ru-element.ru/iptv)-11
+http://ru-element.ru/playlist/playlist.php?ch=11&d=21.06.13
+#EXTINF:0, channel M-88 (1)(12) (ru-element.ru/iptv)-12
+http://ru-element.ru/playlist/playlist.php?ch=12&d=21.06.13
+#EXTINF:0, channel M-96 (1)(13) (ru-element.ru/iptv)-13
+http://ru-element.ru/playlist/playlist.php?ch=13&d=21.06.13
+#EXTINF:0, channel M-98 (1)(14) (ru-element.ru/iptv)-14
+http://ru-element.ru/playlist/playlist.php?ch=14&d=21.06.13
+#EXTINF:0,НТВ+ Киноклуб (15) (ru-element.ru/iptv)-15
+http://ru-element.ru/playlist/playlist.php?ch=15&d=21.06.13
+#EXTINF:0,НТВ+ Киноплюс (16) (ru-element.ru/iptv)-16
+http://ru-element.ru/playlist/playlist.php?ch=16&d=21.06.13
+#EXTINF:0,VH1 European(17) (ru-element.ru/iptv)-17
+http://ru-element.ru/playlist/playlist.php?ch=17&d=21.06.13
+#EXTINF:0,Rdtrk(18) (ru-element.ru/iptv)-18
+http://ru-element.ru/playlist/playlist.php?ch=18&d=21.06.13
+#EXTINF:0,КРТ(19) (ru-element.ru/iptv)-19
+http://ru-element.ru/playlist/playlist.php?ch=19&d=21.06.13
+#EXTINF:0,HD Brodilo TV(20) (ru-element.ru/iptv)-20
+http://ru-element.ru/playlist/playlist.php?ch=20&d=21.06.13
+#EXTINF:0,Астро тв *(21) (ru-element.ru/iptv)-21
+http://ru-element.ru/playlist/playlist.php?ch=21&d=21.06.13
+#EXTINF:0,Детский(22) (ru-element.ru/iptv)-22
+http://ru-element.ru/playlist/playlist.php?ch=22&d=21.06.13
+#EXTINF:0,Rock-Fm (ru-element.ru/iptv)-23
+http://ru-element.ru/playlist/playlist.php?ch=23&d=21.06.13
+#EXTINF:0,Юмор FM (ru-element.ru/iptv)-24
+http://ru-element.ru/playlist/playlist.php?ch=24&d=21.06.13
+#EXTINF:0,Радио Рекорд (ru-element.ru/iptv)-25
+http://ru-element.ru/playlist/playlist.php?ch=25&d=21.06.13
+#EXTINF:0,Радио Рекорд Tranc (ru-element.ru/iptv)-26
+http://ru-element.ru/playlist/playlist.php?ch=26&d=21.06.13
+#EXTINF:0,Дискотека 90 (ru-element.ru/iptv)-27
+http://ru-element.ru/playlist/playlist.php?ch=27&d=21.06.13
+#EXTINF:0,Гоп ФМ (ru-element.ru/iptv)-28
+http://ru-element.ru/playlist/playlist.php?ch=28&d=21.06.13
+#EXTINF:0,Медляк ФМ (ru-element.ru/iptv)-29
+http://ru-element.ru/playlist/playlist.php?ch=29&d=21.06.13
+#EXTINF:0,Радио Юность (ru-element.ru/iptv)-30
+http://ru-element.ru/playlist/playlist.php?ch=30&d=21.06.13
+#EXTINF:0,Наше радио (ru-element.ru/iptv)-31
+http://ru-element.ru/playlist/playlist.php?ch=31&d=21.06.13
+#EXTINF:0,Европа + (ru-element.ru/iptv)-32
+http://ru-element.ru/playlist/playlist.php?ch=32&d=21.06.13
+#EXTINF:0,Ретро Фм  (ru-element.ru/iptv)-33
+http://ru-element.ru/playlist/playlist.php?ch=33&d=21.06.13
+#EXTINF:0,Маяк Фм  (ru-element.ru/iptv)-34
+http://ru-element.ru/playlist/playlist.php?ch=34&d=21.06.13
+#EXTINF:0,Радио NRJ  (ru-element.ru/iptv)-35
+http://ru-element.ru/playlist/playlist.php?ch=35&d=21.06.13
+#EXTINF:0,Радио Шансон (ru-element.ru/iptv)-36
+http://ru-element.ru/playlist/playlist.php?ch=36&d=21.06.13
+#EXTINF:0,Русское Радио (ru-element.ru/iptv)-37
+http://ru-element.ru/playlist/playlist.php?ch=37&d=21.06.13
+#EXTINF:0,АвтоРадио  (ru-element.ru/iptv)-38
+http://ru-element.ru/playlist/playlist.php?ch=38&d=21.06.13
+#EXTINF:0,Дорожное радио (ru-element.ru/iptv)-39
+http://ru-element.ru/playlist/playlist.php?ch=39&d=21.06.13
+#EXTINF:0,Радио Дача (ru-element.ru/iptv)-40
+http://ru-element.ru/playlist/playlist.php?ch=40&d=21.06.13
+#EXTINF:0,Радио SEX FM  (ru-element.ru/iptv)-41
+http://ru-element.ru/playlist/playlist.php?ch=41&d=21.06.13
+#EXTINF:0,Радио Спорт  (ru-element.ru/iptv)-42
+http://ru-element.ru/playlist/playlist.php?ch=42&d=21.06.13
+#EXTINF:0,Радио Top Hits (ru-element.ru/iptv)-43
+http://ru-element.ru/playlist/playlist.php?ch=43&d=21.06.13
+#EXTINF:0,Радио Dance Hits (ru-element.ru/iptv)-44
+http://ru-element.ru/playlist/playlist.php?ch=44&d=21.06.13
+#EXTINF:0,Радио Club Sounds (ru-element.ru/iptv)-45
+http://ru-element.ru/playlist/playlist.php?ch=45&d=21.06.13
+#EXTINF:0,Радио DJ Mixes (ru-element.ru/iptv)-46
+http://ru-element.ru/playlist/playlist.php?ch=46&d=21.06.13
+#EXTINF:0,Classic Vocal Trance (ru-element.ru/iptv)-47
+http://ru-element.ru/playlist/playlist.php?ch=47&d=21.06.13
+#EXTINF:0,Electro House (ru-element.ru/iptv)-48
+http://ru-element.ru/playlist/playlist.php?ch=48&d=21.06.13
+#EXTINF:0,Радио Urban Jamz (ru-element.ru/iptv)-49
+http://ru-element.ru/playlist/playlist.php?ch=49&d=21.06.13
+#EXTINF:0,Радио Christian (ru-element.ru/iptv)-50
+http://ru-element.ru/playlist/playlist.php?ch=50&d=21.06.13
+#EXTINF:0,Радио Romantica (ru-element.ru/iptv)-51
+http://ru-element.ru/playlist/playlist.php?ch=51&d=21.06.13
+#EXTINF:0,Радио New Age (ru-element.ru/iptv)-52
+http://ru-element.ru/playlist/playlist.php?ch=52&d=21.06.13
+#EXTINF:0,Vocal New Age (ru-element.ru/iptv)-53
+http://ru-element.ru/playlist/playlist.php?ch=53&d=21.06.13
+#EXTINF:0,Радио PsyChill (ru-element.ru/iptv)-54
+http://ru-element.ru/playlist/playlist.php?ch=54&d=21.06.13
+#EXTINF:0,Радио Vocal Chillout  (ru-element.ru/iptv)-55
+http://ru-element.ru/playlist/playlist.php?ch=55&d=21.06.13
+#EXTINF:0,Радио Chillout (ru-element.ru/iptv)-56
+http://ru-element.ru/playlist/playlist.php?ch=56&d=21.06.13
+#EXTINF:0,Радио Chillout Dreams (ru-element.ru/iptv)-57
+http://ru-element.ru/playlist/playlist.php?ch=57&d=21.06.13
+#EXTINF:0,Space Dreams (ru-element.ru/iptv)-58
+http://ru-element.ru/playlist/playlist.php?ch=58&d=21.06.13
+#EXTINF:0,Радио Relaxation (ru-element.ru/iptv)-59
+http://ru-element.ru/playlist/playlist.php?ch=59&d=21.06.13
+#EXTINF:0,Cosmic D.tempo  (ru-element.ru/iptv)-60
+http://ru-element.ru/playlist/playlist.php?ch=60&d=21.06.13
+#EXTINF:0,Love Music (ru-element.ru/iptv)-61
+http://ru-element.ru/playlist/playlist.php?ch=61&d=21.06.13
+#EXTINF:0,Classical Guitar (ru-element.ru/iptv)-62
+http://ru-element.ru/playlist/playlist.php?ch=62&d=21.06.13
+#EXTINF:0,Solo Piano (ru-element.ru/iptv)-63
+http://ru-element.ru/playlist/playlist.php?ch=63&d=21.06.13
+#EXTINF:0,Mostly Classical (ru-element.ru/iptv)-64
+http://ru-element.ru/playlist/playlist.php?ch=64&d=21.06.13
+#EXTINF:0,Soft Rock (ru-element.ru/iptv)-65
+http://ru-element.ru/playlist/playlist.php?ch=65&d=21.06.13
+#EXTINF:0,Alternative Rock (ru-element.ru/iptv)-66
+http://ru-element.ru/playlist/playlist.php?ch=66&d=21.06.13
+#EXTINF:0,Modern Rock (ru-element.ru/iptv)-67
+http://ru-element.ru/playlist/playlist.php?ch=67&d=21.06.13
+#EXTINF:0,Hard Rock (ru-element.ru/iptv)-68
+http://ru-element.ru/playlist/playlist.php?ch=68&d=21.06.13
+#EXTINF:0,Metal (ru-element.ru/iptv)-69
+http://ru-element.ru/playlist/playlist.php?ch=69&d=21.06.13
+#EXTINF:0,Pop Punk (ru-element.ru/iptv)-70
+http://ru-element.ru/playlist/playlist.php?ch=70&d=21.06.13
+#EXTINF:0,Все копы-ублюдкизагрузка10с (ru-element.ru/iptv)-71
+http://ru-element.ru/playlist/playlist.php?ch=71&d=21.06.13
+#EXTINF:0,Дружинники  загрузка15с (ru-element.ru/iptv)-72
+http://ru-element.ru/playlist/playlist.php?ch=72&d=21.06.13
+#EXTINF:0,Порочная страстьзагрузка 10 сек (ru-element.ru/iptv)-73
+http://ru-element.ru/playlist/playlist.php?ch=73&d=21.06.13
+#EXTINF:0,Спецотряд Призрак:Загр15 сек (ru-element.ru/iptv)-74
+http://ru-element.ru/playlist/playlist.php?ch=74&d=21.06.13
+#EXTINF:0,Вспомнить всё2012 загрузка15с (ru-element.ru/iptv)-75
+http://ru-element.ru/playlist/playlist.php?ch=75&d=21.06.13
+#EXTINF:0,Эволюция Борна загрузка15с (ru-element.ru/iptv)-76
+http://ru-element.ru/playlist/playlist.php?ch=76&d=21.06.13
+#EXTINF:0,Параллельные миры загрузка15с (ru-element.ru/iptv)-77
+http://ru-element.ru/playlist/playlist.php?ch=77&d=21.06.13
+#EXTINF:0,Побег загрузка15с (ru-element.ru/iptv)-78
+http://ru-element.ru/playlist/playlist.php?ch=78&d=21.06.13
+#EXTINF:0,Неудержимые 2.Загру15 сек (ru-element.ru/iptv)-79
+http://ru-element.ru/playlist/playlist.php?ch=79&d=21.06.13
+#EXTINF:0,Медальонзагрузка15с (ru-element.ru/iptv)-80
+http://ru-element.ru/playlist/playlist.php?ch=80&d=21.06.13
+#EXTINF:0,Прометейзагруз 15 сек (ru-element.ru/iptv)-81
+http://ru-element.ru/playlist/playlist.php?ch=81&d=21.06.13
+#EXTINF:0,Белоснежка и охотник.Загр15сек (ru-element.ru/iptv)-82
+http://ru-element.ru/playlist/playlist.php?ch=82&d=21.06.13
+#EXTINF:0,Седьмая группазагрузка15с (ru-element.ru/iptv)-83
+http://ru-element.ru/playlist/playlist.php?ch=83&d=21.06.13
+#EXTINF:0,Планета бурь (ru-element.ru/iptv)-84
+http://ru-element.ru/playlist/playlist.php?ch=84&d=21.06.13
+#EXTINF:0,Олигарх (ru-element.ru/iptv)-85
+http://ru-element.ru/playlist/playlist.php?ch=85&d=21.06.13
+#EXTINF:0,Царь (ru-element.ru/iptv)-86
+http://ru-element.ru/playlist/playlist.php?ch=86&d=21.06.13
+#EXTINF:0,Зимняя жара (ru-element.ru/iptv)-87
+http://ru-element.ru/playlist/playlist.php?ch=87&d=21.06.13
+#EXTINF:0,Остров сокровищ1. (ru-element.ru/iptv)-88
+http://ru-element.ru/playlist/playlist.php?ch=88&d=21.06.13
+#EXTINF:0,Остров сокровищ2. (ru-element.ru/iptv)-89
+http://ru-element.ru/playlist/playlist.php?ch=89&d=21.06.13
+#EXTINF:0,Ехали два шофера (ru-element.ru/iptv)-90
+http://ru-element.ru/playlist/playlist.php?ch=90&d=21.06.13
+#EXTINF:0,Перегон (ru-element.ru/iptv)-91
+http://ru-element.ru/playlist/playlist.php?ch=91&d=21.06.13
+#EXTINF:0,Монгол (ru-element.ru/iptv)-92
+http://ru-element.ru/playlist/playlist.php?ch=92&d=21.06.13
+#EXTINF:0,Мама не горюй 2 (ru-element.ru/iptv)-93
+http://ru-element.ru/playlist/playlist.php?ch=93&d=21.06.13
+#EXTINF:0,Кукушка (ru-element.ru/iptv)-94
+http://ru-element.ru/playlist/playlist.php?ch=94&d=21.06.13
+#EXTINF:0,Человек амфибия (ru-element.ru/iptv)-95
+http://ru-element.ru/playlist/playlist.php?ch=95&d=21.06.13
+#EXTINF:0,Дело Румянцева (ru-element.ru/iptv)-96
+http://ru-element.ru/playlist/playlist.php?ch=96&d=21.06.13
+#EXTINF:0,Максим Перепелица (ru-element.ru/iptv)-97
+http://ru-element.ru/playlist/playlist.php?ch=97&d=21.06.13
+#EXTINF:0,Полосатый Рейс (ru-element.ru/iptv)-98
+http://ru-element.ru/playlist/playlist.php?ch=98&d=21.06.13
+#EXTINF:0,Особенности Нац рыбалки (ru-element.ru/iptv)-99
+http://ru-element.ru/playlist/playlist.php?ch=99&d=21.06.13
+#EXTINF:0,Каникулы строгого режима (ru-element.ru/iptv)-100
+http://ru-element.ru/playlist/playlist.php?ch=100&d=21.06.13
+#EXTINF:0,Адмирал (ru-element.ru/iptv)-101
+http://ru-element.ru/playlist/playlist.php?ch=101&d=21.06.13
+#EXTINF:0,Свадьба в Малиновке (ru-element.ru/iptv)-102
+http://ru-element.ru/playlist/playlist.php?ch=102&d=21.06.13
+#EXTINF:0,Ирония Судьбы 2 (ru-element.ru/iptv)-103
+http://ru-element.ru/playlist/playlist.php?ch=103&d=21.06.13
+#EXTINF:0,Блондинка за углом (ru-element.ru/iptv)-104
+http://ru-element.ru/playlist/playlist.php?ch=104&d=21.06.13
+#EXTINF:0,Мама не горюй (ru-element.ru/iptv)-105
+http://ru-element.ru/playlist/playlist.php?ch=105&d=21.06.13
+#EXTINF:0,Хоттабыч (ru-element.ru/iptv)-106
+http://ru-element.ru/playlist/playlist.php?ch=106&d=21.06.13
+#EXTINF:0,Новог приключ Маши и Вити (ru-element.ru/iptv)-107
+http://ru-element.ru/playlist/playlist.php?ch=107&d=21.06.13
+#EXTINF:0,Собачье сердце. Серия 1 (ru-element.ru/iptv)-108
+http://ru-element.ru/playlist/playlist.php?ch=108&d=21.06.13
+#EXTINF:0,Собачье сердце. Серия 2 (ru-element.ru/iptv)-109
+http://ru-element.ru/playlist/playlist.php?ch=109&d=21.06.13
+#EXTINF:0,Умри со мной (ru-element.ru/iptv)-110
+http://ru-element.ru/playlist/playlist.php?ch=110&d=21.06.13
+#EXTINF:0,Бумер (ru-element.ru/iptv)-111
+http://ru-element.ru/playlist/playlist.php?ch=111&d=21.06.13
+#EXTINF:0,Брат 2 (ru-element.ru/iptv)-112
+http://ru-element.ru/playlist/playlist.php?ch=112&d=21.06.13
+#EXTINF:0,Жмурки (ru-element.ru/iptv)-113
+http://ru-element.ru/playlist/playlist.php?ch=113&d=21.06.13
+#EXTINF:0,Ванька Грозный (ru-element.ru/iptv)-114
+http://ru-element.ru/playlist/playlist.php?ch=114&d=21.06.13
+#EXTINF:0,Сказ про Федота-стрельца (ru-element.ru/iptv)-115
+http://ru-element.ru/playlist/playlist.php?ch=115&d=21.06.13
+#EXTINF:0,Голый космос (ru-element.ru/iptv)-116
+http://ru-element.ru/playlist/playlist.php?ch=116&d=21.06.13
+#EXTINF:0,Ночная смена (Стивен Кинг) (ru-element.ru/iptv)-117
+http://ru-element.ru/playlist/playlist.php?ch=117&d=21.06.13
+#EXTINF:0,Ад каннибалов (ru-element.ru/iptv)-118
+http://ru-element.ru/playlist/playlist.php?ch=118&d=21.06.13
+#EXTINF:0,Кровь и черные кружева (ru-element.ru/iptv)-119
+http://ru-element.ru/playlist/playlist.php?ch=119&d=21.06.13
+#EXTINF:0,Город Зомби (ru-element.ru/iptv)-120
+http://ru-element.ru/playlist/playlist.php?ch=120&d=21.06.13
+#EXTINF:0,Зеленый ад (ru-element.ru/iptv)-121
+http://ru-element.ru/playlist/playlist.php?ch=121&d=21.06.13
+#EXTINF:0,Противостояние (Стивен Кинг) (ru-element.ru/iptv)-122
+http://ru-element.ru/playlist/playlist.php?ch=122&d=21.06.13
+#EXTINF:0,Обитель зла 4 (ru-element.ru/iptv)-123
+http://ru-element.ru/playlist/playlist.php?ch=123&d=21.06.13
