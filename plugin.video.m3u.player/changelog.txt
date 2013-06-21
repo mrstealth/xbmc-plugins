@@ -1,0 +1,12 @@
+[B]Version 1.0.3[/B]
+- raise add-on version
+
+[B]Version 1.0.2[/B]
+- Set playlists directory in add-on settings
+- Add "Remove all playlists" context menu item
+
+[B]Version 1.0.1[/B]
+- Change add-on name
+
+[B]Version 1.0.0[/B]
+- Initial version
