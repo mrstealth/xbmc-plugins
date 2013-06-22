@@ -1,15 +1,15 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.2
+# Rev. 1.2.3
 # -*- coding: utf-8 -*-
 
-import urllib, re, os, sys
+import urllib, re, sys
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
 import HTMLParser
 import XbmcHelpers
 import simplejson as json
 
-from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib2 import Request, urlopen, URLError
 common = XbmcHelpers
 
 BASE_URL = 'http://www.filin.tv'
@@ -391,7 +391,6 @@ def getItems(url):
         content = common.parseDOM(response["content"], "div", attrs = { "id":"dle-content" })
         blocknews = common.parseDOM(content, "div", attrs = { "class":"blocknews" })
 
-        alltop = common.parseDOM(blocknews, "div", attrs = { "class":"blocknews" })
         mainf = common.parseDOM(blocknews, "div", attrs = { "class":"mainf" })
 
         titles = common.parseDOM(mainf, "a")
@@ -457,36 +456,101 @@ def showItem(url, thumbnail):
 
     image_container = common.parseDOM(block, "td", attrs = { 'valign':'top' })
     image = common.parseDOM(image_container, "img", ret="src")[0]
+    image = image if image.startswith( 'http' ) else BASE_URL + image
 
     genre = unescape(" ".join(str(g) for g in common.parseDOM(mainf, "a")), 'cp1251')
 
     title = beatify_title(getTitle(block))
     desc = getDescription(block)
-    flashvar = re.findall('<script language="javascript">.*flashvars = .*?pl:[ "]*(.*?)"\r\n.*', content, re.S|re.DOTALL)
-    locations = []
-    titles = []
+    flashvar = re.findall('<script language="javascript">.*flashvars = .*?pl:[ "]*(.*?)"\r\n.*', content, re.S|re.DOTALL)[0]
+
+
+    # TODO: find an alternativ way to get flashvars from javascript
+    # scripts = filter(None, common.parseDOM(content, 'script')) # fastest
+    # matching = [s for s in scripts if "flashvar" in s]
+    # print matching
+
+    print flashvar
 
     if flashvar:
-        import json
-        url2json = BASE_URL+'/'+flashvar[0]
+        source_url = "http://kino-dom.tv/"
+
+        if '/play/' in flashvar:
+          url2json = source_url+flashvar
+        else:
+          url2json = source_url+flashvar.replace('play/', '/play/')
+
+        # multiple
+        # url2json = "http://kino-dom.tv/01f551e61970b9645b5465460daccdfe/play/devushkiibombi.xml.json"
+
+        # single
+        # url2json = "http://kino-dom.tv/01f551e61970b9645b5465460daccdfe/play/sashatanja_mp4.xml.json"
+
+        # wrong json format
+        # url2json = "http://kino-dom.tv/01f551e61970b9645b5465460daccdfe/play/institutblagorodnihdevic2_mp4.xml.json"
+
         response = common.fetchPage({"link":url2json})["content"]
-        json = json.loads(response)["playlist"]
+        
+        try:
+          playlist = json.loads(response)['playlist']
+        except ValueError:
+          print "WARNING: wrong JSON format"
+          
+          response = response.replace('\r', '').replace('\t', '').replace('\r\n', '')
+          playlist = json.loads(response)['playlist']
 
-        for season in json:
-            seasonName = season['comment']
-            for obj in season['playlist']:
-                locations.append(obj['file'])
-                titles.append(seasonName+" - "+obj['comment'])
+        if 'playlist' in playlist[0]:
+            print "*** This is a playlist with several seasons"
 
-        for i in range(0, len(locations)):
-            uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
-            item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage=addon_icon, thumbnailImage=image)
+            for season in playlist:
+                title = season['comment']
+                episods = season['playlist']
 
-            overlay = xbmcgui.ICON_OVERLAY_WATCHED
-            info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
-            item.setInfo( type='Video', infoLabels=info)
-            item.setProperty('IsPlayable', 'true')
-            xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+                for episode in episods:
+                    title = ('%s (%s)') % (episode['comment'], season['comment'])
+                    uri = sys.argv[0] + '?mode=play&url=%s' % episode['file']
+                  
+                    item = xbmcgui.ListItem(title, thumbnailImage=image)
+                
+                    overlay = xbmcgui.ICON_OVERLAY_WATCHED
+                    info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
+                
+                    item.setInfo( type='Video', infoLabels=info)
+                    item.setProperty('IsPlayable', 'true')
+                    xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+        else:
+            print "*** This is a playlist with one season"
+
+            for episode in playlist:
+                title = episode['comment']
+                uri = sys.argv[0] + '?mode=play&url=%s' % episode['file']
+                
+                item = xbmcgui.ListItem(title, thumbnailImage=image)
+                
+                overlay = xbmcgui.ICON_OVERLAY_WATCHED
+                info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
+                
+                item.setInfo( type='Video', infoLabels=info)
+                item.setProperty('IsPlayable', 'true')
+                xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
+
+        # for season in json:
+        #     seasonName = season['comment']
+        #     for obj in season['playlist']:
+        #         locations.append(obj['file'])
+        #         titles.append(seasonName+" - "+obj['comment'])
+
+        # for i in range(0, len(locations)):
+        #     uri = sys.argv[0] + '?mode=PLAY&url=%s'%locations[i]
+        #     item = xbmcgui.ListItem(unescape(titles[i], 'utf-8'), iconImage=addon_icon, thumbnailImage=image)
+
+        #     print locations[i]
+
+        #     overlay = xbmcgui.ICON_OVERLAY_WATCHED
+        #     info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
+        #     item.setInfo( type='Video', infoLabels=info)
+        #     item.setProperty('IsPlayable', 'true')
+        #     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
 
     # set view mode to List2 (quarz3 skin)
     try:

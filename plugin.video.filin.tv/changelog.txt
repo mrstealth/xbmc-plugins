@@ -1,3 +1,6 @@
+[B]Version 1.2.3[/B]
+- add workaround for wrong playlist URL and invalid JSON format
+
 [B]Version 1.2.2[/B]
 - get playlist url from javascript
 
