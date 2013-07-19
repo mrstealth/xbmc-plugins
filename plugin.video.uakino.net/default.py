@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.2
+# Rev. 2.0.4
 # -*- coding: utf-8 -*-
 
-import os, urllib, urllib2, sys, socket, cookielib, errno
+import os, urllib, urllib2, sys, socket
 import xbmc, xbmcplugin, xbmcgui, xbmcaddon
-import json
+import uppod
+
 import XbmcHelpers
 common = XbmcHelpers
 
@@ -32,8 +33,7 @@ class Uakino():
 
     def main(self):
         params = common.getParameters(sys.argv[2])
-        mode = url = category = page = None
-        title = image = genre = desc = None
+        mode = url  = None
 
         mode = params['mode'] if params.has_key('mode') else None
         url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
@@ -70,7 +70,6 @@ class Uakino():
         
         if response["status"] == 200:
             catalog_tree = common.parseDOM(response["content"], "div", attrs = { "class":"catalog_tree" })
-            parents = common.parseDOM(catalog_tree, "li", attrs = {"class": "parent_closed"})
             paths = common.parseDOM(catalog_tree, "li", attrs = {"class": "parent_closed"}, ret="cid")
 
             titles = common.parseDOM(catalog_tree, "a", attrs = {"href": "javascript:"})
@@ -134,12 +133,10 @@ class Uakino():
             images = common.parseDOM(media_line, "img", ret="src")
         
         
-            print "Found A: %d"%len(titlesA)
-            print "Found B: %d"%len(titlesB)
+            # print "Found A: %d"%len(titlesA)
+            # print "Found B: %d"%len(titlesB)            
+            # print "Found images %d"%len(images)
             
-            print "Found images %d"%len(images)
-            
-            print images
 
             if titlesA and titlesB:
                 print "*** This is a mix of seasons and movies"
@@ -205,7 +202,7 @@ class Uakino():
                     item.setProperty('IsPlayable', 'true')
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
             else:
-              print "Exception"
+                print "Exception"
               
         else:
             self.showErrorMessage("getCategoryItems(): Bad response status %s"%response["status"])  
@@ -234,9 +231,9 @@ class Uakino():
     def getMovieURL(self, url):
         print "*** get movie url for: %s"%url
         page = common.fetchPage({"link": url})
-        path = common.parseDOM(page["content"], "a", attrs = { "id":"player" }, ret="href")[0]
-        url = "%s/%s"%(self.url,path)
-        self.play(url)
+        uhash = common.parseDOM(page["content"], "a", attrs = { "id":"player" }, ret="href")[0]
+        uppod_url = uppod.decodeSourceURL(uhash)
+        self.play(uppod_url)
    
 
     def play(self, url):
@@ -298,9 +295,9 @@ class Uakino():
             
                 items_counter = 0
             
-                print "Found A: %d"%len(pathsA)
-                print "Found B: %d"%len(pathsB)
-                print "Found images %d"%len(images)
+                # print "Found A: %d"%len(pathsA)
+                # print "Found B: %d"%len(pathsB)
+                # print "Found images %d"%len(images)
     
                 if titlesA and titlesB:
                     print "*** This is a mix of seasons and movies"

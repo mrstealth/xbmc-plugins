@@ -115,7 +115,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.uakino.net" name="Uakino.net" version="2.0.3" provider-name="MrStealth">
+<addon id="plugin.video.uakino.net" name="Uakino.net" version="2.0.4" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.xbmc.helpers" version="2.0.1"/>
