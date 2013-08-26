@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.3
 # -*- coding: utf-8 -*-
 
 import os, sys, urllib, urllib2, cookielib
@@ -21,23 +21,15 @@ class Xmusic():
     self.handle = int(sys.argv[1])
     self.url = 'http://xmusic.me'
 
-    self.username = self.addon.getSetting('username') if self.addon.getSetting('username') else None
-    self.password = self.addon.getSetting('password') if self.addon.getSetting('password') else None
-
-    self.cookie_file = os.path.join(xbmc.translatePath(self.profile), 'cookie.txt')
-    self.cookie = cookielib.LWPCookieJar()
-    
-    #self.token = self.getAPIkey()
-
+    self.icover = os.path.join(self.path, 'resources/icons/cover.png')
+    self.inext = os.path.join(self.path, 'resources/icons/next.png')
 
   def main(self):
     params = common.getParameters(sys.argv[2])
     mode = url = style = playlist = None
-    #title = artist = playlist = language = None
 
     mode = params['mode'] if params.has_key('mode') else None
     url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
-    #playlist = params['playlist'] if params.has_key('playlist') else None
     language = params['language'] if params.has_key('language') else None
 
     if mode == 'play':
@@ -53,71 +45,38 @@ class Xmusic():
 
 
   def menu(self):
-    #self.login()
     self.getMusicStyles()
-#     uri = sys.argv[0] + '?mode=%s'%('search')
-#     item = xbmcgui.ListItem('[COLOR=FF00FF00][%s][/COLOR]'%self.language(1000), iconImage=self.icon)
-#     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-#     
-#     uri = sys.argv[0] + '?mode=%s&url=%s'%('playlists', 'http://muzebra.com/user/playlist')
-#     item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s (muzebra.com)[/COLOR]"%self.language(2000), iconImage=self.icon)
-#     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-# 
-#     uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/', 'Ru charts')
-#     item = xbmcgui.ListItem(self.language(4001), iconImage=self.icon)
-#     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-# 
-#     uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', 'http://muzebra.com/charts/en/', 'Ru charts')
-#     item = xbmcgui.ListItem(self.language(4002), iconImage=self.icon)
-#     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-
-#    xbmcplugin.endOfDirectory(self.handle, True)
-
 
   def getMusicStyles(self):
     page = common.fetchPage({"link": self.url})
     styles = common.parseDOM(page["content"], "ul", attrs = { "class" : "music_styles" })
     links = common.parseDOM(styles, "a", ret="href")
     titles = common.parseDOM(styles, "a")
-    
+
     for i, title in enumerate(titles):
-      uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', urllib.quote_plus(self.url+links[i]))
+      link = self.url+ '/top/' if links[i] == '/' else self.url+links[i]
+      uri = sys.argv[0] + '?mode=%s&url=%s'%('songs', urllib.quote_plus(link))
       item = xbmcgui.ListItem(title, iconImage=self.icon)
       xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
     xbmcplugin.endOfDirectory(self.handle, True)
-        
-    
-#   def getPlaylists(self, url):
-#     print "*** GET PLAYLISTS %s"%url
-#     self.login()
-# 
-#     headers = {
-#       "Accept" : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#       "Accept-Encoding": "gzip,deflate",
-#       "Accept-Language" : "de-de,de;q=0.8,en-us;q=0.5,en;q=0.3",
-#       "Connection" : "keep-alive",
-#       "Host" : "muzebra.com",
-#       "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/17.0 Firefox/17.0",
-#     }
-# 
-#     request = urllib2.Request(url)
-#     response = urllib2.urlopen(request)
-# 
-#     content = common.parseDOM(response.read(), "ul", attrs = { "data-id":"playlist" })
-#     playlists = common.parseDOM(content, "a", attrs = { "class":"hash" })
-#     pids = common.parseDOM(content, "li", ret = "data-id")
-# 
-#     for i, playlist in enumerate(playlists):
-#       uri = sys.argv[0] + '?mode=%s&url=%s&playlist=%s'%('songs', urllib.quote_plus("http://muzebra.com/playlist/%s/"%pids[i]), playlist)
-#       item = xbmcgui.ListItem(playlist, iconImage=self.icon)
-#       xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-# 
-#     xbmcplugin.endOfDirectory(self.handle, True)
 
+  def navigation(self, mode, url):
+      if 'page' in url:
+          page = int(url[-2:].replace('/', ''))+1
+          link = "%s%d/" % (url[:-2], page)
+      else:
+          link = url + '/page/2/'
+
+          print url
+          print link
+
+      uri = sys.argv[0] + '?mode=%s&url=%s' % (mode, urllib.quote_plus(link))
+      item = xbmcgui.ListItem("Next page ...", iconImage=self.inext)
+      xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
   def getSongs(self, url):
-    print "*** GET SONGS FOR PLAYLIST: %s songs"%url
+    print "*** GET SONGS FOR PLAYLIST: %s" % url
  
     page = common.fetchPage({"link": url})
     playlist = common.parseDOM(page["content"], "ul", attrs = { "id" : "playlist" })
@@ -126,8 +85,10 @@ class Xmusic():
     titles = common.parseDOM(playlist, "span")
     links = common.parseDOM(playlist, "li", attrs = { "class":"track" }, ret="data-download")
     durations = common.parseDOM(playlist, "i")
-        
-    style = common.parseDOM(page["content"], "h2", attrs = { "class":"std" })[0]
+
+    style = common.parseDOM(page["content"], "h2", attrs = { "class":"xtitle" })
+    playlist_title = style if style else 'XMusic.me playlist'
+    navigation = common.parseDOM(page["content"], "li", attrs={"class": "listalka1-l"})
 
     for i, title in enumerate(titles):
       song = "%s - %s"%(title, artists[i])
@@ -148,6 +109,9 @@ class Xmusic():
 
       item.setProperty('IsPlayable', 'true')
       xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
+
+    if navigation:
+        self.navigation('songs', url)
 
     xbmcplugin.endOfDirectory(self.handle, True)
 
