@@ -31,28 +31,33 @@ class Kinoprosmotr():
         self.profile = self.addon.getAddonInfo('profile')
 
         self.language = self.addon.getLocalizedString
+
         self.handle = int(sys.argv[1])
+        self.params = sys.argv[2]
+
         self.url = 'http://kinoprosmotr.net'
 
         self.inext = os.path.join(self.path, 'resources/icons/next.png')
         self.debug = False
 
     def main(self):
-        self.log("\nAddon: %s \nHandle: %s\nParams: %s " % (sys.argv[0], sys.argv[1], sys.argv[2]))
+        self.log("Addon: %s"  % self.id)
+        self.log("Handle: %d" % self.handle)
+        self.log("Params: %s" % self.params)
 
-        params = common.getParameters(sys.argv[2])
+        params = common.getParameters(self.params)
 
         mode = params['mode'] if 'mode' in params else None
         url = urllib.unquote_plus(params['url']) if 'url' in params else None
         page = params['page'] if 'page' in params else 1
+
         keyword = params['keyword'] if 'keyword' in params else None
+        unified = params['unified'] if 'unified' in params else None
 
         if mode == 'play':
             self.playItem(url)
         if mode == 'search':
-            self.search(keyword)
-        if mode == 'unified_search':
-            self.unified_search(keyword)
+            self.search(keyword, unified)
         if mode == 'genres':
             self.listGenres(url)
         if mode == 'show':
@@ -175,6 +180,7 @@ class Kinoprosmotr():
                 item.setInfo(type='Video', infoLabels={'title': title, 'genre': genres, 'plot': desc, 'overlay': xbmcgui.ICON_OVERLAY_WATCHED, 'playCount': 0})
                 item.setProperty('IsPlayable', 'true')
                 xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
+
                 xbmc.executebuiltin('Container.SetViewMode(52)')
 
             else:
@@ -256,7 +262,6 @@ class Kinoprosmotr():
         item = xbmcgui.ListItem(path=url)
         xbmcplugin.setResolvedUrl(self.handle, True, item)
 
-
     def getUserInput(self):
         kbd = xbmc.Keyboard()
         kbd.setDefault('')
@@ -269,13 +274,10 @@ class Kinoprosmotr():
                 keyword = translit.rus(kbd.getText())
             else:
                 keyword = kbd.getText()
-
-            print keyword.decode('cp1251').encode('utf-8')
-
         return keyword
 
-    def search(self, keyword):
-        keyword = self.getUserInput() if keyword is None else keyword
+    def search(self, keyword, unified):
+        keyword = translit.rus(keyword) if unified else self.getUserInput()
         unified_search_results = []
 
         if keyword:
@@ -313,14 +315,20 @@ class Kinoprosmotr():
             descriptions = common.parseDOM(search_item_inner, "div")
 
             header = common.parseDOM(search_item_inner, "h3")
+            gcont = common.parseDOM(search_item_inner, "span")
 
             titles = common.parseDOM(header, "a")
             links = common.parseDOM(header, "a", ret="href")
             images = common.parseDOM(search_item_prev, "img", ret="src")
 
-            gcont = common.parseDOM(search_item_inner, "span")
+            if unified:
+                self.log("Perform unified search and return results")
+                for i, title in enumerate(titles):
+                    unified_search_results.append({'title': self.encode(title), 'url': links[i], 'image': images[i], 'plugin': self.id})
 
-            if titles:
+                UnifiedSearch().collect(unified_search_results)
+
+            else:
                 for i, title in enumerate(titles):
                     genres = self.encode(', '.join(common.parseDOM(gcont[i], "a")))
                     desc = self.encode(common.stripTags(descriptions[i]))
@@ -330,26 +338,11 @@ class Kinoprosmotr():
 
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-                    # Unified search results                    
-                    unified_search_results.append({'title': self.encode(titles[i]), 'url': links[i], 'image': images[i], 'plugin': self.id})
-            else:
-                item = xbmcgui.ListItem(self.language(4001), iconImage=self.icon, thumbnailImage=self.icon)
-                xbmcplugin.addDirectoryItem(self.handle, '', item, True)
+                xbmc.executebuiltin('Container.SetViewMode(50)')
+                xbmcplugin.endOfDirectory(self.handle, True)
 
         else:
             self.menu()
-
-        xbmc.executebuiltin('Container.SetViewMode(52)')
-        xbmcplugin.endOfDirectory(self.handle, True)
-
-        # Return results
-        return unified_search_results
-
-    # REMOVE THIS METHOD => POST unified = True parameter to search !!!
-    def unified_search(self, keyword):
-        self.log("Search for keyword %s " % keyword)
-        results = self.search(translit.rus(keyword))
-        UnifiedSearch().collect(results)
 
     # *** Add-on helpers
     def log(self, message):

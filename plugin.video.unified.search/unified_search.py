@@ -26,15 +26,18 @@ class UnifiedSearch():
 
         self.xpath = sys.argv[0]
         self.handle = int(sys.argv[1])
+        self.params = sys.argv[2]
 
         self.language = self.addon.getLocalizedString
         self.supported_addons = self.get_supported_addons()
         self.debug = False
 
     def main(self):
-        self.log("\nAddon: %s \nHandle: %s\nParams: %s " % (sys.argv[0], sys.argv[1], sys.argv[2]))
+        self.log("Addon: %s"  % self.id)
+        self.log("Handle: %d" % self.handle)
+        self.log("Params: %s" % self.params)
 
-        params = common.getParameters(sys.argv[2])
+        params = common.getParameters(self.params)
         mode = params['mode'] if 'mode' in params else None
         keyword = params['keyword'] if 'keyword' in params else None
 
@@ -43,6 +46,8 @@ class UnifiedSearch():
 
         if mode == 'search':
             self.search(keyword)
+        if mode == 'results':
+            self.results()
         if mode == 'reset':
             self.resetResults()
         if mode == 'activatewindow':
@@ -60,13 +65,8 @@ class UnifiedSearch():
         item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s[/COLOR]" % self.language(1001), thumbnailImage=self.icon)
         xbmcplugin.addDirectoryItem(self.handle, self.xpath + '?mode=reset', item, False)
 
-        for i, item in enumerate(self.getSearchResults()):
-            uri = '%s?mode=activatewindow&plugin=%s&url=%s' % (self.xpath, item['plugin'], item['url'])
-
-            item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=item['image'])
-            xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
-
         xbmcplugin.endOfDirectory(self.handle, True)
+
 
     def getUserInput(self):
         kbd = xbmc.Keyboard()
@@ -76,10 +76,8 @@ class UnifiedSearch():
         keyword = None
 
         if kbd.isConfirmed():
-                keyword = kbd.getText()
-
-                # reset results
-                self.addon.setSetting("results", "")
+            keyword = kbd.getText()
+            self.addon.setSetting("results", "")
 
         return keyword
 
@@ -89,36 +87,40 @@ class UnifiedSearch():
         if keyword:
             self.log("Call other add-ons and pass keyword: %s" % keyword)
 
-            item = xbmcgui.ListItem("Please wait ...", thumbnailImage=self.icon)
-            xbmcplugin.addDirectoryItem(self.handle, sys.argv[0], item, False)
-
-            # Check if keyword is cyrillic
             keyword = translit.eng(keyword) if self.isCyrillic(keyword) else keyword
 
             # Send keyword to supported add-ons
             for i, plugin in enumerate(self.supported_addons):
                 script = "special://home/addons/%s/default.py" % plugin
-                xbmc.executebuiltin("XBMC.RunScript(%s, %d, mode=unified_search&keyword=%s)" % (script, self.handle, keyword))
+                xbmc.executebuiltin("XBMC.RunScript(%s, %d, mode=search&keyword=%s&unified=True)" % (script, self.handle, keyword))
 
-        # xbmcplugin.endOfDirectory(self.handle, True)
+        xbmc.executebuiltin('Container.SetViewMode(50)')
+        xbmcplugin.endOfDirectory(self.handle, True)
+
+    def results(self):
+        self.log("Show results on separate page")
+
+        results = self.getSearchResults()
+
+        if results:
+            for i, item in enumerate(results):
+                uri = '%s?mode=activatewindow&plugin=%s&url=%s' % (self.xpath, item['plugin'], item['url'])
+                item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=item['image'])
+                xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
+        else:
+            item = xbmcgui.ListItem("[COLOR=FFFF4000]%s[/COLOR]" % self.language(1002))
+            item.setProperty('IsPlayable', 'false')
+            xbmcplugin.addDirectoryItem(self.handler, '', item, False)
+
+        xbmc.executebuiltin('Container.SetViewMode(50)')
+        xbmcplugin.endOfDirectory(self.handle, True)
 
     def activatewindow(self, plugin, url):
         self.log("%s => %s" % (plugin, url))
 
         window = "plugin://%s/?mode=show&url=%s" % (plugin, url)
         xbmc.executebuiltin('activatewindow(video, %s)' % window)
-        # xbmcplugin.endOfDirectory(self.handle, True)
 
-    # === RESULTS handling
-    def collect(self, results):
-        self.log("Save results to DB %s" % results)
-        
-        if results:
-            self.saveSearchResults(results)            
-        
-        xbmc.executebuiltin("Container.Update(plugin://%s,replace)" % self.id)
-        xbmcplugin.endOfDirectory(self.handle, True)
-    
     def getSearchResults(self):
         self.log("Get search results from storage")
 
@@ -128,19 +130,23 @@ class UnifiedSearch():
         except ValueError:
             return []
 
-    def saveSearchResults(self, results):
-        self.log("Save search rsults in settings %s" % (results))
+    def collect(self, results):
+        if results:
+            for result in results:
+                try:
+                    saved = self.getSearchResults()
 
-        for result in results:
-            try:
-                saved = self.getSearchResults()
+                    if not result['url'] in map(lambda item: item['url'], saved):
+                        saved.append(result)
+                        self.addon.setSetting("results", json.dumps(saved))
+                except Exception, e:
+                    self.error(e)
 
+            window = "plugin://%s/?mode=results" % (self.id)
+            xbmc.executebuiltin('activatewindow(Videos, %s,return)' % window)
 
-                if not result['url'] in map(lambda item: item['url'], saved):
-                    saved.append(result)
-                    self.addon.setSetting("results", json.dumps(saved))
-            except Exception, e:
-                self.error(e)
+        else:
+            self.log("Not found")
 
     def resetResults(self):
         self.addon.setSetting("results", "")

@@ -2,4 +2,5 @@
 <strings>
     <string id="1000">Поиск</string>
     <string id="1001">Сбросить результаты поиска</string>
+    <string id="1002">К сожалению, поиск не дал никаких результатов</string>
 </strings>
