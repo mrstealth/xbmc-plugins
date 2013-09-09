@@ -14,7 +14,10 @@ common = XbmcHelpers
 import Translit as translit
 translit = translit.Translit()
 
+counter = 0
 
+
+# xbmc.sleep( 500 ) => http://xbmc-scripting.googlecode.com/svn/trunk/SVNScripts_argv/
 
 class UnifiedSearch():
     def __init__(self):
@@ -30,12 +33,14 @@ class UnifiedSearch():
 
         self.language = self.addon.getLocalizedString
         self.supported_addons = self.get_supported_addons()
-        self.debug = False
+        self.debug = True
+
+        self.counter = self.addon.getSetting("counter")
 
     def main(self):
-        self.log("Addon: %s"  % self.id)
-        self.log("Handle: %d" % self.handle)
-        self.log("Params: %s" % self.params)
+        # self.log("Addon: %s"  % self.id)
+        # self.log("Handle: %d" % self.handle)
+        # self.log("Params: %s" % self.params)
 
         params = common.getParameters(self.params)
         mode = params['mode'] if 'mode' in params else None
@@ -77,12 +82,14 @@ class UnifiedSearch():
 
         if kbd.isConfirmed():
             keyword = kbd.getText()
-            self.addon.setSetting("results", "")
 
         return keyword
 
     def search(self, keyword):
+        self.resetResults()
+
         keyword = self.getUserInput()
+        #keyword = "Persi"
 
         if keyword:
             self.log("Call other add-ons and pass keyword: %s" % keyword)
@@ -92,10 +99,16 @@ class UnifiedSearch():
             # Send keyword to supported add-ons
             for i, plugin in enumerate(self.supported_addons):
                 script = "special://home/addons/%s/default.py" % plugin
-                xbmc.executebuiltin("XBMC.RunScript(%s, %d, mode=search&keyword=%s&unified=True)" % (script, self.handle, keyword))
+                xbmc.executebuiltin("XBMC.RunScript(%s, %d, mode=search&keyword=%s&unified=True)" % (script, self.handle, keyword), True)
 
-        xbmc.executebuiltin('Container.SetViewMode(50)')
-        xbmcplugin.endOfDirectory(self.handle, True)
+
+                # xbmc.executescript("%s?mode=search&keyword=%s&unified=True" % (script, keyword))
+                #subprocess.Popen([script_player_starts,self.playing_type()])
+                #XBMC.RunScript(script.rssclient,feed=FEED_URL,limit=15)
+
+
+        # xbmc.executebuiltin('Container.SetViewMode(50)')
+        # xbmcplugin.endOfDirectory(self.handle, True)
 
     def results(self):
         self.log("Show results on separate page")
@@ -110,9 +123,8 @@ class UnifiedSearch():
         else:
             item = xbmcgui.ListItem("[COLOR=FFFF4000]%s[/COLOR]" % self.language(1002))
             item.setProperty('IsPlayable', 'false')
-            xbmcplugin.addDirectoryItem(self.handler, '', item, False)
+            xbmcplugin.addDirectoryItem(self.handle, '', item, False)
 
-        xbmc.executebuiltin('Container.SetViewMode(50)')
         xbmcplugin.endOfDirectory(self.handle, True)
 
     def activatewindow(self, plugin, url):
@@ -131,25 +143,46 @@ class UnifiedSearch():
             return []
 
     def collect(self, results):
+        self.log("*** Collect results and activate window")
+
+        counter = int(self.addon.getSetting("counter"))
+        counter +=1
+
+        self.addon.setSetting("counter", str(counter))
+
         if results:
+            print "Counter: %s" % self.addon.getSetting("counter")
+
+            saved = json.loads(self.addon.getSetting("results")) #self.getSearchResults()
+            print "*** Saved %d " % len(saved)
+
             for result in results:
                 try:
-                    saved = self.getSearchResults()
-
                     if not result['url'] in map(lambda item: item['url'], saved):
                         saved.append(result)
                         self.addon.setSetting("results", json.dumps(saved))
                 except Exception, e:
                     self.error(e)
-
-            window = "plugin://%s/?mode=results" % (self.id)
-            xbmc.executebuiltin('activatewindow(Videos, %s,return)' % window)
-
         else:
             self.log("Not found")
 
+        xbmc.sleep(1000)
+
+        if len(self.supported_addons) == counter:
+            print "All done"
+
+            plugin = "plugin://%s/?mode=results" % (self.id)
+            xbmc.executebuiltin('XBMC.ReplaceWindow(10025, %s, return)' % plugin)
+
+        else:
+            print "Supported len %d " % len(self.supported_addons)
+            print "Counter %d" % counter
+            print "Wait and do nothing"
+            return True
+
     def resetResults(self):
-        self.addon.setSetting("results", "")
+        self.addon.setSetting("counter", '0')
+        self.addon.setSetting("results", '[]')
         xbmc.executebuiltin("Container.refresh()")
 
     # === HELPERS
@@ -170,7 +203,7 @@ class UnifiedSearch():
 
     def log(self, message):
         if self.debug:
-            print "### %s: %s" % (self.id, message)
+            print "000 %s: %s" % (self.id, message)
 
     def error(self, message):
         print "%s ERROR: %s" % (self.id, message)
