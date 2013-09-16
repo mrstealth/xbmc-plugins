@@ -3,4 +3,5 @@
     <string id="1000">Suche</string>
     <string id="1001">Suche zurücksetzen</string>
     <string id="1002">Keine Ergebnisse gefunden</string>
+    <string id="1002">Ergebnisse der bisherigen Suche</string>
 </strings>

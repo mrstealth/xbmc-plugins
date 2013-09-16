@@ -3,4 +3,5 @@
     <string id="1000">Search</string>
     <string id="1001">Reset search results</string>
     <string id="1002">Nothing found, please try again</string>
+    <string id="1003">Results of the previous search</string>
 </strings>
