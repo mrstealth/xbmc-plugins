@@ -192,6 +192,8 @@ class Kinosolo():
 
     def playItem(self, url):
         print "*** play url %s" % url
+
+        url = url if not '+or+' in url else url.split('+or+')[-1]
         item = xbmcgui.ListItem(path=url)
         xbmcplugin.setResolvedUrl(self.handle, True, item)
 
@@ -240,6 +242,7 @@ class Kinosolo():
 
             if unified:
                 self.log("Perform unified search and return results")
+
                 for i, title in enumerate(titles):
                     title = title.replace(self.language(5002), '')
                     unified_search_results.append({'title':  title, 'url': links[i], 'image': images[i], 'plugin': self.id})
