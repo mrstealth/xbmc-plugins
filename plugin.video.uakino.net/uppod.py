@@ -51,11 +51,11 @@ def decode(param):
 
 
 def decodeSourceURL(uhash):
-    print "*** [uppod.py-decodeSourceURL] Got uppod uhash \n%s" % uhash
+    # print "*** [uppod.py-decodeSourceURL] Got uppod uhash \n%s" % uhash
     return decode(uhash)
 
 def getDecodedHashFromSourceURL(url, referer):
-    print "*** [uppod.py-getDecodedHashFromSourceURL] Decoded source URL \n%s" % url
+    # print "*** [uppod.py-getDecodedHashFromSourceURL] Decoded source URL \n%s" % url
     request = urllib2.Request(url, None)
     request.add_header('Referer', referer)
     return urllib2.urlopen(request).read()

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.4
+# Rev. 2.0.5
 # -*- coding: utf-8 -*-
 
 import os, urllib, urllib2, sys, socket
@@ -16,6 +16,9 @@ socket.setdefaulttimeout(timeout)
 import Translit as translit
 translit = translit.Translit(encoding='cp1251')
 
+sys.path.append(os.path.dirname(__file__)+ '/../plugin.video.unified.search')
+from unified_search import UnifiedSearch
+
 class Uakino():
     def __init__(self):
         self.id = 'plugin.video.uakino.net'
@@ -29,7 +32,7 @@ class Uakino():
         self.url = 'http://uakino.net'
 
         self.inext = os.path.join(self.path, 'resources/icons/next.png')
-
+        self.debug = bool(self.addon.getSetting("debug"))
 
     def main(self):
         params = common.getParameters(sys.argv[2])
@@ -39,16 +42,19 @@ class Uakino():
         url = urllib.unquote_plus(params['url']) if params.has_key('url') else None
         offset = params['offset'] if params.has_key('offset') else 0
 
+        keyword = params['keyword'] if 'keyword' in params else None
+        unified = params['unified'] if 'unified' in params else None
+
         if mode == 'play':
             self.play(url)
-        if mode == 'movie':
+        if mode == 'movie' or mode == 'show':
             self.getMovieURL(url)
         if mode == 'subcategory':
             self.getSubCategoryItems(url, offset)
         if mode == 'category':
             self.getCategoryItems(url)
         if mode == 'search':
-            self.search()
+            self.search(keyword, unified)
         elif mode == None:
             self.menu()
 
@@ -82,12 +88,13 @@ class Uakino():
 
         else:
             self.showErrorMessage("getCategoryItems(): Bad response status %s"%response["status"])
-            
+
+        xbmc.executebuiltin('Container.SetViewMode(50)')            
         xbmcplugin.endOfDirectory(self.handle, True)
     
 
     def getCategoryItems(self, url):
-        print "*** get category items %s"%url
+        self.log("*** Get category items %s" % url)
         response = common.fetchPage({"link": url})
         
         if response["status"] == 200:
@@ -112,7 +119,7 @@ class Uakino():
            
 
     def getSubCategoryItems(self, url, offset):
-        print "*** get subcategory items %s"%url
+        self.log("*** Get subcategory items %s" % url)
         
         if offset == 0:
             response = common.fetchPage({"link": url})
@@ -139,7 +146,7 @@ class Uakino():
             
 
             if titlesA and titlesB:
-                print "*** This is a mix of seasons and movies"
+                self.log("*** This is a mix of seasons and movies")
                 
                 for i, title in enumerate(titlesA):
                     items_counter += 1
@@ -163,7 +170,7 @@ class Uakino():
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
         
             elif titlesA:
-                print "*** This is a season"
+                self.log("*** This is a season")
         
                 for i, title in enumerate(titlesA):
                     items_counter += 1
@@ -177,7 +184,7 @@ class Uakino():
     
     
             elif titlesB:
-                print "*** This is a movie"
+                self.log("*** This is a movie")
         
                 ul = common.parseDOM(media_line, "ul")
         
@@ -207,16 +214,14 @@ class Uakino():
         else:
             self.showErrorMessage("getCategoryItems(): Bad response status %s"%response["status"])  
 
-
         if items_counter == 16:
             self.nextPage(url, offset)
             
         xbmc.executebuiltin('Container.SetViewMode(52)')
         xbmcplugin.endOfDirectory(self.handle, True)
-                    
 
     def nextPage(self, url, offset):
-        print "*** Next page %s and offset %s"%(url, offset)
+        self.log("Next page %s and offset %s"%(url, offset))
         response = common.fetchPage({"link": url})
         
         navbar = common.parseDOM(response["content"], "div", attrs = { "class":"nav_buttons fright" })
@@ -229,33 +234,41 @@ class Uakino():
 
 
     def getMovieURL(self, url):
-        print "*** get movie url for: %s"%url
+        self.log("Get movie URL for: %s" % url) 
         page = common.fetchPage({"link": url})
         uhash = common.parseDOM(page["content"], "a", attrs = { "id":"player" }, ret="href")[0]
         uppod_url = uppod.decodeSourceURL(uhash)
         self.play(uppod_url)
    
-
     def play(self, url):
-        print "*** play url %s"%url
+        self.log("Play video URL")
+        self.log(url)
+
         item = xbmcgui.ListItem(path = url)
-        xbmcplugin.setResolvedUrl(self.handle, True, item)         
+        xbmcplugin.setResolvedUrl(self.handle, True, item)
 
-
-    def search(self):
-
+    def getUserInput(self):
         kbd = xbmc.Keyboard()
         kbd.setDefault('')
         kbd.setHeading(self.language(1000))
         kbd.doModal()
-        keyword=''
+        keyword = None
 
         if kbd.isConfirmed():
             if self.addon.getSetting('translit') == 'true':
                 keyword = translit.rus(kbd.getText())
             else:
                 keyword = kbd.getText()
+        return keyword
 
+    def search(self, keyword, unified):
+        print "Keyword: %s" % keyword
+        keyword = translit.rus(keyword) if unified else self.getUserInput()
+        unified_search_results = []
+
+        keyword = self.encode(keyword)
+
+        if keyword:
             url = 'http://uakino.net/search_result.php'
 
             headers = {
@@ -280,7 +293,11 @@ class Uakino():
             response = urllib2.urlopen(req)
             html = response.read()
             
-            print self.encode(keyword)
+            self.log(keyword)
+
+            titles = []
+            links = []
+            images = []
 
             if html:
                 media_line = common.parseDOM(html, "div", attrs = { "class":"media_line" })
@@ -307,6 +324,11 @@ class Uakino():
                         
                         link = "%s/%s"%(self.url, pathsA[i])
                         image = self.url+images[i] if images[i].find('http') == -1 else images[i]
+
+                        # INFO: Collect search results
+                        titles.append(title)
+                        links.append(link)
+                        images.append(image)
                         
                         uri = sys.argv[0] + '?mode=subcategory&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
@@ -317,7 +339,12 @@ class Uakino():
     
                         link = "%s/%s"%(self.url, pathsB[i])
                         image = self.url+images[len(pathsB)+i] if images[len(pathsB)+i].find('http') == -1 else images[len(pathsB)+i]
-                        
+ 
+                        # INFO: Collect search results
+                        titles.append(title)
+                        links.append(link)
+                        images.append(image)
+
                         uri = sys.argv[0] + '?mode=movie&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
                         item.setProperty('IsPlayable', 'true')
@@ -331,7 +358,12 @@ class Uakino():
     
                         link = "%s/%s"%(self.url, pathsA[i])
                         image = self.url+images[i] if images[i].find('http') == -1 else images[i]
-    
+
+                        # INFO: Collect search results
+                        titles.append(title)
+                        links.append(link)
+                        images.append(image)
+
                         uri = sys.argv[0] + '?mode=subcategory&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
                         xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
@@ -355,7 +387,12 @@ class Uakino():
                         link = "%s/%s"%(self.url, pathsA[i])
                         image = self.url+images[i] if images[i].find('http') == -1 else images[i]
                         info = {'title': title, 'genre': genres, 'plot': description}
-    
+
+                        # INFO: Collect search results
+                        titles.append(title)
+                        links.append(link)
+                        images.append(image)
+
                         uri = sys.argv[0] + '?mode=movie&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
                         
@@ -368,17 +405,31 @@ class Uakino():
             else:
                 self.showErrorMessage("search(): Bad response status %s"%response["status"])  
     
-            xbmc.executebuiltin('Container.SetViewMode(52)')
-            xbmcplugin.endOfDirectory(self.handle, True)
+            # INFO: Convert and send unified search results
+            if unified:
+                self.log("Perform unified search and return results")
+                for i, title in enumerate(titles):
+                    # title = self.encode(title)
+                    unified_search_results.append({'title':  title, 'url': links[i], 'image': self.url + images[i], 'plugin': self.id, 'is_playable': True})
 
+                UnifiedSearch().collect(unified_search_results)
+            else:            
+                xbmc.executebuiltin('Container.SetViewMode(50)')
+                xbmcplugin.endOfDirectory(self.handle, True)
 
         else:
             self.menu()
 
         xbmcplugin.endOfDirectory(self.handle, True)
-            
                
-    # HELPERS
+    # ===== HELPERS
+    def log(self, message):
+        if self.debug:
+            print "%s: %s" % (self.id, message)
+
+    def error(self, message):
+        print "%s ERROR: %s" % (self.id, message)
+
     def showErrorMessage(self, msg):
         print msg
         xbmc.executebuiltin("XBMC.Notification(%s,%s, %s)"%("ERROR",msg, str(10*1000)))
