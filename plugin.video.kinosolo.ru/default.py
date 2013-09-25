@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.0
+# Rev. 1.1.3
 # -*- coding: utf-8 -*-
 
 import os
@@ -191,10 +191,15 @@ class Kinosolo():
         return response.read()
 
     def playItem(self, url):
-        print "*** play url %s" % url
+        print "Play URL %s" % url
 
-        url = url if not '+or+' in url else url.split('+or+')[-1]
-        item = xbmcgui.ListItem(path=url)
+        if '+or+' in url  or ' or ' in url:
+            self.log("Wrong URL format: %s" % url)
+            video_url =  url.split('+or+')[-1]
+        else:
+            video_url = url
+
+        item = xbmcgui.ListItem(path=video_url)
         xbmcplugin.setResolvedUrl(self.handle, True, item)
 
     def getUserInput(self):
