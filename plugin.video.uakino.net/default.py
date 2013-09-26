@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.5
+# Rev. 2.0.6
 # -*- coding: utf-8 -*-
 
 import os, urllib, urllib2, sys, socket
@@ -9,9 +9,6 @@ import uppod
 
 import XbmcHelpers
 common = XbmcHelpers
-
-timeout = 5
-socket.setdefaulttimeout(timeout)
 
 import Translit as translit
 translit = translit.Translit(encoding='cp1251')
@@ -32,7 +29,7 @@ class Uakino():
         self.url = 'http://uakino.net'
 
         self.inext = os.path.join(self.path, 'resources/icons/next.png')
-        self.debug = bool(self.addon.getSetting("debug"))
+        self.debug = self.addon.getSetting("debug") == 'true'
 
     def main(self):
         params = common.getParameters(sys.argv[2])
@@ -262,13 +259,12 @@ class Uakino():
         return keyword
 
     def search(self, keyword, unified):
-        print "Keyword: %s" % keyword
         keyword = translit.rus(keyword) if unified else self.getUserInput()
         unified_search_results = []
 
-        keyword = self.encode(keyword)
-
         if keyword:
+            keyword = self.encode(keyword)
+
             url = 'http://uakino.net/search_result.php'
 
             headers = {
@@ -289,15 +285,21 @@ class Uakino():
 
             data = urllib.urlencode(values)
             req = urllib2.Request(url, data, headers)
+            html = None
 
-            response = urllib2.urlopen(req)
-            html = response.read()
-            
+            try:
+                response = urllib2.urlopen(req)
+                html = response.read()
+            except  Exception:
+                if unified:
+                    UnifiedSearch().collect(unified_search_results)
+                pass
+
             self.log(keyword)
 
-            titles = []
-            links = []
-            images = []
+            us_titles = []
+            us_links = []
+            us_images = []
 
             if html:
                 media_line = common.parseDOM(html, "div", attrs = { "class":"media_line" })
@@ -323,12 +325,12 @@ class Uakino():
                         items_counter += 1
                         
                         link = "%s/%s"%(self.url, pathsA[i])
-                        image = self.url+images[i] if images[i].find('http') == -1 else images[i]
+                        image = self.url+images[i] if not 'http' in images[i] else images[i]
 
                         # INFO: Collect search results
-                        titles.append(title)
-                        links.append(link)
-                        images.append(image)
+                        us_titles.append(title)
+                        us_links.append(link)
+                        us_images.append(image)
                         
                         uri = sys.argv[0] + '?mode=subcategory&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
@@ -338,12 +340,12 @@ class Uakino():
                         items_counter += 1
     
                         link = "%s/%s"%(self.url, pathsB[i])
-                        image = self.url+images[len(pathsB)+i] if images[len(pathsB)+i].find('http') == -1 else images[len(pathsB)+i]
+                        image = self.url+images[len(pathsB)+i] if not 'http' in images[len(pathsB)+i] else images[len(pathsB)+i]
  
                         # INFO: Collect search results
-                        titles.append(title)
-                        links.append(link)
-                        images.append(image)
+                        us_titles.append(title)
+                        us_links.append(link)
+                        us_images.append(image)
 
                         uri = sys.argv[0] + '?mode=movie&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
@@ -357,12 +359,12 @@ class Uakino():
                         items_counter += 1
     
                         link = "%s/%s"%(self.url, pathsA[i])
-                        image = self.url+images[i] if images[i].find('http') == -1 else images[i]
+                        image = self.url+images[i] if not 'http' in images[i] else images[i]
 
                         # INFO: Collect search results
-                        titles.append(title)
-                        links.append(link)
-                        images.append(image)
+                        us_titles.append(title)
+                        us_links.append(link)
+                        us_images.append(image)
 
                         uri = sys.argv[0] + '?mode=subcategory&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
@@ -385,13 +387,13 @@ class Uakino():
                         items_counter += 1
                         
                         link = "%s/%s"%(self.url, pathsA[i])
-                        image = self.url+images[i] if images[i].find('http') == -1 else images[i]
+                        image = self.url+images[i] if not 'http' in images[i] else images[i]
                         info = {'title': title, 'genre': genres, 'plot': description}
 
                         # INFO: Collect search results
-                        titles.append(title)
-                        links.append(link)
-                        images.append(image)
+                        us_titles.append(title)
+                        us_links.append(link)
+                        us_images.append(image)
 
                         uri = sys.argv[0] + '?mode=movie&url=%s'%link
                         item = xbmcgui.ListItem(title, thumbnailImage = image, iconImage=self.icon)
@@ -403,14 +405,13 @@ class Uakino():
                     item = xbmcgui.ListItem(self.language(9001), thumbnailImage = self.icon)
                     xbmcplugin.addDirectoryItem(self.handle, "", item, False)                  
             else:
-                self.showErrorMessage("search(): Bad response status %s"%response["status"])  
+                self.showErrorMessage("%s: Request timeout" % self.id)
     
             # INFO: Convert and send unified search results
             if unified:
                 self.log("Perform unified search and return results")
-                for i, title in enumerate(titles):
-                    # title = self.encode(title)
-                    unified_search_results.append({'title':  title, 'url': links[i], 'image': self.url + images[i], 'plugin': self.id, 'is_playable': True})
+                for i, title in enumerate(us_titles):
+                    unified_search_results.append({'title':  title, 'url': us_links[i], 'image': us_images[i], 'plugin': self.id, 'is_playable': True})
 
                 UnifiedSearch().collect(unified_search_results)
             else:            
@@ -420,7 +421,6 @@ class Uakino():
         else:
             self.menu()
 
-        xbmcplugin.endOfDirectory(self.handle, True)
                
     # ===== HELPERS
     def log(self, message):
