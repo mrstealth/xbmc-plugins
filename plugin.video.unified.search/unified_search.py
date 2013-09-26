@@ -1,214 +1,97 @@
-import sys
+#!/usr/bin/python
+# Writer (c) 2012, MrStealth
+# Rev. 1.0.9
+# License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
+# -*- coding: utf-8 -*- 
+
+import os
 import json
-import urllib
-import re
+import sqlite3
 
 import xbmc
-import xbmcplugin
-import xbmcgui
 import xbmcaddon
 
-import XbmcHelpers
-common = XbmcHelpers
+from search_db import SearchDB
+from result_db import ResultDB
 
-import Translit as translit
-translit = translit.Translit()
 
-from results_db import ResultsDB
+# TODO:
+# 1) Provide context menu item method for unified search
 
 
 class UnifiedSearch():
     def __init__(self):
         self.id = 'plugin.video.unified.search'
         self.addon = xbmcaddon.Addon(self.id)
-        self.icon = self.addon.getAddonInfo('icon')
         self.path = self.addon.getAddonInfo('path')
-        self.profile = self.addon.getAddonInfo('profile')
-
-        self.xpath = sys.argv[0]
-        self.handle = int(sys.argv[1])
-        self.params = sys.argv[2]
-
         self.language = self.addon.getLocalizedString
+
+        self.addons_dir = os.path.dirname(self.path)
+        self.addon_db = os.path.join(os.path.dirname(os.path.dirname(self.path)), 'userdata/Database/Addons15.db')
+
         self.supported_addons = self.get_supported_addons()
-        self.database = ResultsDB()
 
-        self.counter = self.addon.getSetting("counter")
-        #self.search_id = self.addon.getSetting("search_id")
+        self.result_db = ResultDB()
+        self.search_db = SearchDB()
 
-        self.debug = True
+        self.debug = self.addon.getSetting("debug") == 'true'
 
-    def main(self):
-        self.log("Addon: %s"  % self.id)
-        self.log("Handle: %d" % self.handle)
-        self.log("Params: %s" % self.params)
-
-        params = common.getParameters(self.params)
-        mode = params['mode'] if 'mode' in params else None
-        keyword = params['keyword'] if 'keyword' in params else None
-
-        url = params['url'] if 'url' in params else None
-        plugin = params['plugin'] if 'plugin' in params else None
-
-        if mode == 'search':
-            self.search(keyword)
-        if mode == 'show':
-            self.show_search_results()
-        if mode == 'reset':
-            self.reset()
-        if mode == 'activatewindow':
-            self.activatewindow(plugin, url)
-        elif mode is None:
-            self.menu()
-
-    # === XBMC VIEWS
-    def menu(self):
-        self.log("Supported add-ons: %s" % self.supported_addons)
-
-        uri = self.xpath + '?mode=%s' % "search"
-        item = xbmcgui.ListItem("[COLOR=FF00FF00]%s[/COLOR]" % self.language(1000), thumbnailImage=self.icon)
-        xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-
-        item = xbmcgui.ListItem("%s" % self.language(1003), thumbnailImage=self.icon)
-        xbmcplugin.addDirectoryItem(self.handle, "%s?mode=show" % self.xpath, item, True)
-
-        item = xbmcgui.ListItem("[COLOR=FFFF4000]%s[/COLOR]" % self.language(1001), thumbnailImage=self.icon)
-        xbmcplugin.addDirectoryItem(self.handle, self.xpath + '?mode=reset', item, False)
-
-        xbmcplugin.endOfDirectory(self.handle, True)
-
-    def search(self, keyword):
-        keyword = self.get_user_input()
-        # keyword = "Princ"
-
-        if keyword:
-            # self.log("Search ID: %s" % self.search_id)
-
-            # Generate search ID
-            # self.generate_search_id()
-
-            # Reset search results
-            self.reset()
-
-            self.log("Call other add-ons and pass keyword: %s" % keyword)
-            keyword = translit.eng(keyword) if self.isCyrillic(keyword) else keyword
-
-            for i, plugin in enumerate(self.supported_addons):
-                script = "special://home/addons/%s/default.py" % plugin
-                xbmc.executebuiltin("XBMC.RunScript(%s, %d, mode=search&keyword=%s&unified=True)" % (script, self.handle, keyword), True)
-
-    def show_search_results(self):
-        self.log("Show results on separate page")
-
-        results = self.database.find_all()
-
-        if results:
-            for i, item in enumerate(results):
-                uri = '%s?mode=activatewindow&plugin=%s&url=%s' % (self.xpath, item['plugin'], item['url'])
-                item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=item['image'])
-                xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
-        else:
-            item = xbmcgui.ListItem("[COLOR=FFFF4000]%s[/COLOR]" % self.language(1002))
-            item.setProperty('IsPlayable', 'false')
-            xbmcplugin.addDirectoryItem(self.handle, '', item, False)
-
-        xbmcplugin.endOfDirectory(self.handle, True)
-
-    def previous_searches(self):
-        self.log("Show search result")
-
-        results = self.database.find_all()
-
-        if results:
-            for i, item in enumerate(results):
-                uri = '%s?mode=activatewindow&plugin=%s&url=%s' % (self.xpath, item['plugin'], item['url'])
-                item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=item['image'])
-                xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
-        else:
-            item = xbmcgui.ListItem("[COLOR=FFFF4000]%s[/COLOR]" % self.language(1002))
-            item.setProperty('IsPlayable', 'false')
-            xbmcplugin.addDirectoryItem(self.handle, '', item, False)
-
-        xbmcplugin.endOfDirectory(self.handle, True)
-
-    def activatewindow(self, plugin, url):
-        self.log("%s => %s" % (plugin, url))
-
-        window = "plugin://%s/?mode=show&url=%s" % (plugin, url)
-        xbmc.executebuiltin('activatewindow(video, %s)' % window)
-
-    # === DATA HANDLING
     def collect(self, results):
-        self.log("*** Collect results and activate window")
+        # INFO: Update counter and compare with a number of supported_addons
+        search_id = self.search_db.get_latest_search_id()
+        counter = self.search_db.update_counter(search_id)
 
-        self.increase_counter()
+        self.log("Search counter => %d" % (counter))
+        # xbmc.sleep(100)
 
         if results:
             for result in results:
-                self.database.save(result['title'], result['url'], result['image'], result['plugin'])
+                if 'is_playable' in result:
+                    self.result_db.create(search_id, result['title'].lstrip(), result['url'], result['image'], result['plugin'], result['is_playable'])
+                else:
+                    self.result_db.create(search_id, result['title'].lstrip(), result['url'], result['image'], result['plugin'])                    
 
-        xbmc.sleep(300)
+            if len(self.supported_addons) == counter:
+                self.log("ALL DONE => %s of %d done" % (counter, len(self.supported_addons)))
+                # xbmc.executebuiltin('XBMC.ReplaceWindow(10025, %s, return)' % "plugin://%s/?mode=show&search_id=%d" % (self.id, search_id))
+                xbmc.executebuiltin('Container.Update(%s)' % "plugin://%s/?mode=show&search_id=%d" % (self.id, search_id))
 
-        if len(self.supported_addons) == self.counter:
-            self.log("ALL DONE => %s of %d done" % (self.counter, len(self.supported_addons)))
-            self.log("Activate show results window")
-
-            xbmc.executebuiltin('XBMC.ReplaceWindow(10025, %s, return)' % "plugin://%s/?mode=show" % (self.id))
+            else:
+                # self.log("Wait and do nothing => %s of %d done" % (counter, len(self.supported_addons)))
+                return True
+    
         else:
-            self.log("Wait and do nothing => %s of %d done" % (self.counter, len(self.supported_addons)))
-            return True
-
-    def reset(self):
-        self.addon.setSetting("counter", '0')
-        self.database.drop()
-        xbmc.executebuiltin("Container.refresh()")
-
-    # === HELPERS
-    def get_user_input(self):
-        kbd = xbmc.Keyboard()
-        kbd.setDefault('')
-        kbd.setHeading(self.language(4000))
-        kbd.doModal()
-        keyword = None
-
-        if kbd.isConfirmed():
-            keyword = kbd.getText()
-
-        return keyword
+            if len(self.supported_addons) == counter:
+               # FIXME:  ERROR: Control 50 in window 10025 has been asked to focus, but it can't.
+               xbmc.executebuiltin('XBMC.ReplaceWindow(10025, %s, return)' % "plugin://%s/?mode=show&search_id=0" % (self.id))
+            else:
+              self.log("!!! Nothing found !!!")
+              return True
 
     def get_supported_addons(self):
-        request = '{"jsonrpc": "2.0", "method": "Addons.GetAddons", "params": {"properties": ["summary"]}, "id": 1}'
-
-        api_response = json.loads(xbmc.executeJSONRPC(request))
-        addons = api_response["result"]["addons"]
+        disabled_addons = self.get_disabled_addons()
         supported_addons = []
-
-        for i, addon in enumerate(addons):
-            try:
-                if not 'pvr' in addon["addonid"] and xbmcaddon.Addon(addon["addonid"]).getSetting('unified_search') == 'true':
-                    supported_addons.append(addon["addonid"])
-            except RuntimeError:
-                pass
+        
+        for addon in os.listdir(self.addons_dir):
+            if  os.path.isdir(os.path.join(self.addons_dir, addon)) and 'plugin.video' in addon and addon not in disabled_addons:
+                try:
+                    if xbmcaddon.Addon(addon).getSetting('unified_search') == 'true':
+                        supported_addons.append(addon)
+                except Exception, e:
+                    self.error("Exception in get_supported_addons")
+                    continue
 
         return supported_addons
 
-    def increase_counter(self):
-        self.counter = int(self.counter) + 1 if self.counter else 1
-        self.addon.setSetting("counter", str(self.counter))
-
-    def generate_search_id(self):
-        self.search_id = int(self.search_id) + 1 if self.search_id else 0
-        self.addon.setSetting("search_id", str(self.search_id))
+    def get_disabled_addons(self):
+        con = sqlite3.connect(self.addon_db)
+        cursor = con.cursor()
+        cursor.execute("SELECT addonID FROM disabled")
+        return [x[0] for x in cursor.fetchall()]
 
     def log(self, message):
         if self.debug:
-            print "=== %s: %s" % ("UnifiedSearch", message)
+            print "*** %s: %s" % ("UnifiedSearch", message)
 
     def error(self, message):
         print "%s ERROR: %s" % (self.id, message)
-
-    def isCyrillic(self, keyword):
-        if not re.findall(u"[\u0400-\u0500]+", keyword):
-            return False
-        else:
-            return True
