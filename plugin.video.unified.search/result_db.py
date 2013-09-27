@@ -20,6 +20,8 @@ class ResultDB:
     def connect(self):
         # Try to avoid => OperationalError: database is locked
         self.db = sqlite.connect(self.filename, timeout=10, check_same_thread = False)
+        #self.db = sqlite.connect(self.filename, check_same_thread = True)
+
         self.db.text_factory = str
         self.cursor = self.db.cursor()
 

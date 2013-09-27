@@ -114,8 +114,6 @@ class UnifiedSearchPlugin():
             self.search_id = self.search_db.new(keyword)
             keyword = translit.eng(keyword) if self.isCyrillic(keyword) else keyword
 
-            # xbmc.executebuiltin( "ActivateWindow(busydialog)" )
-
             for i, plugin in enumerate(self.supported_addons):
                 script = "special://home/addons/%s/default.py" % plugin
                 xbmc.executebuiltin("XBMC.RunScript(%s, %d, mode=search&keyword=%s&unified=True)" % (script, self.handle, keyword), False)
@@ -124,8 +122,8 @@ class UnifiedSearchPlugin():
             # self.show(None)
 
             # print len(self.supported_addons)
-            self.notify(self.language(1000).encode('utf-8'), self.language(2000).encode('utf-8'), len(self.supported_addons))            
-            xbmcplugin.endOfDirectory(self.handle, False)
+            self.notify(self.language(1000).encode('utf-8'), self.language(2000).encode('utf-8'))            
+            # xbmcplugin.endOfDirectory(self.handle, False)
 
     def show(self, search_id):
         self.log("Show results on separate page for search_id")
@@ -133,13 +131,15 @@ class UnifiedSearchPlugin():
 
         if results:
             for i, item in enumerate(results):
+                image = item['image'] if item['image']  else self.icon
+
                 if item['is_playable']:
                     uri = '%s?mode=activate&plugin=%s&url=%s&playable=True' % (self.xpath, item['plugin'], item['url'])
-                    item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=item['image'])
+                    item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=image)
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
                 else:
                     uri = '%s?mode=activate&plugin=%s&url=%s' % (self.xpath, item['plugin'], item['url'])
-                    item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=item['image'])
+                    item = xbmcgui.ListItem("%s (%s)" % (item['title'], item['plugin'].replace('plugin.video.', '')), thumbnailImage=image)
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, False)
         else:
             if search_id or search_id == 0:
@@ -151,6 +151,7 @@ class UnifiedSearchPlugin():
                 item.setProperty('IsPlayable', 'false')
                 xbmcplugin.addDirectoryItem(self.handle, '', item, False)
 
+        xbmc.executebuiltin('Container.SetViewMode(50)')
         xbmcplugin.endOfDirectory(self.handle, True)
 
     def previous_results(self):
@@ -168,6 +169,7 @@ class UnifiedSearchPlugin():
             item.setProperty('IsPlayable', 'false')
             xbmcplugin.addDirectoryItem(self.handle, '', item, False)
 
+        xbmc.executebuiltin('Container.SetViewMode(50)')
         xbmcplugin.endOfDirectory(self.handle, True)
 
     def activate(self, plugin, url, playable):
@@ -205,11 +207,8 @@ class UnifiedSearchPlugin():
     def error(self, message):
         print "%s ERROR: %s" % (self.id, message)
 
-    def notify(self, header, msg, sec=5):
-        # print "Show for %s seconds"% sec
-        # Notification(header,message[,time,image]) 
-        time = str(int(sec) * 1000)
-        xbmc.executebuiltin("Notification(%s,%s, %s)" % (header, msg, time))
+    def notify(self, header, msg):
+        xbmc.executebuiltin("Notification(%s,%s,%s,%s)" % ('UnifiedSearch', msg, '30000', self.icon))
 
     def isCyrillic(self, keyword):
         if not re.findall(u"[\u0400-\u0500]+", keyword):

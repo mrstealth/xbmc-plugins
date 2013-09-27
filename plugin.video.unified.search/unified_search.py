@@ -9,20 +9,18 @@ import json
 import sqlite3
 
 import xbmc
+import xbmcgui
 import xbmcaddon
 
 from search_db import SearchDB
 from result_db import ResultDB
 
 
-# TODO:
-# 1) Provide context menu item method for unified search
-
-
 class UnifiedSearch():
     def __init__(self):
         self.id = 'plugin.video.unified.search'
         self.addon = xbmcaddon.Addon(self.id)
+        # self.icon = self.addon.getAddonInfo('icon')
         self.path = self.addon.getAddonInfo('path')
         self.language = self.addon.getLocalizedString
 
@@ -33,7 +31,7 @@ class UnifiedSearch():
 
         self.result_db = ResultDB()
         self.search_db = SearchDB()
-
+        
         self.debug = self.addon.getSetting("debug") == 'true'
 
     def collect(self, results):
@@ -53,6 +51,8 @@ class UnifiedSearch():
 
             if len(self.supported_addons) == counter:
                 self.log("ALL DONE => %s of %d done" % (counter, len(self.supported_addons)))
+                self.notify("Search", "Done")
+                
                 # xbmc.executebuiltin('XBMC.ReplaceWindow(10025, %s, return)' % "plugin://%s/?mode=show&search_id=%d" % (self.id, search_id))
                 xbmc.executebuiltin('Container.Update(%s)' % "plugin://%s/?mode=show&search_id=%d" % (self.id, search_id))
 
@@ -62,8 +62,9 @@ class UnifiedSearch():
     
         else:
             if len(self.supported_addons) == counter:
-               # FIXME:  ERROR: Control 50 in window 10025 has been asked to focus, but it can't.
-               xbmc.executebuiltin('XBMC.ReplaceWindow(10025, %s, return)' % "plugin://%s/?mode=show&search_id=0" % (self.id))
+                self.notify("Search", "Done")
+                # INFO:  Fix for ERROR: Control 50 in window 10025 has been asked to focus, but it can't.
+                xbmc.executebuiltin('Container.Update(%s)' % "plugin://%s/?mode=show&search_id=%d" % (self.id, search_id))
             else:
               self.log("!!! Nothing found !!!")
               return True
@@ -88,6 +89,9 @@ class UnifiedSearch():
         cursor = con.cursor()
         cursor.execute("SELECT addonID FROM disabled")
         return [x[0] for x in cursor.fetchall()]
+
+    def notify(self, header, msg):
+        xbmc.executebuiltin("XBMC.Notification(%s,%s,%s)" % ('UnifiedSearch', self.language(2002).encode('utf-8'), '1000'))
 
     def log(self, message):
         if self.debug:
