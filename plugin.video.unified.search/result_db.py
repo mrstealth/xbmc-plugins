@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.7
+# Rev. 1.1.1
 # License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 # -*- coding: utf-8 -*- 
 
@@ -14,14 +14,12 @@ addon_path = __addon__.getAddonInfo('path')
 
 class ResultDB:
     def __init__(self):
-        self.filename = os.path.join(addon_path, 'resources/databases', 'search_results.sqlite')
+        self.filename = os.path.join(addon_path, 'resources/databases', 'results.db')
         self.connect()
 
     def connect(self):
         # Try to avoid => OperationalError: database is locked
-        self.db = sqlite.connect(self.filename, timeout=10, check_same_thread = False)
-        #self.db = sqlite.connect(self.filename, check_same_thread = True)
-
+        self.db = sqlite.connect(self.filename, timeout=1000, check_same_thread = False)
         self.db.text_factory = str
         self.cursor = self.db.cursor()
 
@@ -31,8 +29,12 @@ class ResultDB:
         self.create_if_not_exists()
 
     def create_if_not_exists(self):
-        self.execute("CREATE TABLE IF NOT EXISTS results (id INT, search_id INT, title TEXT, url TEXT, image TEXT, plugin TEXT, is_playable BOOL NOT NULL)")
-        self.db.commit()
+        try:
+            self.execute("CREATE TABLE IF NOT EXISTS results (id INT, search_id INT, title TEXT, url TEXT, image TEXT, plugin TEXT, is_playable BOOL NOT NULL)")
+            self.db.commit()
+        except sqlite.OperationalError:
+            print "Database '%s' is locked" % self.filename
+            pass
 
     def result_id(self):
         self.execute("SELECT MAX(id) FROM results")

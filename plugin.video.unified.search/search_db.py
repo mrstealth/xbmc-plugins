@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.7
+# Rev. 1.1.1
 # License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 # -*- coding: utf-8 -*- 
 
@@ -14,14 +14,12 @@ addon_path = __addon__.getAddonInfo('path')
 
 class SearchDB:
     def __init__(self):
-        self.filename = os.path.join(addon_path, 'resources/databases', 'search_results.sqlite')
+        self.filename = os.path.join(addon_path, 'resources/databases', 'searches.db')
         self.connect()
 
     def connect(self):
         # Try to avoid  OperationalError: database is locked
-        self.db = sqlite.connect(self.filename, timeout=10, check_same_thread = False)
-        # self.db = sqlite.connect(self.filename, check_same_thread = True)
-
+        self.db = sqlite.connect(self.filename, timeout=1000, check_same_thread = False)
         self.db.text_factory = str
         self.cursor = self.db.cursor()
         self.execute = self.cursor.execute
@@ -29,8 +27,12 @@ class SearchDB:
         self.create_if_not_exists()
 
     def create_if_not_exists(self):
-        self.execute("CREATE TABLE IF NOT EXISTS searches (id INT, keyword TEXT, counter INT default 0)")
-        self.db.commit()
+        try:
+            self.execute("CREATE TABLE IF NOT EXISTS searches (id INT, keyword TEXT, counter INT default 0)")
+            self.db.commit()
+        except sqlite.OperationalError:
+            print "Database '%s' is locked" % self.filename
+            pass
 
     def new(self, keyword):
         search_id = self.search_id()

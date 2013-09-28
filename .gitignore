@@ -2,6 +2,8 @@
 */.DS_Store
 *.sqlite
 */.sqlite
+*.db
+*/.db
 *.pyc
 */.pyc
 *.sqlite
