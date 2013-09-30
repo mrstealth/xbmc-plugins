@@ -440,7 +440,7 @@ def getItems(url):
 
     try:
         mode = VIEW_MODES[Addon.getSetting('seasonsViewMode')]
-        xbmc.executebuiltin("Container.SetViewMode(" + mode +")")
+        xbmc.executebuiltin("Container.SetViewMode(" + mode + ")")
     except Exception, e:
         print "*** Exception"
         print e
@@ -465,6 +465,8 @@ def showItem(url, thumbnail):
     flashvar = re.findall('<script language="javascript">.*flashvars = .*?pl:[ "]*(.*?)"\r\n.*', content, re.S|re.DOTALL)[0]
 
 
+    print flashvar
+    
     # TODO: find an alternativ way to get flashvars from javascript
     # scripts = filter(None, common.parseDOM(content, 'script')) # fastest
     # matching = [s for s in scripts if "flashvar" in s]
