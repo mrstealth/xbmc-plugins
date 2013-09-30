@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.3
+# Rev. 1.1.4
 # -*- coding: utf-8 -*-
 
 import os
@@ -193,9 +193,10 @@ class Kinosolo():
     def playItem(self, url):
         print "Play URL %s" % url
 
-        if '+or+' in url  or ' or ' in url:
-            self.log("Wrong URL format: %s" % url)
+        if '+or+' in url:  
             video_url =  url.split('+or+')[-1]
+        elif ' or ' in url:
+            video_url =  url.split(' or ')[-1]
         else:
             video_url = url
 
