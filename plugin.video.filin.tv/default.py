@@ -414,8 +414,6 @@ def getItems(url):
 
             uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + '&thumbnail=' + images[i]
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage=images[i])
-
-
             infoLabels={'title': title, 'genre' : genre, 'plot': description}
 
             if calculateRating(ratings[i]) > 0:
@@ -462,25 +460,19 @@ def showItem(url, thumbnail):
 
     title = beatify_title(getTitle(block))
     desc = getDescription(block)
-    flashvar = re.findall('<script language="javascript">.*flashvars = .*?pl:[ "]*(.*?)"\r\n.*', content, re.S|re.DOTALL)[0]
-
-
-    print flashvar
     
     # TODO: find an alternativ way to get flashvars from javascript
-    # scripts = filter(None, common.parseDOM(content, 'script')) # fastest
-    # matching = [s for s in scripts if "flashvar" in s]
-    # print matching
+    scripts = filter(None, common.parseDOM(content, 'script')) # fastest
+    matching = [s for s in scripts if "flashvar" in s]
+    playlist = (matching[0].split('pl: ')[-1].split('.json')[0] + '.json').replace(' ', '').replace('"', '')
 
-    print flashvar
-
-    if flashvar:
+    if playlist:
         source_url = "http://kino-dom.tv/"
 
-        if '/play/' in flashvar:
-          url2json = source_url+flashvar
+        if '/play/' in playlist:
+          url2json = source_url+playlist
         else:
-          url2json = source_url+flashvar.replace('play/', '/play/')
+          url2json = source_url+playlist.replace('play/', '/play/')
 
         # multiple
         # url2json = "http://kino-dom.tv/01f551e61970b9645b5465460daccdfe/play/devushkiibombi.xml.json"
