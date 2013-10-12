@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.image.yandex.disk" name="[COLOR red]Yandex[/COLOR] Disk (Photo)" version="1.0.2" provider-name="MrStealth">
+
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>image</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>A file storage service accessible from any internet-enabled device</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
