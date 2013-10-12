@@ -49,6 +49,35 @@
   </extension>
 </addon>
 
+<addon id="plugin.audio.yandex.disk" name="[COLOR red]Yandex[/COLOR] Disk (Music)" version="1.0.2" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>YandexDisk is a file storage service accessible from any internet-enabled device</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.image.yandex.disk" name="[COLOR red]Yandex[/COLOR] Disk (Photo)" version="1.0.2" provider-name="MrStealth">
+
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>image</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>A file storage service accessible from any internet-enabled device</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.filin.tv" name="[B][COLOR CFFFFFFF]Filin.tv[/COLOR][/B]" version="1.2.5" provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -201,6 +230,20 @@
   <extension point="xbmc.addon.metadata">
     <summary>Unified search</summary>
     <description>This addon can find any videos in your plugin collection, which supports unified search (For personal use only)</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.yandex.disk" name="[COLOR red]Yandex[/COLOR] Disk (Video)" version="1.0.2" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>A file storage service accessible from any internet-enabled device</summary>
+    <description>For personal use only</description>
     <platform>all</platform>
   </extension>
 </addon>
