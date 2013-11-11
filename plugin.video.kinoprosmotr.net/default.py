@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.6
+# Rev. 1.1.2
 # -*- coding: utf-8 -*-
 
 import os
@@ -106,7 +106,7 @@ class Kinoprosmotr():
             images = common.parseDOM(poster, "img", ret="src")
 
             teaser = common.parseDOM(movie, "div", attrs={"class": "teaser_info"})
-            descs = common.parseDOM(teaser, "div", attrs={"style": "display:inline;"})
+            descs = common.parseDOM(teaser, "div", attrs={"class": "teaser_desc"})
 
             infos = common.parseDOM(teaser, "ul", attrs={"class": "teaser_ads"})
 
