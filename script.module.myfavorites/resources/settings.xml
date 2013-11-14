@@ -1,3 +1,0 @@
-<settings>
-    <setting id="debug" type="bool" label="Enable debug" defaulf="False"/>
-</settings>

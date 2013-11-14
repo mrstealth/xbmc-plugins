@@ -262,18 +262,6 @@
 	</extension>
 </addon>
 
-<addon id='script.module.myfavorites' version='1.0.0' name='My Favorites module for XBMC plugins' provider-name='MrStealth'>
-  <requires>
-    <import addon='xbmc.python' version='2.0'/>
-  </requires>
-  <extension point='xbmc.service' library="default.py" />
-  <extension point='xbmc.addon.metadata'>
-    <platform>all</platform>
-    <summary lang='en'>My Favorites module for XBMC plugins</summary>
-  </extension>
-  <extension point='xbmc.python.module' library='lib' />
-</addon>
-
 <addon id='script.module.translit' version='1.0.3' name='Translit for xbmc plugins' provider-name='MrStealth'>
   <requires>
     <import addon='xbmc.python' version='2.0'/>
