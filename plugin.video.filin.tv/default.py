@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.3
+# Rev. 1.2.6
 # -*- coding: utf-8 -*-
 
 import urllib, re, sys
@@ -399,7 +399,7 @@ def getItems(url):
         blocktext = common.parseDOM(content, "div", attrs = { "class":"block_text" })
 
         images = common.parseDOM(blocktext, "img", ret = "src")
-        descriptions = common.parseDOM(blocktext, "div", attrs = { "style":"display:inline;" })
+        descriptions = common.parseDOM(blocktext, "td", attrs = { "style":"padding-left:10px;" })
         ratings = common.parseDOM(blocktext, "li", attrs={"class": "current-rating"})
 
         genres = []
@@ -410,7 +410,9 @@ def getItems(url):
             if images[i][0] == '/': images[i] = BASE_URL+images[i]
             title = beatify_title(title)
             genre = unescape(str(genres[i]), 'cp1251')
-            description = unescape(strip_html(descriptions[i]), 'cp1251')
+
+            description = unescape(descriptions[i].split('<br/>')[-1], 'cp1251')
+            description = common.stripTags(description.split('</strong>')[-1])
 
             uri = sys.argv[0] + '?mode=SHOW&url=' + links[i] + '&thumbnail=' + images[i]
             item = xbmcgui.ListItem(title, iconImage = addon_icon, thumbnailImage=images[i])
@@ -459,8 +461,8 @@ def showItem(url, thumbnail):
     genre = unescape(" ".join(str(g) for g in common.parseDOM(mainf, "a")), 'cp1251')
 
     title = beatify_title(getTitle(block))
-    desc = getDescription(block)
-    
+    desc = common.stripTags(getDescription(block))
+
     # TODO: find an alternativ way to get flashvars from javascript
     scripts = filter(None, common.parseDOM(content, 'script')) # fastest
     matching = [s for s in scripts if "flashvar" in s]
@@ -484,12 +486,12 @@ def showItem(url, thumbnail):
         # url2json = "http://kino-dom.tv/01f551e61970b9645b5465460daccdfe/play/institutblagorodnihdevic2_mp4.xml.json"
 
         response = common.fetchPage({"link":url2json})["content"]
-        
+
         try:
           playlist = json.loads(response)['playlist']
         except ValueError:
           print "WARNING: wrong JSON format"
-          
+
           response = response.replace('\r', '').replace('\t', '').replace('\r\n', '')
           playlist = json.loads(response)['playlist']
 
@@ -503,12 +505,12 @@ def showItem(url, thumbnail):
                 for episode in episods:
                     title = ('%s (%s)') % (episode['comment'], season['comment'])
                     uri = sys.argv[0] + '?mode=play&url=%s' % episode['file']
-                  
+
                     item = xbmcgui.ListItem(title, thumbnailImage=image)
-                
+
                     overlay = xbmcgui.ICON_OVERLAY_WATCHED
                     info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
-                
+
                     item.setInfo( type='Video', infoLabels=info)
                     item.setProperty('IsPlayable', 'true')
                     xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
@@ -518,12 +520,12 @@ def showItem(url, thumbnail):
             for episode in playlist:
                 title = episode['comment']
                 uri = sys.argv[0] + '?mode=play&url=%s' % episode['file']
-                
+
                 item = xbmcgui.ListItem(title, thumbnailImage=image)
-                
+
                 overlay = xbmcgui.ICON_OVERLAY_WATCHED
                 info = {"Title": title, 'genre' : genre, "Plot": desc, "overlay": overlay, "playCount": 0}
-                
+
                 item.setInfo( type='Video', infoLabels=info)
                 item.setProperty('IsPlayable', 'true')
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, False)
