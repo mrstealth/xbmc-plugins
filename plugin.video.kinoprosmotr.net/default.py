@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.1.2
+# Rev. 1.1.3
 # -*- coding: utf-8 -*-
 
 import os
@@ -133,7 +133,7 @@ class Kinoprosmotr():
                     title = "%s (%s)" % (self.encode(title), year)
 
                 uri = sys.argv[0] + '?mode=show&url=%s' % (links[i])
-                item = xbmcgui.ListItem(title, iconImage=self.icon, thumbnailImage=image)
+                item = xbmcgui.ListItem(title, iconImage=self.icon, thumbnailImage=self.url+image)
                 item.setInfo(type='Video', infoLabels={'title': title, 'genre': genre, 'plot': desc, 'rating': rating})
 
                 xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
@@ -304,13 +304,20 @@ class Kinoprosmotr():
                 "titleonly": "3"
             }
 
+            headers = {
+                "Referer" : 'http://kinoprosmotr.net/index.php?do=search',
+                "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
+            }
+
             data = urllib.urlencode(values)
-            request = urllib2.Request(url, data)
+            request = urllib2.Request(url, data, headers)
             response = urllib2.urlopen(request)
 
             containers = common.parseDOM(response.read(), "div", attrs={"class": "search_item clearfix"})
             search_item_prev = common.parseDOM(containers, "div", attrs={"class": "search_item_prev"})
             search_item_inner = common.parseDOM(containers, "div", attrs={"class": "search_item_inner"})
+
+            print containers
 
             descriptions = common.parseDOM(search_item_inner, "div")
 
@@ -324,16 +331,19 @@ class Kinoprosmotr():
             if unified:
                 self.log("Perform unified search and return results")
                 for i, title in enumerate(titles):
-                    unified_search_results.append({'title': self.encode(title), 'url': links[i], 'image': images[i], 'plugin': self.id})
+                    image = self.url + images[i]
+                    unified_search_results.append({'title': self.encode(title), 'url': links[i], 'image': image, 'plugin': self.id})
 
                 UnifiedSearch().collect(unified_search_results)
 
             else:
                 for i, title in enumerate(titles):
+                    image = self.url + images[i]
+                    print image
                     genres = self.encode(', '.join(common.parseDOM(gcont[i], "a")))
                     desc = self.encode(common.stripTags(descriptions[i]))
                     uri = sys.argv[0] + '?mode=show&url=%s' % links[i]
-                    item = xbmcgui.ListItem(self.encode(title), iconImage=self.icon, thumbnailImage=images[i])
+                    item = xbmcgui.ListItem(self.encode(title), iconImage=self.icon, thumbnailImage=image)
                     item.setInfo(type='Video', infoLabels={'title': self.encode(title), 'genre': genres, 'plot': desc})
 
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)

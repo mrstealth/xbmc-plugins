@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.6
+# Rev. 1.2.7
 # -*- coding: utf-8 -*-
 
 import urllib, re, sys
@@ -208,17 +208,12 @@ def search():
             print 'Error code: ', e.code
     else:
         response = response.read()
-        info = common.parseDOM(response, "div", attrs = { "id":"dle-info" })[0]
         content = common.parseDOM(response, "div", attrs = { "id":"dle-content" })
+        blocks = common.parseDOM(content, "div", attrs = { "class":"block" })
 
-        if len(info) > 1:
-            result = common.parseDOM(info, "div", attrs = { "class":"ssc2r" })[0]
-            item = xbmcgui.ListItem(colorize('[' + unescape(result, 'cp1251') + ']', 'FFFF4000'))
-            item.setProperty('IsPlayable', 'false')
-            xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
-        else:
+        if len(blocks) > 1:
             result = common.parseDOM(content, "span", attrs = { "class":"sresult" })[0]
-            item = xbmcgui.ListItem(colorize('[' + unescape(result, 'cp1251') + ']', 'FF00FFF0'))
+            item = xbmcgui.ListItem(colorize(unescape(result, 'cp1251'), 'FF00FFF0'))
             item.setProperty('IsPlayable', 'false')
             xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
 
@@ -238,6 +233,11 @@ def search():
                 runner = "XBMC.RunScript(" + str(script)+ ", " + params + ")"
                 item.addContextMenuItems([(localize(language(3001)), runner)])
                 xbmcplugin.addDirectoryItem(pluginhandle, uri, item, True)
+        else:
+            item = xbmcgui.ListItem(colorize(language(2004), 'FFFF4000'))
+            item.setProperty('IsPlayable', 'false')
+            xbmcplugin.addDirectoryItem(pluginhandle, '', item, False)
+
 
     xbmcplugin.endOfDirectory(pluginhandle, True)
 
