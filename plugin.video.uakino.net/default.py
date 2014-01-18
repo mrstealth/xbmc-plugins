@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.7
+# Rev. 2.0.8
 # -*- coding: utf-8 -*-
 
 import os, urllib, urllib2, sys, socket, re
 import xbmc, xbmcplugin, xbmcgui, xbmcaddon
+import uppod
 import XbmcHelpers
 common = XbmcHelpers
 
@@ -253,14 +254,33 @@ class Uakino():
 
         self.log("Get media URL for: %s" % iframe_url)
         page = common.fetchPage({"link": iframe_url})
+        links = []
 
         try:
-            link = URLParser().parse(page['content'])[0]
-            self.log("Media link found: %s" % link)
+            links = URLParser().parse(page['content'])
+            url = None
+
+            for link in links:
+                if 'mp4' in link:
+                    url = link
+
+            if url:
+                self.play(url)
+            else:
+                print "content %s" % content
+                scripts = common.parseDOM(content, "script", attrs = {'type': 'text/javascript'})
+                print "scripts %s" % scripts
+
+                for script in scripts:
+                    print script
+                    links = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', script)
+
+                for link in links:
+                    if 'mp4' in link:
+                        url = link
+
         except IndexError:
             print "EXCEPTION: Media source not found"
-
-        self.play(link)
 
     def play(self, url):
         self.log("Play video URL")
