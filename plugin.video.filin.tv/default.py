@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.7
+# Rev. 1.2.8
 # -*- coding: utf-8 -*-
 
 import urllib, re, sys
@@ -464,7 +464,7 @@ def showItem(url, thumbnail):
     desc = common.stripTags(getDescription(block))
 
     # TODO: find an alternativ way to get flashvars from javascript
-    scripts = filter(None, common.parseDOM(content, 'script')) # fastest
+    scripts = filter(None, common.parseDOM(content, 'script', attrs={'language': "javascript"})) # fastest
     matching = [s for s in scripts if "flashvar" in s]
     playlist = (matching[0].split('pl: ')[-1].split('.json')[0] + '.json').replace(' ', '').replace('"', '')
 
