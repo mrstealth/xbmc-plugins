@@ -202,6 +202,22 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.teremok.tv" name="Teremok.tv" version="1.0.1" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.favorites" version="1.0.4"/>
+    <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Teremok.tv</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.uakino.net" name="Uakino.net (UnifiedSearch)" version="2.0.8" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
