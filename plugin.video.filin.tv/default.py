@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.2.8
+# Rev. 1.2.9
 # -*- coding: utf-8 -*-
 
 import urllib, re, sys
@@ -145,7 +145,7 @@ def getTitle(block):
 
 
 def calculateRating(x):
-    rating = (int(x)*100)/85
+    rating = (int(x)*100)/100
     xbmc_rating = (rating*10)/100
     return xbmc_rating
 
