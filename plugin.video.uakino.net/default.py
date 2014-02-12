@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.0.8
+# Rev. 2.0.9
 # -*- coding: utf-8 -*-
 
 import os, urllib, urllib2, sys, socket, re
@@ -72,11 +72,7 @@ class Uakino():
 
     def menu(self):
         uri = sys.argv[0] + '?mode=%s&url=%s'%("search", self.url)
-        item = xbmcgui.ListItem("[COLOR=FF00FF00][ %s ][/COLOR]"%self.language(1000), thumbnailImage = self.icon)
-        xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
-
-        uri = sys.argv[0] + '?mode=%s&url=%s'%("subcategory", urllib.quote_plus("http://uakino.net/category/video/137"))
-        item = xbmcgui.ListItem(self.language(1003), thumbnailImage = self.icon)
+        item = xbmcgui.ListItem("[COLOR=FF00FF00]%s[/COLOR]"%self.language(1000), thumbnailImage = self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
         self.getCategories()
@@ -87,15 +83,17 @@ class Uakino():
         response = common.fetchPage({"link": url})
 
         if response["status"] == 200:
-            catalog_tree = common.parseDOM(response["content"], "div", attrs = { "class":"catalog_tree" })
-            paths = common.parseDOM(catalog_tree, "li", attrs = {"class": "parent_closed"}, ret="cid")
+            catalog_tree = common.parseDOM(response["content"], "div", attrs = { "class":"footer" })
+            blocks = common.parseDOM(catalog_tree, "div", attrs = { "class":"block" })
+            paths = common.parseDOM(blocks[0], "li")
 
-            titles = common.parseDOM(catalog_tree, "a", attrs = {"href": "javascript:"})
+            titles = common.parseDOM(paths, "a")
+            links = common.parseDOM(paths, "a", ret="href")
 
             for i, title in enumerate(titles):
-                url = "%s/category/video/%s"%(self.url, paths[i])
-                uri = sys.argv[0] + '?mode=category&url=%s'%url
-                item = xbmcgui.ListItem(title, iconImage = self.icon, thumbnailImage = self.icon)
+                url = self.url + links[i]
+                uri = sys.argv[0] + '?mode=subcategory&url=%s'%url
+                item = xbmcgui.ListItem(title.replace(':', ''), iconImage = self.icon, thumbnailImage = self.icon)
                 xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
         else:
@@ -241,7 +239,7 @@ class Uakino():
 
         if navbar and len(links) > 2:
             uri = sys.argv[0] + '?mode=subcategory&url=%s&offset=%s'%(url, str(int(offset)+16))
-            item = xbmcgui.ListItem('Next page >>', thumbnailImage = self.icon, iconImage=self.icon)
+            item = xbmcgui.ListItem(self.language(9002), thumbnailImage = self.icon, iconImage=self.icon)
             xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
 
