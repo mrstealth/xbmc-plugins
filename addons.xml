@@ -78,6 +78,38 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.1tv.ru" name="[COLOR=CAFFFFFF][B]Первый канал (TV)[/B][/COLOR]" version="1.0.3" provider-name="mrstealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>XBMC add-on for http://www.1tv.ru/</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.axenttv.ru" name="Axenttv.ru" version="1.0.0" provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Axenttv.ru</summary>
+        <description>Онлайн телевидение</description>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
 <addon id="plugin.video.filin.tv" name="[B][COLOR CFFFFFFF]Filin.tv[/COLOR][/B]" version="1.2.9" provider-name="mrstealth">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
@@ -93,6 +125,22 @@
         <description>For personal use only</description>
         <platform>all</platform>
     </extension>
+</addon>
+
+<addon id="plugin.video.filmodrom.net" name="Filmodrom.net (UnifiedSearch)" version="1.0.4" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+    <import addon="script.module.translit" version="1.0.3"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Filmodrom.net</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
 </addon>
 
 <addon id="plugin.video.go2load.com" name="Go2Load.com" version="1.0.5" provider-name="MrStealth">
@@ -187,6 +235,105 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.mrstealth.fepcom.net" name="Fepcom.net (UnifiedSearch)" version="1.0.3" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Fepcom.net</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.mrstealth.filmix.net" name="Filmix.net" version="1.0.1" provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Filmix.net</summary>
+        <description>Видео-микс онлайн</description>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.mrstealth.serialu.net" name="[B][COLOR CFFFFFFF]Serialu.net[/COLOR][/B]" version="1.0.6" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Serialu.net</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.mrstealth.showday.tv" name="[B][COLOR CFFFFFFF]Showday.tv[/COLOR][/B]" version="1.0.6" provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Showday.tv</summary>
+        <description>SHOWDAY.TV - сериал на каждый день!</description>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.mrstealth.stepashka.com"
+       name="Stepashka.com"
+       version="1.0.2"
+       provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Stepashka.com</summary>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.online-life.ru" name="Online-life.ru (UnifiedSearch)" version="2.1.2" provider-name="MrStealth">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.favorites" version="1.0.4"/>
+    <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Online-life.ru</summary>
+    <description>For personal use only</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.psihov.net.ua" name="Psihov.net" version="1.0.4" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -250,6 +397,23 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.videokub.com" name="VideoKub.com" version="1.0.2" provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>VideoKub.com</summary>
+        <description>Видео Куб (http://videokub.com)</description>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
 <addon id="plugin.video.yandex.disk" name="[COLOR red]Yandex[/COLOR] Disk (Video)" version="1.0.2" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -276,6 +440,18 @@
 		<disclaimer>Add-ons for home usage in XBMC</disclaimer>
 		<platform>all</platform>
 	</extension>
+</addon>
+
+<addon id='script.module.favorites' version='1.0.4' name='Favorites for xbmc plugins' provider-name='MrStealth'>
+  <requires>
+    <import addon='xbmc.python' version='2.0'/>
+  </requires>
+  <extension point='xbmc.service' library="default.py" />
+  <extension point='xbmc.addon.metadata'>
+    <platform>all</platform>
+    <summary lang='en'>Favorites for xbmc plugins.</summary>
+  </extension>
+  <extension point='xbmc.python.module' library='lib' />
 </addon>
 
 <addon id='script.module.translit' version='1.0.3' name='Translit for xbmc plugins' provider-name='MrStealth'>
