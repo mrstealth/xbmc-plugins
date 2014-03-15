@@ -158,6 +158,23 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.hdrezka.tv" name="Hdrezka.tv" version="1.0.1" provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Hdrezka.tv</summary>
+        <description>HDREZKA.TV - Фильмы, мультфильмы и сериалы в высоком качестве 720</description>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
 <addon id="plugin.video.karaoke-besplatno.ru" name="Karaoke-besplatno.ru" version="1.0.4" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
@@ -313,6 +330,23 @@
     </extension>
     <extension point= "xbmc.addon.metadata">
         <summary>Stepashka.com</summary>
+        <description>For personal use only</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+
+<addon id="plugin.video.musicboxtv.ru" name="Musicboxtv.ru" version="1.0.0" provider-name="MrStealth">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+        <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+        <import addon="script.module.translit" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" provides="video" library="default.py">>
+        <provides>video</provides>
+    </extension>
+    <extension point= "xbmc.addon.metadata">
+        <summary>Musicboxtv.ru</summary>
+        <description>Онлайн телевидение</description>
         <description>For personal use only</description>
         <platform>all</platform>
     </extension>
