@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <string id="2000">Поиск</string>
+  <string id="2001">Жанры (последние поступления)</string>
+  <string id="2002">Фильмы</string>
+  <string id="2003">Сериалы</string>
+  <string id="2004"> Передачи и шоу</string>
+  <string id="2005">Документальные</string>
+  <string id="2006">Музыка</string>
+
+  <string id="3001">Добавить в мои фавориты</string>
+  <string id="3002">Список фаворитов пуст</string>
+  <string id="3003">Успешно добавлен в список фаворитов</string>
+  <string id="3004">Удалить из моих фаворитов</string>
+  <string id="3005">Успешно удалён из списка моих фаворитов</string>
+
+  <string id="4000">[следующая страница] >></string>
+
+  <string id="5000">смотреть онлайн</string>
+  <string id="5001">онлайн</string>
+
+  <string id="6001">Отображение списка сериалов (Вид)</string>
+  <string id="6002">Отображение списка серий (Вид)</string>
+</strings>

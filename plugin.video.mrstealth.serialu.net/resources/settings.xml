@@ -1,0 +1,5 @@
+<settings>
+    <setting id="rating" type="bool" label="6000" default="false"/>
+    <setting type="sep"/>
+    <setting id="translit" type="bool" label="2002" default="true" />
+</settings>

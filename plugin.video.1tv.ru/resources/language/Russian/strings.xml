@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="1000">Потоковое вещание</string>
+    <string id="1001">Видеоархив</string>
+    <string id="1002">Поток</string>
+    <string id="1003">Ошибка</string>
+    <string id="1004">Ссылка на видео не найдено, попробуйте позже</string>
+    <string id="1005">следующая страница ...</string>
+</strings>
