@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 2.1.2
+# Rev. 2.1.3
 # -*- coding: utf-8 -*-
 
 import os
@@ -178,12 +178,9 @@ class OnlineLife():
 
         parser = URLParser()
 
-
-        # DEBUG
-        # for i, script in enumerate(scripts):
-        #     print "#%d*********" % i
-        #     link = parser.parse(scripts[i])
-        #     print link
+        #for i, script in enumerate(scripts):
+        #    print "%d #########" % i
+        #    print script
 
         try:
             link = parser.parse(scripts[6])[0]
@@ -219,6 +216,8 @@ class OnlineLife():
                         for episode in episods:
                             etitle = "%s (%s)" % (episode['comment'], common.stripTags(season['comment']))
                             url = episode['file']
+
+                            # print "**** %s" % url
 
                             uri = sys.argv[0] + '?mode=play&url=%s' % urllib.quote_plus(url)
                             item = xbmcgui.ListItem(etitle, thumbnailImage=image)
@@ -285,12 +284,8 @@ class OnlineLife():
         try:
             if 'youtube' in url:
                 # url =  youtube.get_youtube_url(url, hd) if 'youtube' in url else url
-
-                print "Youtube URL: %s" % url
                 yt.url = url
                 video_url = yt.videos[-1].url
-
-                print "Youtube VIDEOS: %s" % yt.videos
                 # for video in yt.videos:
                 #     extension = video.__dict__['extension']
                 #     resolution = video.__dict__['resolution']

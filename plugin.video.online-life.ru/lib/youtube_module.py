@@ -9,6 +9,7 @@ class YoutubeModuleException(Exception):
 
 class YoutubeModule(object):
     def get_video_info(self, video_url):
+        print "*** get_video_info: %s" % video_url
         request_url = 'http://www.youtube.com/get_video_info?video_id='
 
         if 'http://www.youtube.com/watch?v' in video_url:

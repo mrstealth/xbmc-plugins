@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.online-life.ru" name="Online-life.ru (UnifiedSearch)" version="2.1.2" provider-name="MrStealth">
+<addon id="plugin.video.online-life.ru" name="Online-life.ru (UnifiedSearch)" version="2.1.3" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.favorites" version="1.0.4"/>

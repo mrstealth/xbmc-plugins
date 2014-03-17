@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-# from exceptions import MultipleObjectsReturned, YouTubeError
+from .exceptions import MultipleObjectsReturned, YouTubeError
 from .models import Video
 from .utils import safe_filename
 from urllib import urlencode
@@ -8,20 +8,6 @@ from urllib2 import urlopen
 from urlparse import urlparse, parse_qs, unquote
 
 import re
-
-class MultipleObjectsReturned(Exception):
-    """
-    The query returned multiple objects when only one was expected.
-    """
-    pass
-
-
-class YouTubeError(Exception):
-    """
-    The REST interface returned an error.
-    """
-    pass
-
 
 YT_BASE_URL = 'http://www.youtube.com/get_video_info'
 
@@ -246,20 +232,16 @@ class YouTube(object):
 
             stream_map = self._parse_stream_map(data)
             video_urls = stream_map["url"]
-            #Get the video signatures, YouTube require them as an url component
-            video_signatures = stream_map["sig"]
+            #Apparently signatures are not needed as of 2014-02-28
             self.title = self._fetch(('title',), content)
 
             for idx in range(len(video_urls)):
                 url = video_urls[idx]
-                signature = video_signatures[idx]
                 try:
                     fmt, data = self._extract_fmt(url)
                 except (TypeError, KeyError):
                     pass
                 else:
-                    #Add video signature to url
-                    url = "{0}&signature={1}".format(url, signature)
                     v = Video(url, self.filename, **data)
                     self.videos.append(v)
                     self._fmt_values.append(fmt)

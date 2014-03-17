@@ -6,7 +6,7 @@ from pprint import pprint
 yt = YouTube()
 
 # Set the video URL.
-yt.url = "http://www.youtube.com/watch?v=Ik-RsDGPI5Y"
+yt.url = "http://www.youtube.com/watch?v=yQsCjlFBCmc"
 
 # Once set, you can see all the codec and quality options YouTube has made
 # available for the perticular video by printing videos.
