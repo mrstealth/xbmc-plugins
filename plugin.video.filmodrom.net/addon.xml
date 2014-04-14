@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.filmodrom.net" name="Filmodrom.net (UnifiedSearch)" version="1.0.4" provider-name="MrStealth">
+<addon id="plugin.video.filmodrom.net" name="Filmodrom.net (UnifiedSearch)" version="1.0.5" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.xbmc.helpers" version="2.0.1"/>

@@ -127,7 +127,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.filmodrom.net" name="Filmodrom.net (UnifiedSearch)" version="1.0.4" provider-name="MrStealth">
+<addon id="plugin.video.filmodrom.net" name="Filmodrom.net (UnifiedSearch)" version="1.0.5" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.xbmc.helpers" version="2.0.1"/>
@@ -462,11 +462,11 @@
   </extension>
 </addon>
 
-<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.1" provider-name="MrStealth">
+<addon id="repository.mrstealth" name="Mrstealth XBMC Add-ons" version="1.0.4" provider-name="MrStealth">
 	<extension point="xbmc.addon.repository" name="MrStealth XBMC Add-ons Repository">
-		<info compressed="false">http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml</info>
-		<checksum>http://github.com/mrstealth/xbmc-plugins/raw/master/addons.xml.md5</checksum>
-		<datadir zip="true">https://github.com/mrstealth/xbmc-plugins/raw/master/repo/</datadir>
+		<info compressed="false">https://raw.github.com/mrstealth/xbmc-plugins/master/addons.xml</info>
+		<checksum>https://raw.github.com/mrstealth/xbmc-plugins/master/addons.xml.md5</checksum>
+		<datadir zip="true">https://raw.github.com/mrstealth/xbmc-plugins/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Install Add-ons from MrStealth add-on repository</summary>

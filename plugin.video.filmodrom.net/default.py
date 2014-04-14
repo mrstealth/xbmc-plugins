@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.5
 # -*- coding: utf-8 -*-
 
 import os
@@ -159,8 +159,10 @@ class Filmodrom():
 
             description = common.parseDOM(movie, "div", attrs={"style": "display:inline;"})
 
-            season = common.parseDOM(content, "param", attrs={"name": "flashvars"}, ret="pl")
-            movie = common.parseDOM(content, "param", attrs={"name": "flashvars"}, ret="file")
+            flash = common.parseDOM(content, 'object')
+
+            season = common.parseDOM(flash, "param", attrs={"name": "flashvars"})
+            movie = common.parseDOM(flash, "param", attrs={"name": "flashvars"}, ret="file")
 
             if movie:
                 self.log("This is a film %s " % movie)
@@ -178,7 +180,8 @@ class Filmodrom():
 
             else:
                 self.log("This is a season %s" % season)
-                url = season[0].replace('"', '')
+
+                url = season[0].split('&amp;pl=')[-1].split('"')[0]
                 response = common.fetchPage({"link": url})
                 response = eval(response["content"])
 
