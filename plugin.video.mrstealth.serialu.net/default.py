@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.6
+# Rev. 1.0.7
 # -*- coding: utf-8 -*-
 
 
@@ -147,6 +147,7 @@ class SerialuNet():
         image = common.parseDOM(entry, 'img', attrs={'class': 'm_pic'}, ret='src')[0]
 
         uhash = common.parseDOM(flash_player, "param", attrs={"name": "flashvars"}, ret="pl")[0].split('&')[0]
+        uhash = uhash.replace('"', '')
 
         # 1) get encoded URL from playlist/file HASH
         uppod_url = uppod.decodeSourceURL(uhash)
