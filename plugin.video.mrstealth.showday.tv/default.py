@@ -20,7 +20,7 @@
 # */
 #
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.3
+# Rev. 1.0.7
 
 import os, urllib, urllib2, sys, socket, cookielib, errno
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
@@ -148,6 +148,12 @@ class Showday():
             desc = common.stripTags(self.encode(infos[0]))
             genres = self.encode(', '.join(common.parseDOM(infos[1], "a")))
 
+
+            print "******* URL %s" % url
+            print url
+            #http://wx12.poiuytrew.pw/s/666f85f63f6c23aa777cbc9bfcaef508/neposeda.zy/e01_480.mp4
+            #http://wx12.poiuytrew.pw/s/666f85f63f6c23aa777cbc9bfcaef508/neposeda.zy/e01_[,480,].mp4
+
             try:
                 response = eval(playlist.replace('\t', '').replace('\r\n', '').encode('latin1').decode('utf-8'))
 
@@ -160,6 +166,8 @@ class Showday():
                         episods = season['playlist']
 
                         for episode in episods:
+                            url = episode['file'].replace(',', '').replace('[', '').replace(']', '')
+
                             uri = sys.argv[0] + '?mode=play&url=%s' % episode['file']
                             item = xbmcgui.ListItem(episode['comment'], iconImage=image, thumbnailImage=image)
                             info = {
@@ -178,7 +186,7 @@ class Showday():
 
                     for episode in response['playlist']:
                         etitle = episode['comment']
-                        url = episode['file']
+                        url = episode['file'].replace(',', '').replace('[', '').replace(']', '')
 
                         uri = sys.argv[0] + '?mode=play&url=%s' % url
                         item = xbmcgui.ListItem(etitle, iconImage=image, thumbnailImage=image)
