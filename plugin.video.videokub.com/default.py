@@ -20,7 +20,7 @@
 # */
 #
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.2
+# Rev. 1.0.3
 
 import os, urllib, urllib2, sys #, socket, cookielib, errno
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
@@ -45,7 +45,7 @@ class VideoKub():
         self.language = self.addon.getLocalizedString
         self.inext = os.path.join(self.path, 'resources/icons/next.png')
         self.handle = int(sys.argv[1])
-        self.url = 'http://videokub.com'
+        self.url = 'http://videokub.me'
 
     def main(self):
         params = common.getParameters(sys.argv[2])
@@ -80,7 +80,7 @@ class VideoKub():
         item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s[/COLOR]" % self.language(1003), thumbnailImage=self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-        self.index('http://www.videokub.com/latest-updates/', 1)
+        self.index('http://www.videokub.me/latest-updates/1/', 1)
         xbmcplugin.endOfDirectory(self.handle, True)
 
     def genres(self):
@@ -105,9 +105,13 @@ class VideoKub():
 
 
     def index(self, url, page):
-        page_url = "%s%s/" % (url, page)
+        if(page == 1):
+            page_url = url
+        else:
+            page_url = "%s%s/" % (url, page)
 
         print "Get videos for page_url %s" % page_url
+
         response = common.fetchPage({"link": page_url})
         content = common.parseDOM(response["content"], "div", attrs={"class": "list_videos"})
         videos = common.parseDOM(content, "div", attrs={"class": "short"})
@@ -155,8 +159,6 @@ class VideoKub():
 
         search_string = title.split(' ')
 
-        # 'http://www.videokub.com/search/?q=%s' % (search_string[0] + ' ' + search_string[1])
-
         uri = sys.argv[0] + '?mode=play&url=%s' % link
         item = xbmcgui.ListItem(title, thumbnailImage=self.icon)
         item.setInfo(type='Video', infoLabels={'title': title, 'overlay': xbmcgui.ICON_OVERLAY_WATCHED, 'playCount': 0})
@@ -190,7 +192,7 @@ class VideoKub():
 
             print keyword
 
-            url = 'http://www.videokub.com/search/?q=%s' % (keyword)
+            url = 'http://www.videokub.me/search/?q=%s' % (keyword)
 
             response = urllib2.urlopen(url)
 
