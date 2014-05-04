@@ -19,8 +19,8 @@
 # *  http://www.gnu.org/copyleft/gpl.html
 # */
 #
-# Writer (c) 2012, MrStealth
-# Rev. 1.0.3
+# Writer (c) 2014, MrStealth
+# Rev. 1.0.4
 
 import os, urllib, urllib2, sys #, socket, cookielib, errno
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
@@ -45,7 +45,7 @@ class VideoKub():
         self.language = self.addon.getLocalizedString
         self.inext = os.path.join(self.path, 'resources/icons/next.png')
         self.handle = int(sys.argv[1])
-        self.url = 'http://videokub.me'
+        self.url = 'http://www.videokub.me/'
 
     def main(self):
         params = common.getParameters(sys.argv[2])
@@ -80,7 +80,7 @@ class VideoKub():
         item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s[/COLOR]" % self.language(1003), thumbnailImage=self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
-        self.index('http://www.videokub.me/latest-updates/1/', 1)
+        self.index('http://www.videokub.me/latest-updates/', 1)
         xbmcplugin.endOfDirectory(self.handle, True)
 
     def genres(self):
@@ -105,13 +105,9 @@ class VideoKub():
 
 
     def index(self, url, page):
-        if(page == 1):
-            page_url = url
-        else:
-            page_url = "%s%s/" % (url, page)
+        page_url = "%s%s/" % (url, page)
 
         print "Get videos for page_url %s" % page_url
-
         response = common.fetchPage({"link": page_url})
         content = common.parseDOM(response["content"], "div", attrs={"class": "list_videos"})
         videos = common.parseDOM(content, "div", attrs={"class": "short"})
@@ -141,9 +137,6 @@ class VideoKub():
         print "Get video %s" % url
         response = common.fetchPage({"link": url})
         content = common.parseDOM(response["content"], "div", attrs={"class": "centrum"})
-
-        print response
-
         player = common.parseDOM(content, "div", attrs={"class": "player"})
         scripts = common.parseDOM(player, "script", attrs={"type": "text/javascript"})
         wrapper = common.parseDOM(content, "div", attrs={"class": "wrapper"})
@@ -158,6 +151,8 @@ class VideoKub():
         link = urls[0]
 
         search_string = title.split(' ')
+
+        # 'http://www.videokub.me/search/?q=%s' % (search_string[0] + ' ' + search_string[1])
 
         uri = sys.argv[0] + '?mode=play&url=%s' % link
         item = xbmcgui.ListItem(title, thumbnailImage=self.icon)
@@ -190,13 +185,8 @@ class VideoKub():
         if keyword:
             keyword = self.encode(keyword)
 
-            print keyword
-
             url = 'http://www.videokub.me/search/?q=%s' % (keyword)
-
             response = urllib2.urlopen(url)
-
-            #response = common.fetchPage({"link": url})
             content = common.parseDOM(response.read(), "div", attrs={"class": "list_videos"})
             videos = common.parseDOM(content, "div", attrs={"class": "short"})
 
@@ -225,7 +215,7 @@ class VideoKub():
                     xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
                 # TODO: Fix search pagination
-                # http://www.videokub.com/search/2/?q=%D0%B1%D0%B0%D1%80%D0%B1%D0%BE%D1%81%D0%BA&search=%D0%9D%D0%B0%D0%B9%D1%82%D0%B8
+                # http://www.videokub.me/search/2/?q=%D0%B1%D0%B0%D1%80%D0%B1%D0%BE%D1%81%D0%BA&search=%D0%9D%D0%B0%D0%B9%D1%82%D0%B8
                 #uri = sys.argv[0] + '?mode=%s&url=%s' % ("show", url)
                 #item = xbmcgui.ListItem(self.language(1004), iconImage=self.inext)
                 #xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
@@ -244,9 +234,9 @@ class VideoKub():
 #             <div class="full">
 #             <div class="title">Барбоскины - 121 серия. Семейный секрет</div>
 #             <div class="content">
-#             <div class="item">АВТОР: <a href="http://www.videokub.com/members/39/">videokub</a></div>
+#             <div class="item">АВТОР: <a href="http://www.videokub.me/members/39/">videokub</a></div>
 #             <div class="item">
-#             <a href="http://www.videokub.com/categories/multfilmy/" title="">Mультфильмы</a>                                                    </div>
+#             <a href="http://www.videokub.me/categories/multfilmy/" title="">Mультфильмы</a>                                                    </div>
 #             <div class="item">ОПИСАНИЕ: У видео нет описания</div>
 
 
