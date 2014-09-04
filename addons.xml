@@ -284,10 +284,11 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.mrstealth.serialu.net" name="[B][COLOR CFFFFFFF]Serialu.net[/COLOR][/B]" version="1.0.8" provider-name="MrStealth">
+<addon id="plugin.video.mrstealth.serialu.net" name="[B][COLOR CFFFFFFF]Serialu.net[/COLOR][/B]" version="1.0.9" provider-name="MrStealth">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.xbmc.helpers" version="2.0.1"/>
+    <import addon="script.module.favorites" version="1.0.5"/>
   </requires>
   <extension point="xbmc.python.pluginsource" provides="video" library="default.py">
     <provides>video</provides>
