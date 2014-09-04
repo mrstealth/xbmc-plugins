@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Writer (c) 2012, MrStealth
-# Rev. 1.0.7
+# Rev. 1.0.8
 # -*- coding: utf-8 -*-
 
 
@@ -25,6 +25,8 @@ common = XbmcHelpers
 import Translit as translit
 translit = translit.Translit(encoding='utf-8')
 
+# My Favorites module
+from MyFavorites import MyFavorites
 
 class SerialuNet():
     def __init__(self):
@@ -38,6 +40,7 @@ class SerialuNet():
         self.handle = int(sys.argv[1])
         self.url = 'http://serialu.net'
 
+        self.favorites = MyFavorites(self.id)
         self.inext = os.path.join(self.path, 'resources/icons/next.png')
 
     def main(self):
@@ -54,20 +57,24 @@ class SerialuNet():
             self.search()
         if mode == 'genres':
             self.listGenres(url)
-        if mode == 'movie':
+        if mode == 'show':
             self.getFilmInfo(url)
         if mode == 'category':
             self.getCategoryItems(url, page)
+        if mode == 'favorites':
+            self.show_favorites()
         elif mode is None:
             self.menu()
 
     def menu(self):
         uri = sys.argv[0] + '?mode=%s&url=%s' % ("search", self.url)
-        item = xbmcgui.ListItem("[COLOR=FF00FF00][%s][/COLOR]" % self.language(2000), thumbnailImage=self.icon)
+        item = xbmcgui.ListItem("[B][COLOR=FF00FF00]%s[/COLOR][/B]" % self.language(2000), thumbnailImage=self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
+        self.favorites.ListItem()
+
         uri = sys.argv[0] + '?mode=%s&url=%s' % ("genres", self.url)
-        item = xbmcgui.ListItem("[COLOR=FF00FFF0]%s[/COLOR]" % self.language(1000), thumbnailImage=self.icon)
+        item = xbmcgui.ListItem("[B][COLOR=FF00FFF0]%s[/COLOR][/B]" % self.language(1000), thumbnailImage=self.icon)
         xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
         self.getCategoryItems(self.url, 1)
@@ -121,9 +128,15 @@ class SerialuNet():
                         desc = common.stripTags(info)
                         genre = ', '.join(genres)
 
-                uri = sys.argv[0] + '?mode=movie&url=%s' % links[i]
-                item = xbmcgui.ListItem(title, thumbnailImage=images[i])
+                link = links[i]
+                image = images[i]
+
+                uri = sys.argv[0] + '?mode=show&url=%s' % link
+                item = xbmcgui.ListItem(title, thumbnailImage=image)
                 item.setInfo(type='Video', infoLabels={'title': title, 'genre': genre, 'plot': self.unescape(desc)})
+
+                self.favorites.addContextMenuItem(item, {'title': title.encode('utf-8'), 'url': link, 'image': image, 'playable': False, 'action': 'add', 'plugin': self.id})
+
                 xbmcplugin.addDirectoryItem(self.handle, uri, item, True)
 
         else:
@@ -228,6 +241,10 @@ class SerialuNet():
 
         response = opener.open(request)
         return response.read()
+
+    def show_favorites(self):
+        self.favorites.list()
+        xbmcplugin.endOfDirectory(self.handle, True)
 
     def search(self):
         kbd = xbmc.Keyboard()
