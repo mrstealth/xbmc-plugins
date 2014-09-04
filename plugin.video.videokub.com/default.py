@@ -20,7 +20,7 @@
 # */
 #
 # Writer (c) 2014, MrStealth
-# Rev. 1.0.4
+# Rev. 1.0.5
 
 import os, urllib, urllib2, sys #, socket, cookielib, errno
 import xbmc, xbmcplugin,xbmcgui,xbmcaddon
@@ -136,12 +136,9 @@ class VideoKub():
     def show(self, url):
         print "Get video %s" % url
         response = common.fetchPage({"link": url})
-        content = common.parseDOM(response["content"], "div", attrs={"class": "centrum"})
-        player = common.parseDOM(content, "div", attrs={"class": "player"})
-        scripts = common.parseDOM(player, "script", attrs={"type": "text/javascript"})
-        wrapper = common.parseDOM(content, "div", attrs={"class": "wrapper"})
-
-        title = common.parseDOM(wrapper, "div", attrs={"class": "title"})[0]
+        content = response["content"]
+        scripts = common.parseDOM(response["content"], "script", attrs={"type": "text/javascript"})
+        title = common.parseDOM(response["content"], "div", attrs={"class": "title"})[0]
         urls = []
 
         for script in scripts:
@@ -149,6 +146,8 @@ class VideoKub():
                 urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', script)
 
         link = urls[0]
+
+        print "link %s" % link
 
         search_string = title.split(' ')
 

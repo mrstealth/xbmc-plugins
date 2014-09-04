@@ -431,9 +431,9 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.videokub.com" name="VideoKub.com" version="1.0.4" provider-name="MrStealth">
+<addon id="plugin.video.videokub.com" name="VideoKub.com" version="1.0.5" provider-name="MrStealth">
     <requires>
-        <import addon="xbmc.python" version="2.0"/>
+        <import addon="xbmc.python" version="2.1"/>
         <import addon="script.module.xbmc.helpers" version="2.0.1"/>
         <import addon="script.module.translit" version="1.0.3"/>
     </requires>
