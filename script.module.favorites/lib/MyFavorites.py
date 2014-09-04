@@ -26,6 +26,9 @@ class MyFavoritesDB():
         self.connect()
 
     def create_if_not_exists(self):
+        if not os.path.exists(self.database_file):
+            file(self.database_file, 'w').close()
+
         try:
             self.execute("CREATE TABLE IF NOT EXISTS favorites (title TEXT, url TEXT, image TEXT, playable BOOL NOT NULL)")
             self.db.commit()
@@ -34,10 +37,15 @@ class MyFavoritesDB():
             pass
 
     def connect(self):
-        # Try to avoid => OperationalError: database is locked
-        # if not os.path.isfile(self.database_file):
-            # print "Create new sqlite file"
-            # open(self.database_file, 'a').close()
+        # Create directory if not exist
+        basedir = os.path.dirname(self.database_file)
+        if not os.path.exists(basedir):
+            os.makedirs(basedir)
+
+        # Create DB file if not exist
+        if not os.path.isfile(self.database_file):
+            print "Create new sqlite file %s" % self.database_file
+            open(self.database_file, 'w').close()
 
         self.db = sqlite.connect(self.database_file, timeout=1000, check_same_thread = False)
         self.db.text_factory = str

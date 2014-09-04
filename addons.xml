@@ -476,7 +476,7 @@
 	</extension>
 </addon>
 
-<addon id='script.module.favorites' version='1.0.4' name='Favorites for xbmc plugins' provider-name='MrStealth'>
+<addon id='script.module.favorites' version='1.0.5' name='Favorites for xbmc plugins' provider-name='MrStealth'>
   <requires>
     <import addon='xbmc.python' version='2.0'/>
   </requires>
